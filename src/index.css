@@ -1,0 +1,138 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Frosted Aura Color Palette - Unified with shadcn tokens */
+@layer base {
+  :root {
+    /* Frosted Aura Primary Colors */
+    --primary: #5C7E8F;
+    --primary-strong: #476574;
+    --primary-deep: #1F3440;
+    --primary-foreground: #FFFFFF;
+    
+    /* Frost System */
+    --frost: #D4DDE2;
+    --frost-soft: #EEF2F4;
+    
+    /* Text Colors */
+    --text-muted: #5E6A71;
+    --muted-color: #A2A2A2;
+    
+    /* Shadcn Semantic Tokens - Mapped to Frosted Aura */
+    --background: #FFFFFF;
+    --foreground: #1F3440;
+    
+    --card: #FFFFFF;
+    --card-foreground: #1F3440;
+    
+    --popover: #FFFFFF;
+    --popover-foreground: #1F3440;
+    
+    --secondary: #EEF2F4;
+    --secondary-foreground: #1F3440;
+    
+    --muted: #EEF2F4;
+    --muted-foreground: #5E6A71;
+    
+    --accent: #EEF2F4;
+    --accent-foreground: #1F3440;
+    
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+    
+    --border: #D4DDE2;
+    --input: #D4DDE2;
+    --ring: #5C7E8F;
+    
+    --radius: 0.5rem;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: #111827;
+  background-color: #f9fafb;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-strong);
+}
+
+/* For 3D card flip effect */
+.perspective-container {
+  perspective: 1000px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.group:hover .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  border-radius: 1rem; /* 16px */
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+/* Brand Band Animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+  display: flex;
+}
+
+/* Hide scrollbar for BrandBand carousel */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
