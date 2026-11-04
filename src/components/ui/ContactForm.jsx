@@ -4,8 +4,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import FormField from '@/components/ui/FormField';
 import CountrySelect from '@/components/ui/CountrySelect';
-import { countries } from '@/data/contactData';
-import emailjs from 'emailjs-com';
+import { useCountries } from '@/hooks/useContent';
+import { useCreateMessage } from '@/hooks/useContent';
 
 const ContactForm = () => {
   const { toast } = useToast();
@@ -13,6 +13,17 @@ const ContactForm = () => {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   
+  // Fetch countries from Supabase
+  const { data: countries = [], isLoading: countriesLoading } = useCountries();
+  const createMessage = useCreateMessage();
+  
+  // Transform countries data to format expected by CountrySelect
+  const countryOptions = countries.map(c => ({
+    value: c.country_code || c.id,
+    label: c.name,
+    flag: c.flag_emoji
+  }));
+
   const [formData, setFormData] = useState({
     fullName: '',
     country: '',
@@ -143,24 +154,20 @@ const ContactForm = () => {
 
     setIsSubmitting(true);
 
-    // Prepare data for EmailJS
-    const emailData = {
-      from_name: formData.fullName,
-      country: countries.find(c => c.value === formData.country)?.label || formData.country,
+    // Prepare data for Supabase
+    const messageData = {
+      full_name: formData.fullName,
+      country: countries.find(c => (c.country_code || c.id) === formData.country)?.name || formData.country,
       phone: formData.phone,
       whatsapp: formData.whatsapp,
-      from_email: formData.email || 'Not provided',
+      email: formData.email || null,
       message: formData.projectDetails,
-      to_email: 'info@sentivra-tech.com'
+      status: 'new',
+      source: 'contact_form'
     };
 
     try {
-      await emailjs.send(
-        'service_wa6n2ik',
-        'template_25w1x47',
-        emailData,
-        'hJmI9fWxOOjxXclFc'
-      );
+      await createMessage.mutateAsync(messageData);
 
       // Success
       toast({
@@ -184,11 +191,12 @@ const ContactForm = () => {
       setTouched({});
 
     } catch (error) {
-      console.error('EmailJS Error:', error);
+      console.error('Supabase Error:', error);
       toast({
         title: '❌ Failed to Send Message',
         description: 'Something went wrong. Please try again or contact us directly via WhatsApp.',
         duration: 5000,
+        variant: 'destructive'
       });
     } finally {
       setIsSubmitting(false);
@@ -248,8 +256,8 @@ const ContactForm = () => {
           onBlur={handleBlur}
           error={touched.country && errors.country}
           required
-          countries={countries}
-          disabled={isSubmitting}
+          countries={countryOptions}
+          disabled={isSubmitting || countriesLoading}
         />
 
         {/* Phone Number */}

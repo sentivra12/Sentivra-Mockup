@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { 
   Code, Smartphone, Database, Layers, BarChart3, Bot,
-  Headphones, Zap, Palette, Cloud,
   CheckCircle, Users, Clock, Award
 } from 'lucide-react';
-import { services, serviceCategories } from '@/data/services';
+import * as LucideIcons from 'lucide-react';
+import { useServices, useFAQs, useWhyChooseUs } from '@/hooks/useContent';
 import PageHero from '@/components/ui/PageHero';
 import FeatureStrip from '@/components/ui/FeatureStrip';
 import CategorySidebar from '@/components/ui/CategorySidebar';
@@ -23,6 +23,17 @@ const ServicesPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
+
+  // Fetch data from Supabase
+  const { data: services = [], isLoading: servicesLoading } = useServices();
+  const { data: faqs = [], isLoading: faqsLoading } = useFAQs('services');
+  const { data: whyChooseUs = [], isLoading: whyLoading } = useWhyChooseUs();
+
+  // Helper function to get icon component
+  const getIcon = (iconName) => {
+    const Icon = LucideIcons[iconName];
+    return Icon || LucideIcons.Box;
+  };
 
   useEffect(() => {
     const checkMobile = () => {
@@ -46,41 +57,28 @@ const ServicesPage = () => {
     }
   }, [location.hash]);
 
+  // Build service categories from services data
+  const serviceCategories = [
+    { id: 'all', label: 'All Services', icon: Layers },
+    { id: 'Web & Mobile', label: 'Web & Mobile', icon: Code },
+    { id: 'Business Systems', label: 'Business Systems', icon: Database },
+    { id: 'AI & Data', label: 'AI & Data', icon: Bot }
+  ];
+
   // Filter services by category
   const filteredServices = activeCategory === 'all'
     ? services
-    : services.filter(service => {
-        const categoryMap = {
-          'web-mobile': 'Web & Mobile',
-          'business-systems': 'Business Systems',
-          'ai-data': 'AI & Data'
-        };
-        return service.category === categoryMap[activeCategory];
-      });
+    : services.filter(service => service.category === activeCategory);
 
-  // Features for FeatureStrip
-  const features = [
-    {
-      icon: Headphones,
-      title: 'Continuous Support',
-      description: '24/7 dedicated support'
-    },
-    {
-      icon: Zap,
-      title: 'High Performance',
-      description: 'Lightning-fast solutions'
-    },
-    {
-      icon: Palette,
-      title: 'Modern Design',
-      description: 'Beautiful & intuitive UX'
-    },
-    {
-      icon: Cloud,
-      title: 'Scalable Solutions',
-      description: 'Grow with your business'
-    }
-  ];
+  // Features for FeatureStrip - build from whyChooseUs data
+  const features = whyChooseUs.slice(0, 4).map(item => {
+    const ItemIcon = getIcon(item.icon);
+    return {
+      icon: ItemIcon,
+      title: item.title,
+      description: item.description
+    };
+  });
 
   // Floating icons for hero
   const floatingIcons = [
@@ -92,7 +90,7 @@ const ServicesPage = () => {
     { icon: Database, label: 'CRM Systems', top: 55, left: 85 }
   ];
 
-  // Stats for Why Choose Us
+  // Stats for Why Choose Us - hardcoded for now (could be from stats table)
   const stats = [
     {
       value: 50,
@@ -120,33 +118,17 @@ const ServicesPage = () => {
     }
   ];
 
-  // FAQ data
-  const faqs = [
-    {
-      question: 'How long does it take to complete a project?',
-      answer: 'Project timelines vary based on complexity and scope. A simple website may take 4-6 weeks, while a complex web application or ERP system can take 3-6 months or more. We provide a detailed timeline during the planning phase and keep you updated throughout the development process.'
-    },
-    {
-      question: 'Do you provide ongoing support?',
-      answer: 'Yes! We offer comprehensive maintenance and support packages to ensure your solution continues to perform optimally. Our support includes bug fixes, security updates, performance monitoring, and technical assistance whenever you need it.'
-    },
-    {
-      question: 'Can you work with our existing systems?',
-      answer: 'Absolutely. We specialize in integrating new solutions with existing systems and databases. Our team has experience with various platforms and technologies, ensuring seamless integration and data migration when needed.'
-    },
-    {
-      question: 'What industries do you work with?',
-      answer: 'We work with clients across diverse industries including healthcare, finance, e-commerce, manufacturing, education, real estate, and more. Our adaptable approach allows us to understand and meet the unique needs of any industry.'
-    },
-    {
-      question: 'What technologies do you use?',
-      answer: 'We use modern, proven technologies including React, Vue.js, Node.js, Python, .NET, React Native, Flutter, and more. We select the best technology stack based on your specific project requirements, scalability needs, and long-term goals.'
-    },
-    {
-      question: 'How much does a project cost?',
-      answer: 'Project costs vary significantly based on complexity, features, and timeline. We offer flexible pricing models including fixed-price and time-and-materials. Contact us for a free consultation and detailed quote tailored to your specific needs.'
-    }
-  ];
+  // Show loading state
+  if (servicesLoading || faqsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-16">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading services...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -205,8 +187,12 @@ const ServicesPage = () => {
               <div className="hidden lg:grid grid-cols-3 gap-8">
                 {filteredServices.map((service, index) => (
                   <ServiceCardWithImage
-                    key={service.slug}
-                    service={service}
+                    key={service.id}
+                    service={{
+                      ...service,
+                      shortDescription: service.short_description,
+                      image: service.image_url
+                    }}
                     delay={index * 0.1}
                     variant="desktop"
                   />
@@ -217,8 +203,12 @@ const ServicesPage = () => {
               <div className="lg:hidden space-y-4">
                 {filteredServices.map((service, index) => (
                   <ServiceCardWithImage
-                    key={service.slug}
-                    service={service}
+                    key={service.id}
+                    service={{
+                      ...service,
+                      shortDescription: service.short_description,
+                      image: service.image_url
+                    }}
                     delay={index * 0.05}
                     variant="mobile"
                   />

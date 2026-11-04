@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useFAQs, useSiteSettings } from '@/hooks/useContent';
 import PageHero from '../components/ui/PageHero';
 import ContactForm from '../components/ui/ContactForm';
 import ContactInfoCard from '../components/ui/ContactInfoCard';
@@ -8,9 +9,24 @@ import FAQAccordion from '../components/ui/FAQAccordion';
 import CTABand from '../components/ui/CTABand';
 import WhatsAppButton from '../components/ui/WhatsAppButton';
 import Footer from '../components/Footer';
-import { heroFeatures, contactFAQs, contactInfo } from '../data/contactData';
 
 const ContactPage = () => {
+  // Fetch data from Supabase
+  const { data: faqs = [], isLoading: faqsLoading } = useFAQs('contact');
+  const { data: siteSettings } = useSiteSettings();
+
+  // Hero features (hardcoded for now - could be moved to database if needed)
+  const heroFeatures = [
+    { text: 'Quick Response' },
+    { text: '24/7 Available' },
+    { text: 'Free Consultation' }
+  ];
+
+  // Contact info from site settings
+  const contactInfo = {
+    whatsapp: siteSettings?.whatsapp_number || '201558952126'
+  };
+
   const handleScrollToForm = (e) => {
     e.preventDefault();
     const formElement = document.getElementById('contact-form');
@@ -113,7 +129,7 @@ const ContactPage = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <FAQAccordion faqs={contactFAQs.slice(0, Math.ceil(contactFAQs.length / 2))} />
+              <FAQAccordion faqs={faqs.slice(0, Math.ceil(faqs.length / 2))} />
             </motion.div>
 
             {/* Right Column */}
@@ -123,7 +139,7 @@ const ContactPage = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <FAQAccordion faqs={contactFAQs.slice(Math.ceil(contactFAQs.length / 2))} />
+              <FAQAccordion faqs={faqs.slice(Math.ceil(faqs.length / 2))} />
             </motion.div>
           </div>
         </div>

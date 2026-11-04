@@ -4,18 +4,20 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
-  Headphones, Zap, Palette, 
-  Lightbulb, Award, Target, Users,
-  Search, PenTool, Rocket
-} from 'lucide-react';
-import { services } from '@/data/services';
-import { projects } from '@/data/projects';
-import { clientLogos } from '@/data/clientLogos';
+  useServices, 
+  useProjects, 
+  useClientLogos, 
+  useTrustBadges, 
+  useProcessSteps, 
+  useWhyChooseUs,
+  useHero 
+} from '@/hooks/useContent';
 import SectionHeader from '@/components/ui/SectionHeader';
 import ServiceCard from '@/components/ui/ServiceCard';
 import ProjectCard from '@/components/ui/ProjectCard';
 import FeatureItem from '@/components/ui/FeatureItem';
 import BrandBand from '@/components/ui/BrandBand';
+import * as LucideIcons from 'lucide-react';
 import '../index.css';
 
 const HomePage = () => {
@@ -24,6 +26,21 @@ const HomePage = () => {
   const [showPlayButton, setShowPlayButton] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = React.useRef(null);
+
+  // Fetch data from Supabase
+  const { data: hero, isLoading: heroLoading } = useHero();
+  const { data: services = [], isLoading: servicesLoading } = useServices();
+  const { data: allProjects = [], isLoading: projectsLoading } = useProjects();
+  const { data: clientLogos = [], isLoading: logosLoading } = useClientLogos();
+  const { data: trustBadges = [], isLoading: badgesLoading } = useTrustBadges();
+  const { data: processSteps = [], isLoading: processLoading } = useProcessSteps();
+  const { data: whyChooseUs = [], isLoading: whyLoading } = useWhyChooseUs();
+
+  // Helper function to get icon component
+  const getIcon = (iconName) => {
+    const Icon = LucideIcons[iconName];
+    return Icon || LucideIcons.Box;
+  };
 
   // Handle video playback with ref to ensure muted attribute is set
   useEffect(() => {
@@ -83,8 +100,20 @@ const HomePage = () => {
   const filterCategories = ['All', 'Web Apps', 'Mobile', 'ERP', 'CRM', 'AI & Chatbots', 'Other'];
   
   const filteredProjects = activeFilter === 'All' 
-    ? projects 
-    : projects.filter(project => project.category === activeFilter);
+    ? allProjects 
+    : allProjects.filter(project => project.category === activeFilter);
+
+  // Show loading state
+  if (heroLoading || servicesLoading || projectsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -95,7 +124,7 @@ const HomePage = () => {
 
       {/* Hero Section with Video Background */}
       <section id="home" className="relative min-h-[600px] md:min-h-[650px] flex items-center overflow-hidden">
-        {/* Video Background Layer - TODO: Replace with licensed video files (remove watermark) */}
+        {/* Video Background Layer */}
         <video
           ref={videoRef}
           autoPlay
@@ -103,7 +132,7 @@ const HomePage = () => {
           loop
           playsInline
           preload="metadata"
-          poster="/videos/hero-poster.jpg"
+          poster={hero?.video_poster_url || "/videos/hero-poster.jpg"}
           aria-hidden="true"
           tabIndex={-1}
           className="absolute inset-0 w-full h-full object-cover z-0"
@@ -113,8 +142,14 @@ const HomePage = () => {
             setShowPlayButton(true);
           }}
         >
-          <source src="/videos/hero.webm" type="video/webm" />
-          <source src="/videos/hero.mp4" type="video/mp4" />
+          {hero?.video_webm_url && <source src={hero.video_webm_url} type="video/webm" />}
+          {hero?.video_url && <source src={hero.video_url} type="video/mp4" />}
+          {!hero?.video_url && !hero?.video_webm_url && (
+            <>
+              <source src="/videos/hero.webm" type="video/webm" />
+              <source src="/videos/hero.mp4" type="video/mp4" />
+            </>
+          )}
         </video>
 
         {/* Primary Gradient Overlay - Left to Right (text side to video side) */}
@@ -185,18 +220,21 @@ const HomePage = () => {
                   Software Company
                 </span>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-deep leading-tight">
-                  From ideas to{' '}
-                  <span className="text-primary">real digital products</span>
+                  {hero?.headline || 'From ideas to real digital products'}
                 </h1>
                 <p className="text-lg text-text-muted leading-relaxed">
-                  We transform your vision into powerful digital solutions. Our expert team delivers cutting-edge technology that drives business growth and creates exceptional user experiences.
+                  {hero?.subheadline || 'We transform your vision into powerful digital solutions.'}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <Button size="lg" asChild>
-                    <a href="/#contact">Start Your Project</a>
+                    <a href={hero?.cta_primary_link || '/#contact'}>
+                      {hero?.cta_primary_text || 'Start Your Project'}
+                    </a>
                   </Button>
                   <Button size="lg" variant="outline" asChild>
-                    <a href="/#about">Learn More</a>
+                    <a href={hero?.cta_secondary_link || '/#about'}>
+                      {hero?.cta_secondary_text || 'Learn More'}
+                    </a>
                   </Button>
                 </div>
               </motion.div>
@@ -209,53 +247,27 @@ const HomePage = () => {
       <section className="py-12 bg-white border-b border-frost">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="flex items-center gap-4"
-            >
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Headphones className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-bold text-primary-deep">Professional Support</h3>
-                <p className="text-sm text-text-muted">24/7 dedicated assistance</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex items-center gap-4"
-            >
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Zap className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-bold text-primary-deep">High Performance</h3>
-                <p className="text-sm text-text-muted">Lightning-fast solutions</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex items-center gap-4"
-            >
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Palette className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-bold text-primary-deep">Modern Design</h3>
-                <p className="text-sm text-text-muted">Beautiful & intuitive UX</p>
-              </div>
-            </motion.div>
+            {trustBadges.map((badge, index) => {
+              const BadgeIcon = getIcon(badge.icon);
+              return (
+                <motion.div
+                  key={badge.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="flex items-center gap-4"
+                >
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <BadgeIcon className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-primary-deep">{badge.title}</h3>
+                    <p className="text-sm text-text-muted">{badge.description}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -266,14 +278,24 @@ const HomePage = () => {
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
             {clientLogos.map((logo, index) => (
               <motion.div
-                key={index}
+                key={logo.id}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="w-24 h-24 rounded-lg bg-white shadow-card flex items-center justify-center text-muted font-bold text-xl border border-frost"
+                className="w-24 h-24 rounded-lg bg-white shadow-card flex items-center justify-center border border-frost overflow-hidden"
               >
-                {logo.initial}
+                {logo.logo_url ? (
+                  <img 
+                    src={logo.logo_url} 
+                    alt={logo.client_name}
+                    className="w-full h-full object-contain p-2"
+                  />
+                ) : (
+                  <span className="text-muted font-bold text-xl">
+                    {logo.client_name.charAt(0)}
+                  </span>
+                )}
               </motion.div>
             ))}
           </div>
@@ -289,15 +311,18 @@ const HomePage = () => {
             subtitle="Complete Digital Solutions for Your Business"
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <ServiceCard
-                key={service.slug}
-                icon={service.icon}
-                title={service.title}
-                description={service.shortDescription}
-                delay={index * 0.1}
-              />
-            ))}
+            {services.map((service, index) => {
+              const ServiceIcon = getIcon(service.icon);
+              return (
+                <ServiceCard
+                  key={service.id}
+                  icon={ServiceIcon}
+                  title={service.title}
+                  description={service.short_description}
+                  delay={index * 0.1}
+                />
+              );
+            })}
           </div>
         </div>
       </section>
@@ -328,83 +353,41 @@ const HomePage = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            {/* Left: 3 Process Steps in a Column */}
+            {/* Left: Process Steps in a Column */}
             <div className="space-y-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="bg-white p-8 rounded-xl shadow-card border border-frost"
-              >
-                <div className="flex items-start gap-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Search className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-4xl font-bold text-primary">1</span>
-                      <h3 className="text-xl font-bold text-primary-deep">Understand</h3>
+              {processSteps.map((step, index) => {
+                const StepIcon = getIcon(step.icon);
+                return (
+                  <motion.div
+                    key={step.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: index * 0.2 }}
+                    className="bg-white p-8 rounded-xl shadow-card border border-frost"
+                  >
+                    <div className="flex items-start gap-6">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <StepIcon className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-4xl font-bold text-primary">{step.step_number}</span>
+                          <h3 className="text-xl font-bold text-primary-deep">{step.title}</h3>
+                        </div>
+                        <p className="text-text-muted">{step.description}</p>
+                      </div>
                     </div>
-                    <p className="text-text-muted">
-                      We dive deep into your business needs and goals to create the perfect solution strategy.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-white p-8 rounded-xl shadow-card border border-frost"
-              >
-                <div className="flex items-start gap-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <PenTool className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-4xl font-bold text-primary">2</span>
-                      <h3 className="text-xl font-bold text-primary-deep">Design & Develop</h3>
-                    </div>
-                    <p className="text-text-muted">
-                      Our team brings your vision to life with modern design and cutting-edge technology.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="bg-white p-8 rounded-xl shadow-card border border-frost"
-              >
-                <div className="flex items-start gap-6">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Rocket className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-4xl font-bold text-primary">3</span>
-                      <h3 className="text-xl font-bold text-primary-deep">Launch & Support</h3>
-                    </div>
-                    <p className="text-text-muted">
-                      We ensure a smooth launch and provide ongoing support to help you succeed.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+                  </motion.div>
+                );
+              })}
 
               {/* CTA Button */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.6 }}
+                transition={{ duration: 0.6, delay: processSteps.length * 0.2 }}
               >
                 <Button size="lg" asChild>
                   <a href="/#contact">Start Your Project</a>
@@ -473,7 +456,7 @@ const HomePage = () => {
             {filteredProjects.map((project, index) => (
               <ProjectCard
                 key={project.id}
-                image={project.image}
+                image={project.image_url}
                 title={project.title}
                 category={project.category}
                 delay={index * 0.1}
@@ -493,30 +476,18 @@ const HomePage = () => {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <FeatureItem
-              icon={Lightbulb}
-              title="Innovation"
-              description="We leverage cutting-edge technologies and creative solutions to keep you ahead of the competition."
-              delay={0}
-            />
-            <FeatureItem
-              icon={Award}
-              title="Quality"
-              description="Our commitment to excellence ensures every project meets the highest standards of performance and design."
-              delay={0.1}
-            />
-            <FeatureItem
-              icon={Target}
-              title="Focus on Success"
-              description="Your success is our priority. We align our efforts with your business goals for measurable results."
-              delay={0.2}
-            />
-            <FeatureItem
-              icon={Users}
-              title="Long-Term Partnership"
-              description="We build lasting relationships, providing ongoing support and evolving solutions as your business grows."
-              delay={0.3}
-            />
+            {whyChooseUs.map((item, index) => {
+              const ItemIcon = getIcon(item.icon);
+              return (
+                <FeatureItem
+                  key={item.id}
+                  icon={ItemIcon}
+                  title={item.title}
+                  description={item.description}
+                  delay={index * 0.1}
+                />
+              );
+            })}
           </div>
         </div>
       </section>

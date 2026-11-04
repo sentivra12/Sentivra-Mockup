@@ -6,9 +6,14 @@ import {
   Code, Smartphone, Database, Layers, BarChart3, Bot,
   Search, PenTool, Rocket, CheckCircle, Users, Award, TrendingUp
 } from 'lucide-react';
-import { projects, projectCategories } from '@/data/projects';
-import { testimonials } from '@/data/testimonials';
-import { clientLogos } from '@/data/clientLogos';
+import { 
+  useProjects, 
+  useTestimonials, 
+  useClientLogos, 
+  useProcessSteps,
+  useFAQs,
+  useStats
+} from '@/hooks/useContent';
 import PageHero from '@/components/ui/PageHero';
 import FilterTabs from '@/components/ui/FilterTabs';
 import EnhancedProjectCard from '@/components/ui/EnhancedProjectCard';
@@ -28,6 +33,14 @@ const OurWorkPage = () => {
   const [displayCount, setDisplayCount] = useState(6);
   const location = useLocation();
 
+  // Fetch data from Supabase
+  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  const { data: testimonials = [], isLoading: testimonialsLoading } = useTestimonials();
+  const { data: clientLogos = [], isLoading: logosLoading } = useClientLogos();
+  const { data: processSteps = [], isLoading: processLoading } = useProcessSteps();
+  const { data: faqs = [], isLoading: faqsLoading } = useFAQs('work');
+  const { data: stats = [], isLoading: statsLoading } = useStats();
+
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.substring(1);
@@ -40,20 +53,21 @@ const OurWorkPage = () => {
     }
   }, [location.hash]);
 
+  // Build project categories from projects data
+  const projectCategories = [
+    { id: 'all', label: 'All Projects', icon: Layers },
+    { id: 'Web Apps', label: 'Web Apps', icon: Code },
+    { id: 'Mobile', label: 'Mobile', icon: Smartphone },
+    { id: 'ERP', label: 'ERP', icon: Database },
+    { id: 'CRM', label: 'CRM', icon: BarChart3 },
+    { id: 'AI & Chatbots', label: 'AI & Chatbots', icon: Bot },
+    { id: 'Other', label: 'Other', icon: Layers }
+  ];
+
   // Filter projects by category
   const filteredProjects = activeCategory === 'all'
     ? projects
-    : projects.filter(project => {
-        const categoryMap = {
-          'web-applications': 'Web Applications',
-          'mobile-applications': 'Mobile Applications',
-          'erp-systems': 'ERP Systems',
-          'crm-systems': 'CRM Systems',
-          'ai-chatbots': 'AI & Chatbots',
-          'other': 'Other'
-        };
-        return project.category === categoryMap[activeCategory];
-      });
+    : projects.filter(project => project.category === activeCategory);
 
   const displayedProjects = filteredProjects.slice(0, displayCount);
   const hasMore = displayCount < filteredProjects.length;
@@ -69,32 +83,13 @@ const OurWorkPage = () => {
     { icon: Smartphone, label: 'Mobile Apps', top: 70, left: 55 }
   ];
 
-  // Process steps
-  const processSteps = [
-    {
-      icon: Search,
-      title: 'Understand',
-      description: 'We dive deep into your business needs and project requirements.'
-    },
-    {
-      icon: PenTool,
-      title: 'Plan & Design',
-      description: 'Creating detailed roadmaps and user-centric designs.'
-    },
-    {
-      icon: Rocket,
-      title: 'Develop',
-      description: 'Building robust solutions with cutting-edge technologies.'
-    },
-    {
-      icon: CheckCircle,
-      title: 'Launch & Support',
-      description: 'Smooth deployment with ongoing maintenance and support.'
-    }
-  ];
-
-  // Impact stats
-  const impactStats = [
+  // Impact stats - use from database if available, fallback to defaults
+  const impactStats = stats.length > 0 ? stats.map(stat => ({
+    value: stat.value,
+    suffix: stat.suffix || '',
+    icon: CheckCircle, // Default icon for stats
+    label: stat.label
+  })) : [
     {
       value: 50,
       suffix: '+',
@@ -121,45 +116,17 @@ const OurWorkPage = () => {
     }
   ];
 
-  // FAQ data
-  const faqs = [
-    {
-      question: 'How long does it take to complete a project?',
-      answer: 'Project timelines vary based on complexity and scope. A simple website may take 4-6 weeks, while a complex web application or ERP system can take 3-6 months or more. We provide a detailed timeline during the planning phase and keep you updated throughout the development process.'
-    },
-    {
-      question: 'Do you provide ongoing support?',
-      answer: 'Yes! We offer comprehensive maintenance and support packages to ensure your solution continues to perform optimally. Our support includes bug fixes, security updates, performance monitoring, and technical assistance whenever you need it.'
-    },
-    {
-      question: 'Can you work with our existing systems?',
-      answer: 'Absolutely. We specialize in integrating new solutions with existing systems and databases. Our team has experience with various platforms and technologies, ensuring seamless integration and data migration when needed.'
-    },
-    {
-      question: 'What technologies do you use?',
-      answer: 'We use modern, proven technologies including React, Vue.js, Node.js, Python, Laravel, React Native, Flutter, and more. We select the best technology stack based on your specific project requirements, scalability needs, and long-term goals.'
-    },
-    {
-      question: 'What industries do you work with?',
-      answer: 'We work with clients across diverse industries including healthcare, finance, e-commerce, manufacturing, education, real estate, and more. Our adaptable approach allows us to understand and meet the unique needs of any industry.'
-    },
-    {
-      question: 'How much does a project cost?',
-      answer: 'Project costs vary significantly based on complexity, features, and timeline. We offer flexible pricing models including fixed-price and time-and-materials. Contact us for a free consultation and detailed quote tailored to your specific needs.'
-    },
-    {
-      question: 'Can we request custom features?',
-      answer: 'Absolutely! We specialize in building custom solutions tailored to your unique requirements. We work closely with you to understand your needs and develop features that give you a competitive advantage.'
-    },
-    {
-      question: 'Do you offer UI/UX design only?',
-      answer: 'Yes, we offer standalone UI/UX design services. Our design team can create beautiful, user-centric interfaces whether you need design only or full development services.'
-    },
-    {
-      question: 'Will we own the source code?',
-      answer: 'Yes, upon project completion and full payment, you own all source code, designs, and intellectual property. We provide complete documentation and transfer all rights to you.'
-    }
-  ];
+  // Show loading state
+  if (projectsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-16">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading projects...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -204,9 +171,19 @@ const OurWorkPage = () => {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="w-24 h-24 rounded-lg bg-frost-soft shadow-card flex items-center justify-center text-muted font-bold text-lg border border-frost hover:border-primary hover:text-primary transition-all"
+                className="w-24 h-24 rounded-lg bg-white shadow-card flex items-center justify-center border border-frost overflow-hidden"
               >
-                {logo.initial}
+                {logo.logo_url ? (
+                  <img 
+                    src={logo.logo_url} 
+                    alt={logo.client_name}
+                    className="w-full h-full object-contain p-2"
+                  />
+                ) : (
+                  <span className="text-muted font-bold text-xl">
+                    {logo.client_name.charAt(0)}
+                  </span>
+                )}
               </motion.div>
             ))}
           </div>
@@ -246,7 +223,13 @@ const OurWorkPage = () => {
                 {displayedProjects.map((project, index) => (
                   <EnhancedProjectCard
                     key={project.id}
-                    project={project}
+                    project={{
+                      ...project,
+                      image: project.image_url,
+                      shortDescription: project.short_description,
+                      type: project.category,
+                      techStack: project.technologies || []
+                    }}
                     delay={index * 0.1}
                   />
                 ))}

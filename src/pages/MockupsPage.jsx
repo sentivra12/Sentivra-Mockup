@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
+import { useMockups, useFAQs } from '@/hooks/useContent';
 import PageHero from '@/components/ui/PageHero';
 import CategoryFilterWithIcons from '@/components/ui/CategoryFilterWithIcons';
 import SearchInput from '@/components/ui/SearchInput';
@@ -12,7 +13,10 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { mockups, mockupCategories, mockupsFAQs } from '@/data/mockups';
+import { 
+  Globe, ShoppingCart, Utensils, Briefcase, Heart, 
+  GraduationCap, Dumbbell, Home, Layers 
+} from 'lucide-react';
 
 const MockupsPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -21,9 +25,27 @@ const MockupsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(8);
 
+  // Fetch data from Supabase
+  const { data: mockups = [], isLoading: mockupsLoading } = useMockups();
+  const { data: faqs = [], isLoading: faqsLoading } = useFAQs('mockups');
+
+  // Build mockup categories
+  const mockupCategories = [
+    { id: 'all', label: 'All Mockups', icon: Layers },
+    { id: 'Business & Corporate', label: 'Business', icon: Briefcase },
+    { id: 'E-Commerce', label: 'E-Commerce', icon: ShoppingCart },
+    { id: 'Restaurant & Food', label: 'Restaurant', icon: Utensils },
+    { id: 'Healthcare', label: 'Healthcare', icon: Heart },
+    { id: 'Education', label: 'Education', icon: GraduationCap },
+    { id: 'Fitness & Wellness', label: 'Fitness', icon: Dumbbell },
+    { id: 'Real Estate', label: 'Real Estate', icon: Home },
+    { id: 'Portfolio & Personal', label: 'Portfolio', icon: Globe },
+    { id: 'Other', label: 'Other', icon: Layers }
+  ];
+
   // Filter mockups based on category and search
   const filteredMockups = mockups.filter((mockup) => {
-    const matchesCategory = activeCategory === 'all' || mockup.categoryId === activeCategory;
+    const matchesCategory = activeCategory === 'all' || mockup.category === activeCategory;
     const matchesSearch = searchQuery === '' || 
       mockup.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       mockup.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -60,6 +82,18 @@ const MockupsPage = () => {
   const handleViewMore = () => {
     setVisibleCount(prev => Math.min(prev + 4, filteredMockups.length));
   };
+
+  // Show loading state
+  if (mockupsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-16">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading mockups...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div 
@@ -281,8 +315,8 @@ const MockupsPage = () => {
 
           {/* 2-column FAQ on desktop, 1-column on mobile */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <FAQAccordion faqs={mockupsFAQs.slice(0, 4)} />
-            <FAQAccordion faqs={mockupsFAQs.slice(4, 8)} />
+            <FAQAccordion faqs={faqs.slice(0, Math.ceil(faqs.length / 2))} />
+            <FAQAccordion faqs={faqs.slice(Math.ceil(faqs.length / 2))} />
           </div>
         </div>
       </section>

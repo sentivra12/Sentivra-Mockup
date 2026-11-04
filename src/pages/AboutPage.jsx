@@ -4,6 +4,12 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { 
+  useCountries, 
+  useTimeline, 
+  useValues, 
+  useStats 
+} from '@/hooks/useContent';
 import PageHero from '@/components/ui/PageHero';
 import BrandBand from '@/components/ui/BrandBand';
 import CountryCard from '@/components/ui/CountryCard';
@@ -15,10 +21,23 @@ import ValueCard from '@/components/ui/ValueCard';
 import CTABand from '@/components/ui/CTABand';
 import SectionHeader from '@/components/ui/SectionHeader';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
-import { countries, timelineMilestones, values, stats, teamAvatars } from '@/data/aboutData';
 
 const AboutPage = () => {
   const navigate = useNavigate();
+
+  // Fetch data from Supabase
+  const { data: countries = [], isLoading: countriesLoading } = useCountries();
+  const { data: timelineMilestones = [], isLoading: timelineLoading } = useTimeline();
+  const { data: values = [], isLoading: valuesLoading } = useValues();
+  const { data: stats = [], isLoading: statsLoading } = useStats();
+
+  // Hardcoded team avatars (could be moved to database if needed)
+  const teamAvatars = [
+    { id: 1, name: 'Team Member 1', avatar: 'https://i.pravatar.cc/150?img=1' },
+    { id: 2, name: 'Team Member 2', avatar: 'https://i.pravatar.cc/150?img=2' },
+    { id: 3, name: 'Team Member 3', avatar: 'https://i.pravatar.cc/150?img=3' },
+    { id: 4, name: 'Team Member 4', avatar: 'https://i.pravatar.cc/150?img=4' }
+  ];
 
   const handleScrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -26,6 +45,18 @@ const AboutPage = () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // Show loading state
+  if (countriesLoading || timelineLoading || valuesLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-16">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div 
