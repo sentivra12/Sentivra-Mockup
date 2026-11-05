@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, X, Save } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
 import DataTable from '@/admin/components/DataTable';
+import MediaUploadField from '@/components/MediaUploadField';
 import { useTestimonials, useCreateTestimonial, useUpdateTestimonial, useDeleteTestimonial } from '@/hooks/useContent';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -339,20 +340,16 @@ const TestimonialsPage = () => {
                     </div>
                   </div>
 
-                  {/* Avatar URL */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Avatar URL
-                    </label>
-                    <input
-                      type="url"
-                      name="client_photo_url"
-                      value={formData.client_photo_url}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      placeholder="https://example.com/avatar.jpg"
-                    />
-                  </div>
+                  {/* Avatar */}
+                  <MediaUploadField
+                    label="Client Photo (Optional)"
+                    value={formData.client_photo_url}
+                    onChange={(url) => setFormData({ ...formData, client_photo_url: url })}
+                    accept="image/*"
+                    fileType="image"
+                    showAltText={false}
+                    helperText="Photo of the client giving the testimonial"
+                  />
 
                   {/* Display Order, Featured, Active */}
                   <div className="grid grid-cols-3 gap-4">

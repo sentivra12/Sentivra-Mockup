@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FolderOpen, X, Save } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
 import DataTable from '@/admin/components/DataTable';
+import MediaUploadField from '@/components/MediaUploadField';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '@/hooks/useContent';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -360,19 +361,15 @@ const ProjectsPage = () => {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Image URL
-                    </label>
-                    <input
-                      type="url"
-                      name="image_url"
-                      value={formData.image_url}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
+                  <MediaUploadField
+                    label="Project Image"
+                    value={formData.image_url}
+                    onChange={(url) => setFormData({ ...formData, image_url: url })}
+                    accept="image/*"
+                    fileType="image"
+                    showAltText={false}
+                    helperText="Main project screenshot or preview image"
+                  />
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>

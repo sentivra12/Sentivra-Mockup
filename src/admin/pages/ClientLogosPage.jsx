@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, X, Save, Upload } from 'lucide-react';
+import { Users, X, Save } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
 import DataTable from '@/admin/components/DataTable';
+import MediaUploadField from '@/components/MediaUploadField';
 import { useClientLogos, useCreateClientLogo, useUpdateClientLogo, useDeleteClientLogo } from '@/hooks/useContent';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -235,50 +236,17 @@ const ClientLogosPage = () => {
                     />
                   </div>
 
-                  {/* Logo URL */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Logo URL *
-                    </label>
-                    <input
-                      type="url"
-                      name="logo_url"
-                      value={formData.logo_url}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      placeholder="https://example.com/logo.png"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      💡 Tip: Upload logo to Media Library first, then paste URL here
-                    </p>
-                  </div>
-
-                  {/* Logo Preview */}
-                  {formData.logo_url && (
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Preview
-                      </label>
-                      <div className="p-4 bg-accent/30 rounded-xl border-2 border-dashed border-border flex items-center justify-center">
-                        <img
-                          src={formData.logo_url}
-                          alt="Logo preview"
-                          className="max-w-[200px] max-h-[100px] object-contain"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'block';
-                          }}
-                        />
-                        <div
-                          className="text-muted-foreground text-sm"
-                          style={{ display: 'none' }}
-                        >
-                          Failed to load image
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  {/* Logo */}
+                  <MediaUploadField
+                    label="Client Logo"
+                    value={formData.logo_url}
+                    onChange={(url) => setFormData({ ...formData, logo_url: url })}
+                    accept="image/*"
+                    fileType="image"
+                    required
+                    showAltText={false}
+                    helperText="Company logo (PNG recommended for transparency)"
+                  />
 
                   {/* Website URL */}
                   <div>

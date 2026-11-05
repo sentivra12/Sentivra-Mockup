@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Image, X, Save } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
 import DataTable from '@/admin/components/DataTable';
+import MediaUploadField from '@/components/MediaUploadField';
 import { useMockups, useCreateMockup, useUpdateMockup, useDeleteMockup } from '@/hooks/useContent';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -317,52 +318,36 @@ const MockupsPage = () => {
                     />
                   </div>
 
-                  {/* Image URLs */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Image URL *
-                      </label>
-                      <input
-                        type="url"
-                        name="image_url"
-                        value={formData.image_url}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        placeholder="https://..."
-                      />
-                    </div>
+                  {/* Images */}
+                  <MediaUploadField
+                    label="Main Image"
+                    value={formData.image_url}
+                    onChange={(url) => setFormData({ ...formData, image_url: url })}
+                    accept="image/*"
+                    fileType="image"
+                    required
+                    showAltText={false}
+                    helperText="Main mockup preview image"
+                  />
 
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Thumbnail URL
-                      </label>
-                      <input
-                        type="url"
-                        name="thumbnail_url"
-                        value={formData.thumbnail_url}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                        placeholder="https://... (optional)"
-                      />
-                    </div>
-                  </div>
+                  <MediaUploadField
+                    label="Thumbnail (Optional)"
+                    value={formData.thumbnail_url}
+                    onChange={(url) => setFormData({ ...formData, thumbnail_url: url })}
+                    accept="image/*"
+                    fileType="image"
+                    showAltText={false}
+                    helperText="Smaller version for grid view"
+                  />
 
-                  {/* Download URL */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Download URL
-                    </label>
-                    <input
-                      type="url"
-                      name="download_url"
-                      value={formData.download_url}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      placeholder="https://... (optional)"
-                    />
-                  </div>
+                  <MediaUploadField
+                    label="Download File (Optional)"
+                    value={formData.download_url}
+                    onChange={(url) => setFormData({ ...formData, download_url: url })}
+                    accept=".zip,.pdf"
+                    fileType="document"
+                    helperText="Downloadable mockup file (ZIP or PDF)"
+                  />
 
                   {/* Tags */}
                   <div>
