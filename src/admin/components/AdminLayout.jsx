@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -91,7 +92,13 @@ const AdminLayout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Admin Dashboard - Sentivra CMS</title>
+      </Helmet>
+      
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Sidebar - Desktop */}
       <motion.aside
         initial={false}
@@ -267,6 +274,7 @@ const AdminLayout = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 

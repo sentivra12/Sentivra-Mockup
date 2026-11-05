@@ -1,0 +1,10 @@
+# Allow all robots
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /admin
+Disallow: /admin/*
+
+# Sitemap
+Sitemap: https://sentivra-mockup.vercel.app/sitemap.xml
