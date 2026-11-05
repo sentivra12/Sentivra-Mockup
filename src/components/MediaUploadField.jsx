@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, Image as ImageIcon, Video, File, AlertCircle, Check, Loader2, ExternalLink, ChevronDown } from 'lucide-react';
+import { Upload, X, Image as ImageIcon, Video as VideoIcon, File as FileIcon, AlertCircle, Check, Loader2, ExternalLink, ChevronDown } from 'lucide-react';
 import { uploadFile, deleteFile } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -145,16 +145,28 @@ const MediaUploadField = ({
     try {
       let processedFile = file;
 
-      // Show processing state for images
+      // Try to process images (resize/convert to WebP), but fall back to original if it fails
       if (fileType === 'image' && file.type !== 'image/svg+xml') {
         setProgress(10); // Show we're processing
-        processedFile = await Promise.race([
-          resizeImage(file),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Image processing timeout (30s)')), 30000)
-          )
-        ]);
-        setProgress(20);
+        try {
+          processedFile = await Promise.race([
+            resizeImage(file),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Image processing timeout (30s)')), 30000)
+            )
+          ]);
+          setProgress(20);
+          console.log('Image processed successfully:', processedFile.name);
+        } catch (processingError) {
+          console.warn('Image processing failed, uploading original file:', processingError.message);
+          // Fall back to original file - it's better to upload a bigger file than to fail
+          processedFile = file;
+          setProgress(20);
+          toast({
+            title: 'Processing skipped',
+            description: 'Uploading original file',
+          });
+        }
       }
 
       // Generate unique filename
@@ -221,10 +233,20 @@ const MediaUploadField = ({
     } catch (error) {
       console.error('Upload error:', error);
       
-      // Show user-friendly error message
-      const errorMessage = uploadAborted 
-        ? 'Upload timed out. Please try a smaller file or check your connection.'
-        : error.message || 'Failed to upload file. Please try again.';
+      // Parse Supabase storage errors for user-friendly messages
+      let errorMessage = error.message || 'Failed to upload file. Please try again.';
+      
+      if (uploadAborted) {
+        errorMessage = 'Upload timed out. Please try a smaller file or check your connection.';
+      } else if (error.message?.includes('bucket')) {
+        errorMessage = 'Storage bucket not configured. Please contact support.';
+      } else if (error.message?.includes('policy') || error.message?.includes('permission')) {
+        errorMessage = 'Permission denied. Please ensure you are logged in.';
+      } else if (error.message?.includes('size') || error.message?.includes('large')) {
+        errorMessage = `File too large. Maximum size: ${(maxFileSize / (1024 * 1024)).toFixed(0)}MB`;
+      } else if (error.message?.includes('type') || error.message?.includes('MIME')) {
+        errorMessage = 'Invalid file type. Please check the allowed formats.';
+      }
       
       setValidationError(errorMessage);
       toast({
@@ -313,8 +335,8 @@ const MediaUploadField = ({
   };
 
   const getIcon = () => {
-    if (fileType === 'video') return <Video className="w-6 h-6" />;
-    if (fileType === 'document') return <File className="w-6 h-6" />;
+    if (fileType === 'video') return <VideoIcon className="w-6 h-6" />;
+    if (fileType === 'document') return <FileIcon className="w-6 h-6" />;
     return <ImageIcon className="w-6 h-6" />;
   };
 
@@ -417,7 +439,7 @@ const MediaUploadField = ({
                   />
                 ) : (
                   <div className="w-24 h-24 bg-frost rounded-lg flex items-center justify-center">
-                    <File className="w-8 h-8 text-primary" />
+                    <FileIcon className="w-8 h-8 text-primary" />
                   </div>
                 )}
               </div>

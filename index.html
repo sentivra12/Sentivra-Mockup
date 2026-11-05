@@ -34,8 +34,8 @@
 		<link rel="canonical" href="https://sentivra.com/" />
 		
 		<!-- Preload Critical Assets -->
-		<!-- Preload logo for immediate display in header -->
-		<link rel="preload" href="/sentivra-logo.jpg" as="image" type="image/jpeg" />
+		<!-- Logo will be used immediately in header, so preload is beneficial -->
+		<link rel="preload" href="/sentivra-logo.jpg" as="image" type="image/jpeg" fetchpriority="high" />
 		
 		<!-- Preconnect to external domains for faster resource loading -->
 		<link rel="dns-prefetch" href="https://images.unsplash.com" />

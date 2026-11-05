@@ -210,6 +210,7 @@ export default defineConfig({
 		},
 	},
 	build: {
+		sourcemap: true, // Enable sourcemaps for debugging
 		rollupOptions: {
 			external: [
 				'@babel/parser',
@@ -244,7 +245,7 @@ export default defineConfig({
 		minify: 'terser',
 		terserOptions: {
 			compress: {
-				drop_console: true, // Remove console.logs in production
+				drop_console: false, // Keep console for debugging
 				drop_debugger: true
 			}
 		}
