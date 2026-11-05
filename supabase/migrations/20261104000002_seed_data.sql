@@ -32,17 +32,18 @@ VALUES
 -- =============================================
 -- 3. HERO SECTION
 -- =============================================
+-- Only insert if no hero exists (prevent duplicates on re-run)
 INSERT INTO hero (headline, subheadline, cta_primary_text, cta_primary_link, cta_secondary_text, cta_secondary_link, video_url, is_active)
-VALUES (
+SELECT 
   'From Ideas to Real Digital Products',
   'We transform your business ideas into powerful software solutions',
   'Get Started',
   '/contact',
   'View Our Work',
   '/our-work',
-  '/videos/hero.mp4', -- Existing video path
+  '/videos/hero.mp4',
   true
-);
+WHERE NOT EXISTS (SELECT 1 FROM hero LIMIT 1);
 
 -- =============================================
 -- 4. TRUST BADGES

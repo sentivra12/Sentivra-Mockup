@@ -92,15 +92,39 @@ export const fetchSiteSettings = async () => {
   const { data, error } = await supabase
     .from('site_settings')
     .select('*')
-    .single();
+    .limit(1)
+    .maybeSingle();
 
   if (error) throw error;
+  
+  // Return default settings if no data exists
+  if (!data) {
+    return {
+      site_name: 'Sentivra',
+      site_tagline: 'From Ideas to Real Digital Products',
+      contact_email: 'info@sentivra.com',
+      contact_phone: '',
+      contact_address: '',
+      social_facebook: '',
+      social_twitter: '',
+      social_linkedin: '',
+      social_instagram: '',
+      social_github: '',
+    };
+  }
+  
   return data;
 };
 
 export const updateSiteSettings = async (values) => {
   const settings = await fetchSiteSettings();
-  return update('site_settings', settings.id, values);
+  
+  // If settings has an ID, update it; otherwise insert new one
+  if (settings && settings.id) {
+    return update('site_settings', settings.id, values);
+  } else {
+    return create('site_settings', values);
+  }
 };
 
 // =============================================
@@ -139,17 +163,41 @@ export const fetchHero = async () => {
     .from('hero')
     .select('*')
     .eq('is_active', true)
-    .order('created_at', { ascending: false })
+    .order('updated_at', { ascending: false })
     .limit(1)
     .maybeSingle();
 
   if (error) throw error;
+  
+  // Return default hero if no data exists
+  if (!data) {
+    return {
+      headline: 'From Ideas to Real Digital Products',
+      subheadline: 'We transform your business ideas into powerful software solutions',
+      cta_primary_text: 'Get Started',
+      cta_primary_link: '/contact',
+      cta_secondary_text: 'View Our Work',
+      cta_secondary_link: '/our-work',
+      video_url: '',
+      video_webm_url: '',
+      video_poster_url: '',
+      is_active: true,
+    };
+  }
+  
   return data;
 };
 
 export const updateHero = async (values) => {
   const hero = await fetchHero();
-  return update('hero', hero.id, values);
+  
+  // If hero has an ID, update it; otherwise insert new one
+  if (hero && hero.id) {
+    return update('hero', hero.id, values);
+  } else {
+    // Create new hero (this should be rare, only if database is empty)
+    return create('hero', { ...values, is_active: true });
+  }
 };
 
 // =============================================

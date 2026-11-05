@@ -62,7 +62,7 @@ const MediaUploadField = ({
 
   // Resize image in browser
   const resizeImage = (file, maxWidth = 1920) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       // Don't resize SVG
       if (file.type === 'image/svg+xml') {
         resolve(file);
@@ -70,32 +70,50 @@ const MediaUploadField = ({
       }
 
       const reader = new FileReader();
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+
       reader.onload = (e) => {
         const img = document.createElement('img');
+        
+        img.onerror = () => {
+          reject(new Error('Failed to load image'));
+        };
+        
         img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
+          try {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
 
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width;
-            width = maxWidth;
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob(
+              (blob) => {
+                if (!blob) {
+                  reject(new Error('Failed to convert image to WebP'));
+                  return;
+                }
+                resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), {
+                  type: 'image/webp',
+                }));
+              },
+              'image/webp',
+              0.9
+            );
+          } catch (err) {
+            reject(new Error(`Image processing failed: ${err.message}`));
           }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          canvas.toBlob(
-            (blob) => {
-              resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), {
-                type: 'image/webp',
-              }));
-            },
-            'image/webp',
-            0.9
-          );
         };
         img.src = e.target.result;
       };
@@ -103,9 +121,11 @@ const MediaUploadField = ({
     });
   };
 
-  // Handle file upload
+  // Handle file upload with timeout and proper error handling
   const handleFileUpload = async (file) => {
     setValidationError('');
+    let progressInterval = null;
+    let uploadAborted = false;
     
     // Validate
     const error = validateFile(file);
@@ -125,9 +145,16 @@ const MediaUploadField = ({
     try {
       let processedFile = file;
 
-      // Resize images
+      // Show processing state for images
       if (fileType === 'image' && file.type !== 'image/svg+xml') {
-        processedFile = await resizeImage(file);
+        setProgress(10); // Show we're processing
+        processedFile = await Promise.race([
+          resizeImage(file),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Image processing timeout (30s)')), 30000)
+          )
+        ]);
+        setProgress(20);
       }
 
       // Generate unique filename
@@ -137,15 +164,25 @@ const MediaUploadField = ({
       const filename = `${timestamp}-${randomStr}.${ext}`;
       const filePath = `${fileType}s/${filename}`;
 
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setProgress((prev) => Math.min(prev + 10, 90));
-      }, 200);
+      // Show upload progress (simulated)
+      progressInterval = setInterval(() => {
+        setProgress((prev) => Math.min(prev + 10, 85));
+      }, 500);
 
-      // Upload to Supabase Storage
-      const publicUrl = await uploadFile('site-media', filePath, processedFile);
+      // Upload to Supabase Storage with timeout
+      const publicUrl = await Promise.race([
+        uploadFile('site-media', filePath, processedFile),
+        new Promise((_, reject) => 
+          setTimeout(() => {
+            uploadAborted = true;
+            reject(new Error('Upload timeout (60s). File may be too large.'));
+          }, 60000)
+        )
+      ]);
 
-      clearInterval(progressInterval);
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
       setProgress(100);
 
       // Get image dimensions if it's an image
@@ -157,6 +194,13 @@ const MediaUploadField = ({
             size: file.size,
             width: img.width,
             height: img.height,
+          });
+        };
+        img.onerror = () => {
+          // Still set file info even if preview fails
+          setFileInfo({
+            name: file.name,
+            size: file.size,
           });
         };
         img.src = URL.createObjectURL(processedFile);
@@ -176,12 +220,22 @@ const MediaUploadField = ({
       });
     } catch (error) {
       console.error('Upload error:', error);
+      
+      // Show user-friendly error message
+      const errorMessage = uploadAborted 
+        ? 'Upload timed out. Please try a smaller file or check your connection.'
+        : error.message || 'Failed to upload file. Please try again.';
+      
+      setValidationError(errorMessage);
       toast({
         title: 'Upload failed',
-        description: error.message || 'Failed to upload file',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
       setUploading(false);
       setProgress(0);
     }
