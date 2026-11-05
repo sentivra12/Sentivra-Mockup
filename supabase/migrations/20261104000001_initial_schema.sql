@@ -8,7 +8,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- =============================================
 -- 1. SITE SETTINGS
 -- =============================================
-CREATE TABLE site_settings (
+CREATE TABLE IF NOT EXISTS site_settings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   site_name TEXT NOT NULL DEFAULT 'Sentivra',
   logo_url TEXT,
@@ -29,7 +29,7 @@ CREATE TABLE site_settings (
 -- =============================================
 -- 2. SEO SETTINGS (per page)
 -- =============================================
-CREATE TABLE seo_settings (
+CREATE TABLE IF NOT EXISTS seo_settings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   page_key TEXT UNIQUE NOT NULL, -- 'home', 'services', 'about', etc.
   meta_title TEXT NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE seo_settings (
 -- =============================================
 -- 3. HERO SECTION
 -- =============================================
-CREATE TABLE hero (
+CREATE TABLE IF NOT EXISTS hero (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   headline TEXT NOT NULL,
   subheadline TEXT,
@@ -63,7 +63,7 @@ CREATE TABLE hero (
 -- =============================================
 -- 4. TRUST BADGES
 -- =============================================
-CREATE TABLE trust_badges (
+CREATE TABLE IF NOT EXISTS trust_badges (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   icon TEXT NOT NULL, -- Lucide icon name
   title TEXT NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE trust_badges (
 -- =============================================
 -- 5. SERVICES
 -- =============================================
-CREATE TABLE services (
+CREATE TABLE IF NOT EXISTS services (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
@@ -97,13 +97,13 @@ CREATE TABLE services (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_services_category ON services(category);
-CREATE INDEX idx_services_slug ON services(slug);
+CREATE INDEX IF NOT EXISTS idx_services_category ON services(category);
+CREATE INDEX IF NOT EXISTS idx_services_slug ON services(slug);
 
 -- =============================================
 -- 6. PROJECTS
 -- =============================================
-CREATE TABLE projects (
+CREATE TABLE IF NOT EXISTS projects (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
@@ -125,13 +125,13 @@ CREATE TABLE projects (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_projects_category ON projects(category);
-CREATE INDEX idx_projects_slug ON projects(slug);
+CREATE INDEX IF NOT EXISTS idx_projects_category ON projects(category);
+CREATE INDEX IF NOT EXISTS idx_projects_slug ON projects(slug);
 
 -- =============================================
 -- 7. MOCKUPS
 -- =============================================
-CREATE TABLE mockups (
+CREATE TABLE IF NOT EXISTS mockups (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
   description TEXT,
@@ -148,12 +148,12 @@ CREATE TABLE mockups (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_mockups_category ON mockups(category);
+CREATE INDEX IF NOT EXISTS idx_mockups_category ON mockups(category);
 
 -- =============================================
 -- 8. CLIENT LOGOS
 -- =============================================
-CREATE TABLE client_logos (
+CREATE TABLE IF NOT EXISTS client_logos (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_name TEXT NOT NULL,
   logo_url TEXT NOT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE client_logos (
 -- =============================================
 -- 9. TESTIMONIALS
 -- =============================================
-CREATE TABLE testimonials (
+CREATE TABLE IF NOT EXISTS testimonials (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_name TEXT NOT NULL,
   client_title TEXT, -- e.g., "CEO", "Marketing Director"
@@ -186,7 +186,7 @@ CREATE TABLE testimonials (
 -- =============================================
 -- 10. FAQs
 -- =============================================
-CREATE TABLE faqs (
+CREATE TABLE IF NOT EXISTS faqs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   page_key TEXT NOT NULL, -- 'contact', 'mockups', 'services', 'general'
   question TEXT NOT NULL,
@@ -197,12 +197,12 @@ CREATE TABLE faqs (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_faqs_page_key ON faqs(page_key);
+CREATE INDEX IF NOT EXISTS idx_faqs_page_key ON faqs(page_key);
 
 -- =============================================
 -- 11. PROCESS STEPS
 -- =============================================
-CREATE TABLE process_steps (
+CREATE TABLE IF NOT EXISTS process_steps (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   step_number INTEGER NOT NULL,
   title TEXT NOT NULL,
@@ -217,7 +217,7 @@ CREATE TABLE process_steps (
 -- =============================================
 -- 12. WHY CHOOSE US
 -- =============================================
-CREATE TABLE why_choose_us (
+CREATE TABLE IF NOT EXISTS why_choose_us (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   icon TEXT NOT NULL, -- Lucide icon name
   title TEXT NOT NULL,
@@ -231,7 +231,7 @@ CREATE TABLE why_choose_us (
 -- =============================================
 -- 13. COUNTRIES (About page)
 -- =============================================
-CREATE TABLE countries (
+CREATE TABLE IF NOT EXISTS countries (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   country_name TEXT NOT NULL,
   flag_emoji TEXT,
@@ -245,7 +245,7 @@ CREATE TABLE countries (
 -- =============================================
 -- 14. TIMELINE MILESTONES
 -- =============================================
-CREATE TABLE timeline_milestones (
+CREATE TABLE IF NOT EXISTS timeline_milestones (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   year INTEGER NOT NULL,
   title TEXT NOT NULL,
@@ -259,7 +259,7 @@ CREATE TABLE timeline_milestones (
 -- =============================================
 -- 15. VALUES (About page)
 -- =============================================
-CREATE TABLE values (
+CREATE TABLE IF NOT EXISTS values (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   icon TEXT NOT NULL, -- Lucide icon name
   title TEXT NOT NULL,
@@ -273,7 +273,7 @@ CREATE TABLE values (
 -- =============================================
 -- 16. STATS (About page)
 -- =============================================
-CREATE TABLE stats (
+CREATE TABLE IF NOT EXISTS stats (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   label TEXT NOT NULL,
   value INTEGER NOT NULL,
@@ -288,7 +288,7 @@ CREATE TABLE stats (
 -- =============================================
 -- 17. BLOG POSTS
 -- =============================================
-CREATE TABLE blog_posts (
+CREATE TABLE IF NOT EXISTS blog_posts (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
@@ -305,14 +305,14 @@ CREATE TABLE blog_posts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_blog_posts_slug ON blog_posts(slug);
-CREATE INDEX idx_blog_posts_status ON blog_posts(status);
-CREATE INDEX idx_blog_posts_published_at ON blog_posts(published_at);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_status ON blog_posts(status);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published_at ON blog_posts(published_at);
 
 -- =============================================
 -- 18. MESSAGES (Contact form + Mockup requests)
 -- =============================================
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   type TEXT NOT NULL DEFAULT 'contact', -- 'contact', 'mockup_request', 'quote_request'
   name TEXT NOT NULL,
@@ -332,14 +332,14 @@ CREATE TABLE messages (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_messages_type ON messages(type);
-CREATE INDEX idx_messages_status ON messages(status);
-CREATE INDEX idx_messages_created_at ON messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_messages_type ON messages(type);
+CREATE INDEX IF NOT EXISTS idx_messages_status ON messages(status);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
 
 -- =============================================
 -- 19. MEDIA LIBRARY
 -- =============================================
-CREATE TABLE media (
+CREATE TABLE IF NOT EXISTS media (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   file_name TEXT NOT NULL,
   file_path TEXT NOT NULL, -- Path in Supabase Storage
@@ -353,7 +353,7 @@ CREATE TABLE media (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_media_file_type ON media(file_type);
+CREATE INDEX IF NOT EXISTS idx_media_file_type ON media(file_type);
 
 -- =============================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
@@ -381,48 +381,120 @@ ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE media ENABLE ROW LEVEL SECURITY;
 
 -- Public READ access for active/published content
+DROP POLICY IF EXISTS "Public can view active content" ON site_settings;
 CREATE POLICY "Public can view active content" ON site_settings FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public can view SEO" ON seo_settings;
 CREATE POLICY "Public can view SEO" ON seo_settings FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public can view active hero" ON hero;
 CREATE POLICY "Public can view active hero" ON hero FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active trust badges" ON trust_badges;
 CREATE POLICY "Public can view active trust badges" ON trust_badges FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active services" ON services;
 CREATE POLICY "Public can view active services" ON services FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active projects" ON projects;
 CREATE POLICY "Public can view active projects" ON projects FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active mockups" ON mockups;
 CREATE POLICY "Public can view active mockups" ON mockups FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active client logos" ON client_logos;
 CREATE POLICY "Public can view active client logos" ON client_logos FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active testimonials" ON testimonials;
 CREATE POLICY "Public can view active testimonials" ON testimonials FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active FAQs" ON faqs;
 CREATE POLICY "Public can view active FAQs" ON faqs FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active process steps" ON process_steps;
 CREATE POLICY "Public can view active process steps" ON process_steps FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active why choose us" ON why_choose_us;
 CREATE POLICY "Public can view active why choose us" ON why_choose_us FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active countries" ON countries;
 CREATE POLICY "Public can view active countries" ON countries FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active timeline" ON timeline_milestones;
 CREATE POLICY "Public can view active timeline" ON timeline_milestones FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active values" ON values;
 CREATE POLICY "Public can view active values" ON values FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view active stats" ON stats;
 CREATE POLICY "Public can view active stats" ON stats FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Public can view published blog posts" ON blog_posts;
 CREATE POLICY "Public can view published blog posts" ON blog_posts FOR SELECT USING (status = 'published');
+
+DROP POLICY IF EXISTS "Public can view media" ON media;
 CREATE POLICY "Public can view media" ON media FOR SELECT USING (true);
 
 -- Public can INSERT messages (contact form)
+DROP POLICY IF EXISTS "Public can create messages" ON messages;
 CREATE POLICY "Public can create messages" ON messages FOR INSERT WITH CHECK (true);
 
 -- Admin FULL access (authenticated users)
--- Note: In production, you'd add a custom claim or separate admin_users table
+DROP POLICY IF EXISTS "Authenticated users have full access to site_settings" ON site_settings;
 CREATE POLICY "Authenticated users have full access to site_settings" ON site_settings FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to seo_settings" ON seo_settings;
 CREATE POLICY "Authenticated users have full access to seo_settings" ON seo_settings FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to hero" ON hero;
 CREATE POLICY "Authenticated users have full access to hero" ON hero FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to trust_badges" ON trust_badges;
 CREATE POLICY "Authenticated users have full access to trust_badges" ON trust_badges FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to services" ON services;
 CREATE POLICY "Authenticated users have full access to services" ON services FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to projects" ON projects;
 CREATE POLICY "Authenticated users have full access to projects" ON projects FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to mockups" ON mockups;
 CREATE POLICY "Authenticated users have full access to mockups" ON mockups FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to client_logos" ON client_logos;
 CREATE POLICY "Authenticated users have full access to client_logos" ON client_logos FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to testimonials" ON testimonials;
 CREATE POLICY "Authenticated users have full access to testimonials" ON testimonials FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to faqs" ON faqs;
 CREATE POLICY "Authenticated users have full access to faqs" ON faqs FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to process_steps" ON process_steps;
 CREATE POLICY "Authenticated users have full access to process_steps" ON process_steps FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to why_choose_us" ON why_choose_us;
 CREATE POLICY "Authenticated users have full access to why_choose_us" ON why_choose_us FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to countries" ON countries;
 CREATE POLICY "Authenticated users have full access to countries" ON countries FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to timeline_milestones" ON timeline_milestones;
 CREATE POLICY "Authenticated users have full access to timeline_milestones" ON timeline_milestones FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to values" ON values;
 CREATE POLICY "Authenticated users have full access to values" ON values FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to stats" ON stats;
 CREATE POLICY "Authenticated users have full access to stats" ON stats FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to blog_posts" ON blog_posts;
 CREATE POLICY "Authenticated users have full access to blog_posts" ON blog_posts FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to messages" ON messages;
 CREATE POLICY "Authenticated users have full access to messages" ON messages FOR ALL USING (auth.role() = 'authenticated');
+
+DROP POLICY IF EXISTS "Authenticated users have full access to media" ON media;
 CREATE POLICY "Authenticated users have full access to media" ON media FOR ALL USING (auth.role() = 'authenticated');
 
 -- =============================================
@@ -439,21 +511,56 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Apply trigger to all tables with updated_at
+DROP TRIGGER IF EXISTS update_site_settings_updated_at ON site_settings;
 CREATE TRIGGER update_site_settings_updated_at BEFORE UPDATE ON site_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_seo_settings_updated_at ON seo_settings;
 CREATE TRIGGER update_seo_settings_updated_at BEFORE UPDATE ON seo_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_hero_updated_at ON hero;
 CREATE TRIGGER update_hero_updated_at BEFORE UPDATE ON hero FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_trust_badges_updated_at ON trust_badges;
 CREATE TRIGGER update_trust_badges_updated_at BEFORE UPDATE ON trust_badges FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_services_updated_at ON services;
 CREATE TRIGGER update_services_updated_at BEFORE UPDATE ON services FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_projects_updated_at ON projects;
 CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_mockups_updated_at ON mockups;
 CREATE TRIGGER update_mockups_updated_at BEFORE UPDATE ON mockups FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_client_logos_updated_at ON client_logos;
 CREATE TRIGGER update_client_logos_updated_at BEFORE UPDATE ON client_logos FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_testimonials_updated_at ON testimonials;
 CREATE TRIGGER update_testimonials_updated_at BEFORE UPDATE ON testimonials FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_faqs_updated_at ON faqs;
 CREATE TRIGGER update_faqs_updated_at BEFORE UPDATE ON faqs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_process_steps_updated_at ON process_steps;
 CREATE TRIGGER update_process_steps_updated_at BEFORE UPDATE ON process_steps FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_why_choose_us_updated_at ON why_choose_us;
 CREATE TRIGGER update_why_choose_us_updated_at BEFORE UPDATE ON why_choose_us FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_countries_updated_at ON countries;
 CREATE TRIGGER update_countries_updated_at BEFORE UPDATE ON countries FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_timeline_milestones_updated_at ON timeline_milestones;
 CREATE TRIGGER update_timeline_milestones_updated_at BEFORE UPDATE ON timeline_milestones FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_values_updated_at ON values;
 CREATE TRIGGER update_values_updated_at BEFORE UPDATE ON values FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_stats_updated_at ON stats;
 CREATE TRIGGER update_stats_updated_at BEFORE UPDATE ON stats FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_blog_posts_updated_at ON blog_posts;
 CREATE TRIGGER update_blog_posts_updated_at BEFORE UPDATE ON blog_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_messages_updated_at ON messages;
 CREATE TRIGGER update_messages_updated_at BEFORE UPDATE ON messages FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
