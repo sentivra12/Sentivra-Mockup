@@ -27,4 +27,10 @@ ADD COLUMN IF NOT EXISTS project_id UUID REFERENCES projects(id) ON DELETE SET N
 
 CREATE INDEX IF NOT EXISTS idx_testimonials_project_id ON testimonials(project_id);
 
+-- Add optional author_id to blog_posts (for future user-based authorship)
+ALTER TABLE blog_posts
+ADD COLUMN IF NOT EXISTS author_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_blog_posts_author_id ON blog_posts(author_id);
+
 -- No data migration needed - all new columns are nullable
