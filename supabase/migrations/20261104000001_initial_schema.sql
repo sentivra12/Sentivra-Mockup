@@ -233,8 +233,10 @@ CREATE TABLE IF NOT EXISTS why_choose_us (
 -- =============================================
 CREATE TABLE IF NOT EXISTS countries (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  country_name TEXT NOT NULL,
+  name TEXT NOT NULL,
+  country_code TEXT,
   flag_emoji TEXT,
+  description TEXT,
   client_count INTEGER DEFAULT 0,
   display_order INTEGER DEFAULT 0,
   is_active BOOLEAN DEFAULT TRUE,
@@ -314,25 +316,19 @@ CREATE INDEX IF NOT EXISTS idx_blog_posts_published_at ON blog_posts(published_a
 -- =============================================
 CREATE TABLE IF NOT EXISTS messages (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  type TEXT NOT NULL DEFAULT 'contact', -- 'contact', 'mockup_request', 'quote_request'
-  name TEXT NOT NULL,
-  email TEXT NOT NULL,
-  phone TEXT,
-  company TEXT,
-  subject TEXT,
-  message TEXT NOT NULL,
+  full_name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT NOT NULL,
+  whatsapp TEXT NOT NULL,
   country TEXT,
-  service_interest TEXT,
-  mockup_id UUID REFERENCES mockups(id) ON DELETE SET NULL,
+  message TEXT NOT NULL,
   status TEXT DEFAULT 'new', -- 'new', 'read', 'replied', 'archived'
-  notes TEXT, -- Admin notes
-  ip_address TEXT,
-  user_agent TEXT,
+  source TEXT DEFAULT 'contact_form', -- 'contact_form', 'mockup_request', 'quote_request'
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_messages_type ON messages(type);
+CREATE INDEX IF NOT EXISTS idx_messages_source ON messages(source);
 CREATE INDEX IF NOT EXISTS idx_messages_status ON messages(status);
 CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at);
 

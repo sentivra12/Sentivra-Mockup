@@ -439,10 +439,10 @@ export const useCreateMessage = () => {
   });
 };
 
-export const useMessages = (type = null, status = null) => {
+export const useMessages = (source = null, status = null) => {
   return useQuery({
-    queryKey: ['messages', type, status],
-    queryFn: () => api.fetchMessages(type, status),
+    queryKey: ['messages', source, status],
+    queryFn: () => api.fetchMessages(source, status),
     staleTime: 1 * 60 * 1000, // 1 minute (more frequent for messages)
   });
 };
@@ -451,7 +451,7 @@ export const useUpdateMessageStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status, notes }) => api.updateMessageStatus(id, status, notes),
+    mutationFn: ({ id, status }) => api.updateMessageStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     },

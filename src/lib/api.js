@@ -401,14 +401,14 @@ export const deleteBlogPost = async (id) => {
 export const createMessage = async (values) => {
   return create('messages', {
     ...values,
-    type: values.type || 'contact',
     status: 'new',
+    source: values.source || 'contact_form',
   });
 };
 
-export const fetchMessages = async (type = null, status = null) => {
+export const fetchMessages = async (source = null, status = null) => {
   const filter = {};
-  if (type) filter.type = type;
+  if (source) filter.source = source;
   if (status) filter.status = status;
 
   return fetchAll('messages', {
@@ -418,10 +418,8 @@ export const fetchMessages = async (type = null, status = null) => {
   });
 };
 
-export const updateMessageStatus = async (id, status, notes = null) => {
-  const updates = { status };
-  if (notes !== null) updates.notes = notes;
-  return update('messages', id, updates);
+export const updateMessageStatus = async (id, status) => {
+  return update('messages', id, { status });
 };
 
 export const deleteMessage = async (id) => {
