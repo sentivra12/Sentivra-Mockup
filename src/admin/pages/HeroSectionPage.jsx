@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Save } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
+import MediaUploadField from '@/components/MediaUploadField';
 import { useHero, useUpdateHero } from '@/hooks/useContent';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -196,65 +197,41 @@ const HeroSectionPage = () => {
           {/* Background Video */}
           <div className="pt-6 border-t border-border">
             <h3 className="text-lg font-bold mb-4">Background Video</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Video URL (MP4)
-                </label>
-                <input
-                  type="text"
-                  name="video_url"
-                  value={formData.video_url}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  placeholder="/videos/hero.mp4 or https://..."
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  💡 Recommended: Upload to Media Library first
-                </p>
-              </div>
+            <div className="space-y-6">
+              <MediaUploadField
+                label="Video (MP4)"
+                value={formData.video_url}
+                onChange={(url) => setFormData({ ...formData, video_url: url })}
+                accept="video/mp4"
+                fileType="video"
+                helperText="Main video file. Recommended: under 10MB for fast loading."
+              />
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Video URL (WebM) - Optional
-                </label>
-                <input
-                  type="text"
-                  name="video_webm_url"
-                  value={formData.video_webm_url}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  placeholder="/videos/hero.webm or https://..."
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  WebM format for better browser compatibility
-                </p>
-              </div>
+              <MediaUploadField
+                label="Video (WebM) - Optional"
+                value={formData.video_webm_url}
+                onChange={(url) => setFormData({ ...formData, video_webm_url: url })}
+                accept="video/webm"
+                fileType="video"
+                helperText="Alternative format for better browser compatibility."
+              />
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Video Poster (Thumbnail)
-                </label>
-                <input
-                  type="text"
-                  name="video_poster_url"
-                  value={formData.video_poster_url}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  placeholder="/videos/poster.jpg or https://..."
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Image shown before video loads
-                </p>
-              </div>
+              <MediaUploadField
+                label="Video Poster (Thumbnail)"
+                value={formData.video_poster_url}
+                onChange={(url) => setFormData({ ...formData, video_poster_url: url })}
+                accept="image/*"
+                fileType="image"
+                helperText="Image shown before video loads."
+              />
 
               {/* Video Preview */}
               {formData.video_url && (
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Preview
+                    Live Preview
                   </label>
-                  <div className="aspect-video bg-accent/30 rounded-xl border-2 border-dashed border-border overflow-hidden">
+                  <div className="aspect-video bg-accent/30 rounded-xl border-2 border-dashed border-frost overflow-hidden">
                     <video
                       src={formData.video_url}
                       poster={formData.video_poster_url}
@@ -288,7 +265,7 @@ const HeroSectionPage = () => {
             <Button
               type="submit"
               disabled={updateHero.isPending}
-              className="bg-gradient-to-r from-primary to-secondary text-white px-8"
+              className="bg-primary-strong text-white px-8 hover:bg-primary-dark focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2"
             >
               <Save className="w-4 h-4 mr-2" />
               {updateHero.isPending ? 'Saving...' : 'Save Hero Section'}
