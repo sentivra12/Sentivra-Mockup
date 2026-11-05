@@ -150,7 +150,7 @@ const MediaUploadField = ({
 
       // Get image dimensions if it's an image
       if (fileType === 'image') {
-        const img = new window.Image();
+        const img = document.createElement('img');
         img.onload = () => {
           setFileInfo({
             name: file.name,
