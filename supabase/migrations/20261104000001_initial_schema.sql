@@ -170,12 +170,11 @@ CREATE TABLE IF NOT EXISTS client_logos (
 CREATE TABLE IF NOT EXISTS testimonials (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_name TEXT NOT NULL,
-  client_title TEXT, -- e.g., "CEO", "Marketing Director"
-  company_name TEXT,
-  avatar_url TEXT,
+  client_role TEXT,
+  client_company TEXT,
+  client_photo_url TEXT,
   rating INTEGER CHECK (rating >= 1 AND rating <= 5),
   testimonial_text TEXT NOT NULL,
-  project_id UUID REFERENCES projects(id) ON DELETE SET NULL,
   display_order INTEGER DEFAULT 0,
   is_featured BOOLEAN DEFAULT FALSE,
   is_active BOOLEAN DEFAULT TRUE,

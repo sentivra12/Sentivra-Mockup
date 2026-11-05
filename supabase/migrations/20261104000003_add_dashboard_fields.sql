@@ -21,4 +21,10 @@ ALTER TABLE countries
 ADD COLUMN IF NOT EXISTS country_code TEXT,
 ADD COLUMN IF NOT EXISTS description TEXT;
 
+-- Add optional project reference to testimonials (for linking testimonials to specific projects)
+ALTER TABLE testimonials
+ADD COLUMN IF NOT EXISTS project_id UUID REFERENCES projects(id) ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_testimonials_project_id ON testimonials(project_id);
+
 -- No data migration needed - all new columns are nullable

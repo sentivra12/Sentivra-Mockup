@@ -254,7 +254,7 @@ VALUES
 -- =============================================
 -- 9. TESTIMONIALS
 -- =============================================
-INSERT INTO testimonials (client_name, client_title, company_name, testimonial_text, rating, display_order, is_featured, is_active)
+INSERT INTO testimonials (client_name, client_role, client_company, testimonial_text, rating, display_order, is_featured, is_active)
 VALUES
   (
     'Sarah Johnson',

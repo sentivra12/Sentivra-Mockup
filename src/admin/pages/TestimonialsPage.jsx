@@ -18,11 +18,11 @@ const TestimonialsPage = () => {
   const [editingTestimonial, setEditingTestimonial] = useState(null);
   const [formData, setFormData] = useState({
     client_name: '',
-    client_title: '',
-    company_name: '',
+    client_role: '',
+    client_company: '',
     testimonial_text: '',
     rating: 5,
-    avatar_url: '',
+    client_photo_url: '',
     is_featured: false,
     is_active: true,
     display_order: 0,
@@ -33,11 +33,11 @@ const TestimonialsPage = () => {
       setEditingTestimonial(testimonial);
       setFormData({
         client_name: testimonial.client_name,
-        client_title: testimonial.client_title || '',
-        company_name: testimonial.company_name || '',
+        client_role: testimonial.client_role || '',
+        client_company: testimonial.client_company || '',
         testimonial_text: testimonial.testimonial_text,
         rating: testimonial.rating || 5,
-        avatar_url: testimonial.avatar_url || '',
+        client_photo_url: testimonial.client_photo_url || '',
         is_featured: testimonial.is_featured,
         is_active: testimonial.is_active,
         display_order: testimonial.display_order || 0,
@@ -46,11 +46,11 @@ const TestimonialsPage = () => {
       setEditingTestimonial(null);
       setFormData({
         client_name: '',
-        client_title: '',
-        company_name: '',
+        client_role: '',
+        client_company: '',
         testimonial_text: '',
         rating: 5,
-        avatar_url: '',
+        client_photo_url: '',
         is_featured: false,
         is_active: true,
         display_order: testimonials.length,
@@ -133,9 +133,9 @@ const TestimonialsPage = () => {
       sortable: true,
       render: (value, row) => (
         <div className="flex items-center gap-3">
-          {row.avatar_url ? (
+          {row.client_photo_url ? (
             <img
-              src={row.avatar_url}
+              src={row.client_photo_url}
               alt={value}
               className="w-10 h-10 rounded-full object-cover"
             />
@@ -146,15 +146,15 @@ const TestimonialsPage = () => {
           )}
           <div>
             <div className="font-medium">{value}</div>
-            {row.client_title && (
-              <div className="text-xs text-muted-foreground">{row.client_title}</div>
+            {row.client_role && (
+              <div className="text-xs text-muted-foreground">{row.client_role}</div>
             )}
           </div>
         </div>
       ),
     },
     {
-      key: 'company_name',
+      key: 'client_company',
       label: 'Company',
       sortable: true,
     },
@@ -270,8 +270,8 @@ const TestimonialsPage = () => {
                       </label>
                       <input
                         type="text"
-                        name="client_title"
-                        value={formData.client_title}
+                        name="client_role"
+                        value={formData.client_role}
                         onChange={handleChange}
                         className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
                         placeholder="CEO"
@@ -284,8 +284,8 @@ const TestimonialsPage = () => {
                       </label>
                       <input
                         type="text"
-                        name="company_name"
-                        value={formData.company_name}
+                        name="client_company"
+                        value={formData.client_company}
                         onChange={handleChange}
                         className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
                         placeholder="Tech Innovations Inc."
@@ -346,8 +346,8 @@ const TestimonialsPage = () => {
                     </label>
                     <input
                       type="url"
-                      name="avatar_url"
-                      value={formData.avatar_url}
+                      name="client_photo_url"
+                      value={formData.client_photo_url}
                       onChange={handleChange}
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
                       placeholder="https://example.com/avatar.jpg"
