@@ -233,11 +233,11 @@ VALUES
 -- =============================================
 -- 7. MOCKUPS (Placeholder - categories only)
 -- =============================================
-INSERT INTO mockups (title, description, category, image_url, is_active, display_order)
+INSERT INTO mockups (slug, title, description, category, image_url, is_active, display_order)
 VALUES
-  ('E-commerce Dashboard', 'Modern e-commerce admin dashboard mockup', 'E-commerce', 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop', true, 1),
-  ('Landing Page Template', 'Professional landing page for SaaS products', 'Landing Pages', 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=600&fit=crop', true, 2),
-  ('Mobile App UI Kit', 'Comprehensive mobile app UI design kit', 'Mobile Apps', 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop', true, 3);
+  ('e-commerce-dashboard', 'E-commerce Dashboard', 'Modern e-commerce admin dashboard mockup', 'E-commerce', 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop', true, 1),
+  ('landing-page-template', 'Landing Page Template', 'Professional landing page for SaaS products', 'Landing Pages', 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=600&fit=crop', true, 2),
+  ('mobile-app-ui-kit', 'Mobile App UI Kit', 'Comprehensive mobile app UI design kit', 'Mobile Apps', 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop', true, 3);
 
 -- =============================================
 -- 8. CLIENT LOGOS (Placeholder)
