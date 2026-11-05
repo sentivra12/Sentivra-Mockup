@@ -401,14 +401,14 @@ export const deleteBlogPost = async (id) => {
 export const createMessage = async (values) => {
   return create('messages', {
     ...values,
-    type: values.type || 'contact',
+    source: values.source || 'contact_form',
     status: 'new',
   });
 };
 
-export const fetchMessages = async (type = null, status = null) => {
+export const fetchMessages = async (source = null, status = null) => {
   const filter = {};
-  if (type) filter.type = type;
+  if (source) filter.source = source;
   if (status) filter.status = status;
 
   return fetchAll('messages', {
