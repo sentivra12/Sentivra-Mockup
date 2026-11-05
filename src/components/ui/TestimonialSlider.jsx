@@ -2,8 +2,17 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
-const TestimonialSlider = ({ testimonials }) => {
+const TestimonialSlider = ({ testimonials = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Safety check for empty testimonials
+  if (!testimonials || testimonials.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-text-muted">No testimonials available at the moment.</p>
+      </div>
+    );
+  }
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -22,7 +31,7 @@ const TestimonialSlider = ({ testimonials }) => {
     if (e.key === 'ArrowRight') goToNext();
   };
 
-  const currentTestimonial = testimonials[currentIndex];
+  const currentTestimonial = testimonials[currentIndex] || {};
 
   return (
     <div 
@@ -59,6 +68,8 @@ const TestimonialSlider = ({ testimonials }) => {
                 src={currentTestimonial.clientPhoto}
                 alt={currentTestimonial.clientName}
                 className="w-16 h-16 rounded-full object-cover border-2 border-primary"
+                width="64"
+                height="64"
               />
               <div>
                 <h4 className="font-bold text-primary-deep text-lg">

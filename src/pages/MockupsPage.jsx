@@ -17,6 +17,8 @@ import {
   Globe, ShoppingCart, Utensils, Briefcase, Heart, 
   GraduationCap, Dumbbell, Home, Layers 
 } from 'lucide-react';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
 
 const MockupsPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -159,19 +161,19 @@ const MockupsPage = () => {
       </div>
 
       {/* Category Filter Section */}
-      <section className="py-12 bg-frost-soft border-b border-frost">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="md" className="bg-frost-soft border-b border-frost">
+        <Container>
           <CategoryFilterWithIcons
             categories={mockupCategories}
             activeCategory={activeCategory}
             onCategoryChange={handleCategoryChange}
           />
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Mockups Grid Section */}
-      <section id="mockups-section" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section id="mockups-section" spacing="xl" className="bg-white">
+        <Container>
           {/* Section Header with Search */}
           <div className="mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end mb-8">
@@ -286,8 +288,8 @@ const MockupsPage = () => {
               </div>
             </motion.div>
           )}
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Custom Design CTA Banner */}
       <CustomDesignBanner
@@ -299,8 +301,8 @@ const MockupsPage = () => {
       />
 
       {/* FAQ Section */}
-      <section className="py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="xl" className="bg-frost-soft">
+        <Container>
           <div className="text-center mb-16">
             <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-3">
               FAQ
@@ -318,8 +320,8 @@ const MockupsPage = () => {
             <FAQAccordion faqs={faqs.slice(0, Math.ceil(faqs.length / 2))} />
             <FAQAccordion faqs={faqs.slice(Math.ceil(faqs.length / 2))} />
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Mockup Modal */}
       <MockupModal

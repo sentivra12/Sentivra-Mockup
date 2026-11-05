@@ -17,6 +17,8 @@ const CountryCard = ({ country, delay = 0 }) => {
           alt={country.name}
           loading="lazy"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          width="300"
+          height="160"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         

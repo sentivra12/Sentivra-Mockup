@@ -6,6 +6,8 @@ import * as LucideIcons from 'lucide-react';
 import { useServices } from '@/hooks/useContent';
 import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
 
 const ServiceDetailPage = () => {
   const { serviceId } = useParams();
@@ -60,19 +62,21 @@ const ServiceDetailPage = () => {
 
       <div className="pt-16">
         {/* Hero Section */}
-        <section className="py-24 bg-gradient-to-br from-primary-strong to-primary-deep text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+        <Section spacing="xl" className="bg-gradient-to-br from-primary-strong to-primary-deep text-white">
+          <Container>
+            <div className="text-center">
+              <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
               <ServiceIcon className="h-16 w-16 mx-auto mb-6" />
               <h1 className="text-4xl md:text-6xl font-bold mb-4">{service.title}</h1>
               <p className="text-xl text-white/80 max-w-3xl mx-auto">{service.short_description}</p>
-            </motion.div>
-          </div>
-        </section>
+              </motion.div>
+            </div>
+          </Container>
+        </Section>
 
         {/* Details Section */}
-        <section className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Section spacing="xl" className="bg-white">
+          <Container>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }} className="space-y-6">
                 <h2 className="text-3xl font-bold text-primary-deep">What We Offer</h2>
@@ -88,14 +92,15 @@ const ServiceDetailPage = () => {
                     </li>
                   ))}
                  </ul>
-              </motion.div>
+                </motion.div>
             </div>
-          </div>
-        </section>
+          </Container>
+        </Section>
         
         {/* CTA Section */}
-        <section className="py-20 bg-frost-soft">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <Section spacing="lg" className="bg-frost-soft">
+          <Container>
+            <div className="text-center">
                  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
                     <h2 className="text-3xl md:text-4xl font-bold text-primary-deep">Ready to build with us?</h2>
                     <p className="text-xl text-text-muted mt-4 mb-8 max-w-2xl mx-auto">Let's discuss how our {service.title} expertise can help your business succeed.</p>
@@ -106,7 +111,8 @@ const ServiceDetailPage = () => {
                     </Link>
                 </motion.div>
             </div>
-        </section>
+          </Container>
+        </Section>
 
       </div>
     </motion.div>

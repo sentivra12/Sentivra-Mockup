@@ -216,7 +216,37 @@ export default defineConfig({
 				'@babel/traverse',
 				'@babel/generator',
 				'@babel/types'
-			]
+			],
+			output: {
+				manualChunks: {
+					// Vendor chunks for better caching
+					'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+					'ui-vendor': ['framer-motion', 'lucide-react'],
+					'radix-vendor': [
+						'@radix-ui/react-alert-dialog',
+						'@radix-ui/react-avatar',
+						'@radix-ui/react-checkbox',
+						'@radix-ui/react-dialog',
+						'@radix-ui/react-dropdown-menu',
+						'@radix-ui/react-label',
+						'@radix-ui/react-slider',
+						'@radix-ui/react-slot',
+						'@radix-ui/react-tabs',
+						'@radix-ui/react-toast'
+					],
+					'supabase-vendor': ['@supabase/supabase-js', '@tanstack/react-query']
+				}
+			}
+		},
+		// Optimize chunk size
+		chunkSizeWarningLimit: 1000,
+		// Enable minification
+		minify: 'terser',
+		terserOptions: {
+			compress: {
+				drop_console: true, // Remove console.logs in production
+				drop_debugger: true
+			}
 		}
 	}
 });

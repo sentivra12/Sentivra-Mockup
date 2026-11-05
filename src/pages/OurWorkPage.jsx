@@ -27,14 +27,16 @@ import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
 
 const OurWorkPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [displayCount, setDisplayCount] = useState(6);
   const location = useLocation();
 
-  // Fetch data from Supabase
-  const { data: projects = [], isLoading: projectsLoading } = useProjects();
+  // Fetch data from Supabase with proper defaults
+  const { data: projects = [], isLoading: projectsLoading, error: projectsError } = useProjects();
   const { data: testimonials = [], isLoading: testimonialsLoading } = useTestimonials();
   const { data: clientLogos = [], isLoading: logosLoading } = useClientLogos();
   const { data: processSteps = [], isLoading: processLoading } = useProcessSteps();
@@ -64,10 +66,10 @@ const OurWorkPage = () => {
     { id: 'Other', label: 'Other', icon: Layers }
   ];
 
-  // Filter projects by category
+  // Filter projects by category (with safety check)
   const filteredProjects = activeCategory === 'all'
-    ? projects
-    : projects.filter(project => project.category === activeCategory);
+    ? (projects || [])
+    : (projects || []).filter(project => project?.category === activeCategory);
 
   const displayedProjects = filteredProjects.slice(0, displayCount);
   const hasMore = displayCount < filteredProjects.length;
@@ -84,11 +86,11 @@ const OurWorkPage = () => {
   ];
 
   // Impact stats - use from database if available, fallback to defaults
-  const impactStats = stats.length > 0 ? stats.map(stat => ({
-    value: stat.value,
-    suffix: stat.suffix || '',
+  const impactStats = (stats && stats.length > 0) ? stats.map(stat => ({
+    value: stat?.value || 0,
+    suffix: stat?.suffix || '',
     icon: CheckCircle, // Default icon for stats
-    label: stat.label
+    label: stat?.label || ''
   })) : [
     {
       value: 50,
@@ -128,6 +130,29 @@ const OurWorkPage = () => {
     );
   }
 
+  // Show error state with retry
+  if (projectsError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-16 px-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-primary-deep mb-2">Failed to Load Projects</h2>
+          <p className="text-text-muted mb-6">We couldn't load the projects. Please try again.</p>
+          <Button 
+            onClick={() => window.location.reload()}
+            className="bg-primary hover:bg-primary-dark text-white"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <Helmet>
@@ -161,10 +186,10 @@ const OurWorkPage = () => {
       />
 
       {/* Client Logos Strip */}
-      <section className="py-12 bg-white border-b border-frost">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="md" className="bg-white border-b border-frost">
+        <Container>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-            {clientLogos.map((logo, index) => (
+            {(clientLogos || []).map((logo, index) => (
               <motion.div
                 key={logo.id}
                 initial={{ opacity: 0 }}
@@ -178,21 +203,23 @@ const OurWorkPage = () => {
                     src={logo.logo_url} 
                     alt={logo.client_name}
                     className="w-full h-full object-contain p-2"
+                    width="96"
+                    height="96"
                   />
                 ) : (
                   <span className="text-muted font-bold text-xl">
-                    {logo.client_name.charAt(0)}
+                    {logo?.client_name?.charAt(0) || '?'}
                   </span>
                 )}
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Featured Projects Section */}
-      <section id="projects" className="py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section id="projects" spacing="xl" className="bg-frost-soft">
+        <Container>
           <SectionHeader
             title="Featured Projects"
             subtitle="Explore our portfolio of successful projects across various industries and technologies"
@@ -222,13 +249,13 @@ const OurWorkPage = () => {
               >
                 {displayedProjects.map((project, index) => (
                   <EnhancedProjectCard
-                    key={project.id}
+                    key={project?.id || index}
                     project={{
                       ...project,
-                      image: project.image_url,
-                      shortDescription: project.short_description,
-                      type: project.category,
-                      techStack: project.technologies || []
+                      image: project?.image_url || '',
+                      shortDescription: project?.short_description || '',
+                      type: project?.category || '',
+                      techStack: Array.isArray(project?.technologies) ? project.technologies : []
                     }}
                     delay={index * 0.1}
                   />
@@ -259,15 +286,15 @@ const OurWorkPage = () => {
               </Button>
             </div>
           )}
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Brand Band */}
       <BrandBand />
 
       {/* Process Section */}
-      <section id="process" className="py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section id="process" spacing="xl" className="bg-frost-soft">
+        <Container>
           <div className="text-center mb-16">
             <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-4">
               OUR PROCESS
@@ -289,9 +316,9 @@ const OurWorkPage = () => {
             </a>
           </div>
 
-          <ProcessStepsList steps={processSteps} />
-        </div>
-      </section>
+          <ProcessStepsList steps={processSteps || []} />
+        </Container>
+      </Section>
 
       {/* Impact Stats Band */}
       <WhyChooseUsBand
@@ -302,8 +329,8 @@ const OurWorkPage = () => {
       />
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section id="testimonials" spacing="xl" className="bg-white">
+        <Container>
           <div className="text-center mb-16">
             <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-4">
               CLIENT TESTIMONIAL
@@ -313,13 +340,13 @@ const OurWorkPage = () => {
             </h2>
           </div>
 
-          <TestimonialSlider testimonials={testimonials} />
-        </div>
-      </section>
+          <TestimonialSlider testimonials={testimonials || []} />
+        </Container>
+      </Section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section id="faq" spacing="xl" className="bg-white">
+        <Container>
           <div className="text-center mb-16">
             <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-4">
               FAQ
@@ -333,10 +360,10 @@ const OurWorkPage = () => {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <FAQAccordion faqs={faqs} />
+            <FAQAccordion faqs={faqs || []} />
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Final CTA Band */}
       <CTABand

@@ -50,10 +50,43 @@
     
     --radius: 0.5rem;
   }
+
+  /* Remove default focus outline globally and use primary ring */
+  *:focus {
+    outline: none;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Better focus for buttons and links */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 body {
@@ -79,6 +112,25 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary-strong);
+}
+
+/* Horizontal scrollbar for filter tabs on mobile */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 2px;
 }
 
 /* For 3D card flip effect */

@@ -1,7 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const ProcessStepsList = ({ steps }) => {
+const ProcessStepsList = ({ steps = [] }) => {
+  // Safety check for empty steps
+  if (!steps || steps.length === 0) {
+    return null;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
       {steps.map((step, index) => {

@@ -27,6 +27,8 @@ const PageHero = ({
             src={backgroundImage} 
             alt="" 
             className="w-full h-full object-cover"
+            width="1200"
+            height="800"
           />
         </div>
       )}
@@ -184,6 +186,8 @@ const PageHero = ({
                 src={backgroundImage} 
                 alt="Services" 
                 className="w-full h-auto rounded-2xl shadow-lg-primary"
+                width="800"
+                height="600"
               />
             )}
           </motion.div>

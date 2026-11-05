@@ -50,6 +50,8 @@ const Footer = () => {
                 src="/sentivra-logo.jpg" 
                 alt="Sentivra Logo" 
                 className="h-10 w-10 rounded-full"
+                width="40"
+                height="40"
               />
               <span className="s-logo text-2xl font-bold">
                 <span className="text-primary">S</span>entivra

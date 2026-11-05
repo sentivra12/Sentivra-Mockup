@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
 
 const EnhancedProjectCard = ({ project, delay = 0 }) => {
+  // Safety check for project data
+  if (!project) return null;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -14,10 +17,12 @@ const EnhancedProjectCard = ({ project, delay = 0 }) => {
       {/* Image */}
       <div className="relative overflow-hidden aspect-[4/3]">
         <img
-          src={project.image}
-          alt={project.title}
+          src={project?.image || '/placeholder.jpg'}
+          alt={project?.title || 'Project'}
           loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          width="400"
+          height="300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
@@ -26,22 +31,22 @@ const EnhancedProjectCard = ({ project, delay = 0 }) => {
       <div className="p-6">
         {/* Category Badge */}
         <span className="inline-block px-3 py-1 text-xs font-semibold text-primary bg-frost-soft rounded-full mb-3">
-          {project.type || project.category}
+          {project?.type || project?.category || 'Uncategorized'}
         </span>
 
         {/* Title */}
         <h3 className="text-xl font-bold text-primary-deep mb-2 group-hover:text-primary transition-colors">
-          {project.title}
+          {project?.title || 'Untitled Project'}
         </h3>
 
         {/* Description */}
         <p className="text-text-muted text-sm leading-relaxed mb-4 line-clamp-2">
-          {project.shortDescription}
+          {project?.shortDescription || ''}
         </p>
 
         {/* Tech Stack Tags */}
         <div className="flex flex-wrap gap-2">
-          {project.techStack.map((tech, index) => (
+          {(Array.isArray(project?.techStack) ? project.techStack : []).map((tech, index) => (
             <span
               key={index}
               className="px-2.5 py-1 text-xs font-medium text-text-muted bg-frost-soft rounded-md"

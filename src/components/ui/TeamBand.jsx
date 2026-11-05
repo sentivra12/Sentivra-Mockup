@@ -93,6 +93,8 @@ const TeamBand = ({
                   src={teamImage}
                   alt="Our team"
                   className="w-full h-auto rounded-2xl shadow-lg-primary"
+                  width="800"
+                  height="600"
                 />
                 {/* Gradient fade into navy on left side */}
                 <div className="hidden lg:block absolute inset-y-0 -left-8 w-32 bg-gradient-to-r from-navy to-transparent" />

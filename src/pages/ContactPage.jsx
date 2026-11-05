@@ -9,6 +9,8 @@ import FAQAccordion from '../components/ui/FAQAccordion';
 import CTABand from '../components/ui/CTABand';
 import WhatsAppButton from '../components/ui/WhatsAppButton';
 import Footer from '../components/Footer';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
 
 const ContactPage = () => {
   // Fetch data from Supabase
@@ -57,8 +59,8 @@ const ContactPage = () => {
       />
 
       {/* Main Content Section */}
-      <section className="py-16 md:py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="xl" className="bg-frost-soft">
+        <Container>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Contact Form (2/3 width on desktop) */}
             <motion.div
@@ -95,12 +97,12 @@ const ContactPage = () => {
           >
             <ContactInfoCard />
           </motion.div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* FAQ Section */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="xl" className="bg-white">
+        <Container>
           {/* Section Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -142,8 +144,8 @@ const ContactPage = () => {
               <FAQAccordion faqs={faqs.slice(Math.ceil(faqs.length / 2))} />
             </motion.div>
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* CTA Band */}
       <CTABand

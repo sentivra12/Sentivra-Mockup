@@ -21,6 +21,8 @@ import ValueCard from '@/components/ui/ValueCard';
 import CTABand from '@/components/ui/CTABand';
 import SectionHeader from '@/components/ui/SectionHeader';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
 
 const AboutPage = () => {
   const navigate = useNavigate();
@@ -101,8 +103,8 @@ const AboutPage = () => {
       <BrandBand withArrows={true} />
 
       {/* Our Presence Section */}
-      <section className="py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="xl" className="bg-frost-soft">
+        <Container>
           {/* Desktop: 3-column layout | Mobile: stacked */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
@@ -147,15 +149,15 @@ const AboutPage = () => {
               <RegionMap countries={countries} />
             </div>
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Stats Strip */}
       <StatsStrip stats={stats} />
 
       {/* Our Story Section */}
-      <section id="our-story" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section id="our-story" spacing="xl" className="bg-white">
+        <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             {/* Left - Story Content */}
             <motion.div
@@ -190,8 +192,8 @@ const AboutPage = () => {
               <Timeline milestones={timelineMilestones} />
             </div>
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Our Team Band */}
       <TeamBand
@@ -204,8 +206,8 @@ const AboutPage = () => {
       />
 
       {/* Our Values Section */}
-      <section className="py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="xl" className="bg-frost-soft">
+        <Container>
           {/* Section Header */}
           <div className="text-center mb-16">
             <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-3">
@@ -242,8 +244,8 @@ const AboutPage = () => {
               />
             ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Final CTA Band */}
       <CTABand

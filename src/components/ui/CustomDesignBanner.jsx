@@ -81,6 +81,8 @@ const CustomDesignBanner = ({
                 src={image}
                 alt="Custom design illustration"
                 className="w-full h-auto rounded-2xl shadow-lg-primary"
+                width="800"
+                height="600"
               />
             )}
             

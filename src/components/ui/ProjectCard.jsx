@@ -12,6 +12,7 @@ const ProjectCard = ({ image, title, category, delay = 0 }) => {
     >
       <div className="relative overflow-hidden aspect-[4/3]">
         <img
+          loading="lazy"
           src={image}
           alt={title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

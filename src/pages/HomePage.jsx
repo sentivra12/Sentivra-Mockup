@@ -3,6 +3,8 @@ import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
 import { 
   useServices, 
   useProjects, 
@@ -152,19 +154,19 @@ const HomePage = () => {
           )}
         </video>
 
-        {/* Primary Gradient Overlay - Left to Right (text side to video side) */}
+        {/* Primary Gradient Overlay - Left to Right (text side to video side, desktop only) */}
         <div 
-          className="absolute inset-0 z-10 pointer-events-none"
+          className="absolute inset-0 z-10 hidden md:block pointer-events-none"
           style={{
-            background: 'linear-gradient(to right, rgba(238, 242, 244, 0.97) 0%, rgba(238, 242, 244, 0.95) 35%, rgba(238, 242, 244, 0.7) 50%, rgba(238, 242, 244, 0.3) 60%, transparent 70%)',
+            background: 'linear-gradient(to right, rgba(238, 242, 244, 0.98) 0%, rgba(238, 242, 244, 0.96) 35%, rgba(238, 242, 244, 0.75) 50%, rgba(238, 242, 244, 0.35) 60%, transparent 70%)',
           }}
         />
 
-        {/* Mobile Gradient Overlay - Top to Bottom (stronger for mobile) */}
+        {/* Mobile Gradient Overlay - Top to Bottom (stronger for mobile readability) */}
         <div 
-          className="absolute inset-0 z-10 lg:hidden pointer-events-none"
+          className="absolute inset-0 z-10 md:hidden pointer-events-none"
           style={{
-            background: 'linear-gradient(to bottom, rgba(238, 242, 244, 0.92) 0%, rgba(238, 242, 244, 0.88) 50%, rgba(238, 242, 244, 0.7) 80%, rgba(238, 242, 244, 0.5) 100%)',
+            background: 'linear-gradient(to bottom, rgba(238, 242, 244, 0.95) 0%, rgba(238, 242, 244, 0.92) 40%, rgba(238, 242, 244, 0.85) 70%, rgba(238, 242, 244, 0.7) 100%)',
           }}
         />
 
@@ -244,8 +246,8 @@ const HomePage = () => {
       </section>
 
       {/* Trust Badges Section */}
-      <section className="py-12 bg-white border-b border-frost">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="sm" background="white" className="border-b border-frost">
+        <Container>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {trustBadges.map((badge, index) => {
               const BadgeIcon = getIcon(badge.icon);
@@ -269,12 +271,12 @@ const HomePage = () => {
               );
             })}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Client Logos Section */}
-      <section className="py-16 bg-white border-t border-frost border-b border-frost">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section spacing="md" background="white" className="border-t border-frost border-b border-frost">
+        <Container>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
             {clientLogos.map((logo, index) => (
               <motion.div
@@ -287,9 +289,12 @@ const HomePage = () => {
               >
                 {logo.logo_url ? (
                   <img 
+                    loading="lazy"
                     src={logo.logo_url} 
                     alt={logo.client_name}
                     className="w-full h-full object-contain p-2"
+                    width="96"
+                    height="96"
                   />
                 ) : (
                   <span className="text-muted font-bold text-xl">
@@ -299,8 +304,8 @@ const HomePage = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Services Section */}
       <section id="services" className="py-24 bg-white">

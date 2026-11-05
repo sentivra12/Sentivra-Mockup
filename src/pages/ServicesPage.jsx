@@ -18,6 +18,8 @@ import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
 
 const ServicesPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -65,18 +67,18 @@ const ServicesPage = () => {
     { id: 'AI & Data', label: 'AI & Data', icon: Bot }
   ];
 
-  // Filter services by category
+  // Filter services by category with safety
   const filteredServices = activeCategory === 'all'
-    ? services
-    : services.filter(service => service.category === activeCategory);
+    ? (services || [])
+    : (services || []).filter(service => service?.category === activeCategory);
 
-  // Features for FeatureStrip - build from whyChooseUs data
-  const features = whyChooseUs.slice(0, 4).map(item => {
-    const ItemIcon = getIcon(item.icon);
+  // Features for FeatureStrip - build from whyChooseUs data with safety
+  const features = (whyChooseUs || []).slice(0, 4).map(item => {
+    const ItemIcon = getIcon(item?.icon);
     return {
       icon: ItemIcon,
-      title: item.title,
-      description: item.description
+      title: item?.title || '',
+      description: item?.description || ''
     };
   });
 
@@ -166,8 +168,8 @@ const ServicesPage = () => {
       <FeatureStrip features={features} />
 
       {/* What We Do Section */}
-      <section id="services-list" className="py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section id="services-list" spacing="xl" className="bg-frost-soft">
+        <Container>
           <SectionHeader
             title="What We Do"
             subtitle="Comprehensive digital solutions tailored to your business needs"
@@ -227,8 +229,8 @@ const ServicesPage = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* Why Choose Us Band */}
       <WhyChooseUsBand
@@ -243,8 +245,8 @@ const ServicesPage = () => {
       />
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Section id="faq" spacing="xl" className="bg-white">
+        <Container>
           <div className="text-center mb-16">
             <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-4">
               FAQ
@@ -271,6 +273,8 @@ const ServicesPage = () => {
                   src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=600&fit=crop"
                   alt="FAQ Illustration"
                   className="w-full h-auto rounded-2xl shadow-card-hover"
+                  width="600"
+                  height="600"
                 />
                 <div className="absolute inset-0 bg-primary/10 rounded-2xl"></div>
               </div>
@@ -286,8 +290,8 @@ const ServicesPage = () => {
               <FAQAccordion faqs={faqs} />
             </motion.div>
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
       {/* WhatsApp Button */}
       <WhatsAppButton />
