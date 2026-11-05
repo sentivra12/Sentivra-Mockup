@@ -349,7 +349,7 @@ VALUES
 -- =============================================
 -- 15. COUNTRIES (About page)
 -- =============================================
-INSERT INTO countries (country_name, flag_emoji, client_count, display_order, is_active)
+INSERT INTO countries (name, flag_emoji, client_count, display_order, is_active)
 VALUES
   ('United States', '🇺🇸', 45, 1, true),
   ('United Kingdom', '🇬🇧', 32, 2, true),
