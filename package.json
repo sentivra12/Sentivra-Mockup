@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/validate-translations.cjs && node tools/generate-llms.js || true && vite build",
+    "build": "node scripts/validate-translations.cjs && node tools/generate-llms.js || true && npx vite build",
     "preview": "vite preview",
     "validate-translations": "node scripts/validate-translations.cjs"
   },
