@@ -384,6 +384,39 @@ export const useCountries = () => {
   });
 };
 
+export const useCreateCountry = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.createCountry,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['countries'] });
+    },
+  });
+};
+
+export const useUpdateCountry = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, values }) => api.updateCountry(id, values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['countries'] });
+    },
+  });
+};
+
+export const useDeleteCountry = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.deleteCountry,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['countries'] });
+    },
+  });
+};
+
 export const useTimeline = () => {
   return useQuery({
     queryKey: ['timeline'],
@@ -392,11 +425,77 @@ export const useTimeline = () => {
   });
 };
 
+export const useCreateTimelineMilestone = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.createTimelineMilestone,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['timeline'] });
+    },
+  });
+};
+
+export const useUpdateTimelineMilestone = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, values }) => api.updateTimelineMilestone(id, values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['timeline'] });
+    },
+  });
+};
+
+export const useDeleteTimelineMilestone = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.deleteTimelineMilestone,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['timeline'] });
+    },
+  });
+};
+
 export const useValues = () => {
   return useQuery({
     queryKey: ['values'],
     queryFn: api.fetchValues,
     staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useCreateValue = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.createValue,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['values'] });
+    },
+  });
+};
+
+export const useUpdateValue = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, values }) => api.updateValue(id, values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['values'] });
+    },
+  });
+};
+
+export const useDeleteValue = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.deleteValue,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['values'] });
+    },
   });
 };
 
@@ -499,6 +598,261 @@ export const useDeleteMedia = () => {
     mutationFn: ({ id, filePath }) => api.deleteMedia(id, filePath),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['media'] });
+    },
+  });
+};
+
+
+// =============================================
+// MARQUEE ITEMS
+// =============================================
+
+export const useMarqueeItems = (rowNumber = null) => {
+  return useQuery({
+    queryKey: ['marqueeItems', rowNumber],
+    queryFn: () => api.fetchMarqueeItems(rowNumber),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+    throwOnError: false,
+  });
+};
+
+export const useAllMarqueeItems = () => {
+  return useQuery({
+    queryKey: ['allMarqueeItems'],
+    queryFn: api.fetchAllMarqueeItems,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+    throwOnError: false,
+  });
+};
+
+export const useCreateMarqueeItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.createMarqueeItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marqueeItems'] });
+      queryClient.invalidateQueries({ queryKey: ['allMarqueeItems'] });
+    },
+  });
+};
+
+export const useUpdateMarqueeItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...values }) => api.updateMarqueeItem(id, values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marqueeItems'] });
+      queryClient.invalidateQueries({ queryKey: ['allMarqueeItems'] });
+    },
+  });
+};
+
+export const useDeleteMarqueeItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.deleteMarqueeItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marqueeItems'] });
+      queryClient.invalidateQueries({ queryKey: ['allMarqueeItems'] });
+    },
+  });
+};
+
+// =============================================
+// PAGE CONTENT (New)
+// =============================================
+
+export const usePageContent = (pageKey, sectionKey) => {
+  return useQuery({
+    queryKey: ['pageContent', pageKey, sectionKey],
+    queryFn: () => api.fetchPageContent(pageKey, sectionKey),
+    staleTime: 5 * 60 * 1000,
+    enabled: !!pageKey,
+  });
+};
+
+export const useAllPageContent = (pageKey) => {
+  return useQuery({
+    queryKey: ['pageContent', pageKey],
+    queryFn: () => api.fetchAllPageContent(pageKey),
+    staleTime: 5 * 60 * 1000,
+    enabled: !!pageKey,
+  });
+};
+
+export const useUpdatePageContent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.updatePageContent,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['pageContent'] });
+    },
+  });
+};
+
+// =============================================
+// SERVICE CATEGORIES (New)
+// =============================================
+
+export const useServiceCategories = () => {
+  return useQuery({
+    queryKey: ['serviceCategories'],
+    queryFn: api.fetchServiceCategories,
+    staleTime: 10 * 60 * 1000, // 10 minutes (categories change rarely)
+  });
+};
+
+export const useServiceCategory = (slug) => {
+  return useQuery({
+    queryKey: ['serviceCategory', slug],
+    queryFn: () => api.fetchServiceCategory(slug),
+    staleTime: 10 * 60 * 1000,
+    enabled: !!slug,
+  });
+};
+
+export const useCreateServiceCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.createServiceCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['serviceCategories'] });
+    },
+  });
+};
+
+export const useUpdateServiceCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...data }) => api.updateServiceCategory(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['serviceCategories'] });
+    },
+  });
+};
+
+export const useDeleteServiceCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.deleteServiceCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['serviceCategories'] });
+    },
+  });
+};
+
+
+// =============================================
+// PROJECT CATEGORIES (New)
+// =============================================
+
+export const useProjectCategories = () => {
+  return useQuery({
+    queryKey: ['projectCategories'],
+    queryFn: api.fetchProjectCategories,
+    staleTime: 10 * 60 * 1000, // 10 minutes (categories change rarely)
+  });
+};
+
+export const useProjectCategory = (slug) => {
+  return useQuery({
+    queryKey: ['projectCategory', slug],
+    queryFn: () => api.fetchProjectCategory(slug),
+    staleTime: 10 * 60 * 1000,
+    enabled: !!slug,
+  });
+};
+
+export const useCreateProjectCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.createProjectCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projectCategories'] });
+    },
+  });
+};
+
+export const useUpdateProjectCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...data }) => api.updateProjectCategory(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projectCategories'] });
+    },
+  });
+};
+
+export const useDeleteProjectCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.deleteProjectCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projectCategories'] });
+    },
+  });
+};
+
+// =============================================
+// MOCKUP CATEGORIES
+// =============================================
+
+export const useMockupCategories = () => {
+  return useQuery({
+    queryKey: ['mockupCategories'],
+    queryFn: api.getMockupCategories,
+  });
+};
+
+export const useMockupCategory = (slug) => {
+  return useQuery({
+    queryKey: ['mockupCategory', slug],
+    queryFn: () => api.getMockupCategoryBySlug(slug),
+    enabled: !!slug,
+  });
+};
+
+export const useCreateMockupCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.createMockupCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mockupCategories'] });
+    },
+  });
+};
+
+export const useUpdateMockupCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...values }) => api.updateMockupCategory(id, values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mockupCategories'] });
+    },
+  });
+};
+
+export const useDeleteMockupCategory = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.deleteMockupCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mockupCategories'] });
     },
   });
 };
