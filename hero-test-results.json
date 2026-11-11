@@ -1,0 +1,300 @@
+[
+  {
+    "testCase": "desktop-light-en",
+    "analysis": {
+      "h1": {
+        "weight": 800,
+        "color": {
+          "r": 15,
+          "g": 23,
+          "b": 42,
+          "hex": "#0f172a"
+        },
+        "fontSize": "72px",
+        "lineCount": 4,
+        "text": "We Build Software Solutions That Scale"
+      },
+      "paragraph": {
+        "weight": 500,
+        "color": {
+          "r": 15,
+          "g": 23,
+          "b": 42,
+          "hex": "#0f172a"
+        }
+      },
+      "primaryButton": {
+        "weight": 500,
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "hex": "#ffffff"
+        }
+      },
+      "secondaryButton": {
+        "weight": 600,
+        "color": {
+          "r": 31,
+          "g": 52,
+          "b": 64,
+          "hex": "#1f3440"
+        }
+      },
+      "constellation": {
+        "hasLines": true,
+        "lineCount": 6
+      }
+    },
+    "issues": [
+      "H1 wraps to 4 lines (expected 2-3)"
+    ],
+    "passed": false
+  },
+  {
+    "testCase": "desktop-dark-en",
+    "analysis": {
+      "h1": {
+        "weight": 800,
+        "color": {
+          "r": 15,
+          "g": 23,
+          "b": 42,
+          "hex": "#0f172a"
+        },
+        "fontSize": "72px",
+        "lineCount": 4,
+        "text": "We Build Software Solutions That Scale"
+      },
+      "paragraph": {
+        "weight": 500,
+        "color": {
+          "r": 15,
+          "g": 23,
+          "b": 42,
+          "hex": "#0f172a"
+        }
+      },
+      "primaryButton": {
+        "weight": 500,
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "hex": "#ffffff"
+        }
+      },
+      "secondaryButton": {
+        "weight": 600,
+        "color": {
+          "r": 31,
+          "g": 52,
+          "b": 64,
+          "hex": "#1f3440"
+        }
+      },
+      "constellation": {
+        "hasLines": true,
+        "lineCount": 6
+      }
+    },
+    "issues": [
+      "H1 wraps to 4 lines (expected 2-3)"
+    ],
+    "passed": false
+  },
+  {
+    "testCase": "desktop-light-ar",
+    "analysis": {
+      "h1": {
+        "weight": 700,
+        "color": {
+          "r": 90,
+          "g": 127,
+          "b": 144,
+          "hex": "#5a7f90"
+        },
+        "fontSize": "200px",
+        "lineCount": 1,
+        "text": "404"
+      },
+      "paragraph": {
+        "weight": null,
+        "color": null
+      },
+      "primaryButton": {
+        "weight": 500,
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "hex": "#ffffff"
+        }
+      },
+      "secondaryButton": {
+        "weight": null,
+        "color": null
+      },
+      "constellation": {
+        "hasLines": false,
+        "lineCount": 0
+      }
+    },
+    "issues": [
+      "Paragraph weight too low: null (expected ≥500)",
+      "Secondary button weight too low: null (expected ≥500)",
+      "Constellation lines missing",
+      "Too few constellation lines: 0 (expected ≥5)"
+    ],
+    "passed": false
+  },
+  {
+    "testCase": "desktop-dark-ar",
+    "analysis": {
+      "h1": {
+        "weight": 700,
+        "color": {
+          "r": 90,
+          "g": 127,
+          "b": 144,
+          "hex": "#5a7f90"
+        },
+        "fontSize": "200px",
+        "lineCount": 1,
+        "text": "404"
+      },
+      "paragraph": {
+        "weight": null,
+        "color": null
+      },
+      "primaryButton": {
+        "weight": 500,
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "hex": "#ffffff"
+        }
+      },
+      "secondaryButton": {
+        "weight": null,
+        "color": null
+      },
+      "constellation": {
+        "hasLines": false,
+        "lineCount": 0
+      }
+    },
+    "issues": [
+      "Paragraph weight too low: null (expected ≥500)",
+      "Secondary button weight too low: null (expected ≥500)",
+      "Constellation lines missing",
+      "Too few constellation lines: 0 (expected ≥5)"
+    ],
+    "passed": false
+  },
+  {
+    "testCase": "tablet-light-en",
+    "analysis": {
+      "h1": {
+        "weight": 800,
+        "color": {
+          "r": 15,
+          "g": 23,
+          "b": 42,
+          "hex": "#0f172a"
+        },
+        "fontSize": "44px",
+        "lineCount": 4,
+        "text": "We Build Software Solutions That Scale"
+      },
+      "paragraph": {
+        "weight": 500,
+        "color": {
+          "r": 15,
+          "g": 23,
+          "b": 42,
+          "hex": "#0f172a"
+        }
+      },
+      "primaryButton": {
+        "weight": 500,
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "hex": "#ffffff"
+        }
+      },
+      "secondaryButton": {
+        "weight": 600,
+        "color": {
+          "r": 31,
+          "g": 52,
+          "b": 64,
+          "hex": "#1f3440"
+        }
+      },
+      "constellation": {
+        "hasLines": true,
+        "lineCount": 6
+      }
+    },
+    "issues": [
+      "H1 wraps to 4 lines (expected 2-3)"
+    ],
+    "passed": false
+  },
+  {
+    "testCase": "mobile-light-en",
+    "analysis": {
+      "h1": {
+        "weight": 800,
+        "color": {
+          "r": 15,
+          "g": 23,
+          "b": 42,
+          "hex": "#0f172a"
+        },
+        "fontSize": "44px",
+        "lineCount": 4,
+        "text": "We Build Software Solutions That Scale"
+      },
+      "paragraph": {
+        "weight": 500,
+        "color": {
+          "r": 15,
+          "g": 23,
+          "b": 42,
+          "hex": "#0f172a"
+        }
+      },
+      "primaryButton": {
+        "weight": 500,
+        "color": {
+          "r": 255,
+          "g": 255,
+          "b": 255,
+          "hex": "#ffffff"
+        }
+      },
+      "secondaryButton": {
+        "weight": 600,
+        "color": {
+          "r": 31,
+          "g": 52,
+          "b": 64,
+          "hex": "#1f3440"
+        }
+      },
+      "constellation": {
+        "hasLines": true,
+        "lineCount": 6
+      }
+    },
+    "issues": [
+      "H1 wraps to 4 lines (expected 2-3)"
+    ],
+    "passed": false
+  }
+]

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ChevronRight, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/i18n/useTranslation';
 
 const PageHero = ({ 
   breadcrumbs = [], 
@@ -18,6 +19,8 @@ const PageHero = ({
   teamAvatars = [], // New prop for team avatars
   featureBadges = [] // New prop for Contact page feature badges
 }) => {
+  const { t, language } = useTranslation();
+  
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-gradient-to-br from-frost-soft to-frost overflow-hidden">
       {/* Background Image */}
@@ -54,7 +57,7 @@ const PageHero = ({
                 ease: "easeInOut"
               }
             }}
-            className="absolute bg-white/80 backdrop-blur-md rounded-2xl shadow-dropdown p-6 border border-frost"
+            className="absolute bg-color-background/80 backdrop-blur-md rounded-2xl shadow-dropdown p-6 border border-frost"
             style={{
               top: `${item.top}%`,
               left: `${item.left}%`,
@@ -80,7 +83,7 @@ const PageHero = ({
           >
             {/* Breadcrumb */}
             {breadcrumbs.length > 0 && (
-              <nav className="flex items-center space-x-2 text-sm text-text-muted">
+              <nav className={`flex items-center text-sm text-text-muted ${language === 'ar' ? 'space-x-reverse' : ''} space-x-2`}>
                 {breadcrumbs.map((crumb, index) => (
                   <React.Fragment key={index}>
                     {index > 0 && <ChevronRight className="h-4 w-4" />}
@@ -127,26 +130,23 @@ const PageHero = ({
             {/* Feature Badges */}
             {featureBadges.length > 0 && (
               <div className="flex flex-wrap gap-3 pt-2">
-                {featureBadges.map((badge, index) => {
-                  const Icon = badge.icon;
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 px-4 py-2.5 bg-white border border-frost rounded-lg shadow-card hover:shadow-card-hover transition-shadow"
-                    >
-                      <Icon className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-sm font-medium text-primary-deep whitespace-nowrap">
-                        {badge.label}
-                      </span>
-                    </div>
-                  );
-                })}
+                {featureBadges.map((badge, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-color-background border border-frost rounded-lg shadow-card hover:shadow-card-hover transition-shadow"
+                  >
+                    {badge.icon && <badge.icon className="h-5 w-5 text-primary flex-shrink-0" />}
+                    <span className="text-sm font-medium text-primary-deep whitespace-nowrap">
+                      {badge.text || badge.label}
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
 
             {/* Buttons */}
             {(primaryButton || secondaryButton) && (
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className={`flex flex-col sm:flex-row gap-4 pt-4 ${language === 'ar' ? 'sm:flex-row-reverse' : ''}`}>
                 {primaryButton && (
                   <a href={primaryButton.href} onClick={primaryButton.onClick}>
                     <Button 
@@ -154,7 +154,7 @@ const PageHero = ({
                       className="bg-primary hover:bg-primary-dark text-white px-8 py-6 text-lg rounded-lg group"
                     >
                       {primaryButton.label}
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className={`h-5 w-5 group-hover:translate-x-1 transition-transform ${language === 'ar' ? 'mr-2 rotate-180' : 'ml-2'}`} />
                     </Button>
                   </a>
                 )}
@@ -166,7 +166,7 @@ const PageHero = ({
                       className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-6 text-lg rounded-lg group"
                     >
                       {secondaryButton.label}
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className={`h-5 w-5 group-hover:translate-x-1 transition-transform ${language === 'ar' ? 'mr-2 rotate-180' : 'ml-2'}`} />
                     </Button>
                   </a>
                 )}
@@ -200,7 +200,7 @@ const PageHero = ({
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="hidden lg:block absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-lg-primary p-6 max-w-xs z-20"
+          className="hidden lg:block absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 bg-color-background rounded-2xl shadow-lg-primary p-6 max-w-xs z-20"
         >
           {/* Card Title */}
           <h3 className="text-lg font-bold text-primary-deep mb-4">
@@ -226,8 +226,8 @@ const PageHero = ({
 
           {/* Arrow Button */}
           <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors group">
-            <span className="font-medium">Learn More</span>
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <span className="font-medium">{t('common.learnMore')}</span>
+            <ArrowRight className={`h-4 w-4 group-hover:translate-x-1 transition-transform ${language === 'ar' ? 'rotate-180' : ''}`} />
           </button>
         </motion.div>
       )}

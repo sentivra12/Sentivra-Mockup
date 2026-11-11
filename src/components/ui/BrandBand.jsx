@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from '@/i18n/useTranslation';
 
 const BrandBand = ({ withArrows = false }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollRef = React.useRef(null);
+  const { t, language } = useTranslation();
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
@@ -28,10 +30,10 @@ const BrandBand = ({ withArrows = false }) => {
             {/* Left Arrow */}
             <button
               onClick={() => handleScroll('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
-              aria-label="Scroll left"
+              className={`absolute top-1/2 -translate-y-1/2 z-10 bg-color-background/90 hover:bg-color-background rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110 ${language === 'ar' ? 'right-0' : 'left-0'}`}
+              aria-label={t('common.scrollLeft')}
             >
-              <ChevronLeft className="h-6 w-6 text-primary" />
+              <ChevronLeft className={`h-6 w-6 text-primary ${language === 'ar' ? 'rotate-180' : ''}`} />
             </button>
 
             {/* Scrollable Container */}
@@ -54,10 +56,10 @@ const BrandBand = ({ withArrows = false }) => {
             {/* Right Arrow */}
             <button
               onClick={() => handleScroll('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110"
-              aria-label="Scroll right"
+              className={`absolute top-1/2 -translate-y-1/2 z-10 bg-color-background/90 hover:bg-color-background rounded-full p-2 shadow-lg transition-all duration-200 hover:scale-110 ${language === 'ar' ? 'left-0' : 'right-0'}`}
+              aria-label={t('common.scrollRight')}
             >
-              <ChevronRight className="h-6 w-6 text-primary" />
+              <ChevronRight className={`h-6 w-6 text-primary ${language === 'ar' ? 'rotate-180' : ''}`} />
             </button>
           </div>
         </div>

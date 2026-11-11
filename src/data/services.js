@@ -1,9 +1,10 @@
-
 import { Code, Smartphone, Bot, BarChart3, Database, Layers } from 'lucide-react';
+import { supabase, isMissingEnv } from '../lib/supabase';
 
 const createSlug = (title) => title.toLowerCase().replace(/ & /g, '-and-').replace(/ /g, '-').replace(/[^\w-]+/g, '');
 
-export const services = [
+// Static fallback data (used when Supabase is not configured)
+export const servicesStatic = [
   {
     slug: createSlug('Web Application Development'),
     icon: Code,
@@ -66,9 +67,129 @@ export const services = [
   }
 ];
 
+// Default export for backward compatibility
+export const services = servicesStatic;
+
+// Service categories
 export const serviceCategories = [
   { id: 'all', name: 'All Services', icon: Layers },
   { id: 'web-mobile', name: 'Web & Mobile', icon: Code },
   { id: 'business-systems', name: 'Business Systems', icon: Database },
   { id: 'ai-data', name: 'AI & Data', icon: BarChart3 }
 ];
+
+/**
+ * Fetch services from Supabase with optional filters
+ * Falls back to static data if Supabase is not configured
+ * @param {Object} options - Query options
+ * @param {string} options.category - Filter by category
+ * @param {boolean} options.featured - Filter featured services
+ * @param {string} options.language - Language code ('en' or 'ar')
+ * @returns {Promise<Array>} Services array
+ */
+export const fetchServices = async ({ category, featured, language = 'en' } = {}) => {
+  // If Supabase is not configured, return static data
+  if (isMissingEnv) {
+    console.warn('Using static services data (Supabase not configured)');
+    let filtered = servicesStatic;
+    
+    if (category && category !== 'all') {
+      filtered = filtered.filter(s => s.category === category);
+    }
+    
+    if (featured) {
+      filtered = filtered.filter(s => s.featured);
+    }
+    
+    return filtered;
+  }
+
+  try {
+    let query = supabase
+      .from('services')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+
+    if (category && category !== 'all') {
+      query = query.eq('category', category);
+    }
+
+    if (featured) {
+      query = query.eq('is_featured', true);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching services:', error);
+      return servicesStatic;
+    }
+
+    // Map bilingual fields
+    return data.map(service => ({
+      ...service,
+      title: language === 'ar' && service.title_ar ? service.title_ar : service.title,
+      shortDescription: language === 'ar' && service.short_description_ar 
+        ? service.short_description_ar 
+        : service.short_description,
+      longDescription: language === 'ar' && service.long_description_ar 
+        ? service.long_description_ar 
+        : service.long_description,
+      features: language === 'ar' && service.features_ar 
+        ? service.features_ar 
+        : service.features,
+      icon: service.icon || Code, // Default icon
+    }));
+  } catch (err) {
+    console.error('Error fetching services:', err);
+    return servicesStatic;
+  }
+};
+
+/**
+ * Fetch a single service by slug
+ * @param {string} slug - Service slug
+ * @param {string} language - Language code ('en' or 'ar')
+ * @returns {Promise<Object|null>} Service object or null
+ */
+export const fetchServiceBySlug = async (slug, language = 'en') => {
+  // If Supabase is not configured, return from static data
+  if (isMissingEnv) {
+    console.warn('Using static services data (Supabase not configured)');
+    return servicesStatic.find(s => s.slug === slug) || null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('services')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_active', true)
+      .single();
+
+    if (error) {
+      console.error('Error fetching service:', error);
+      return servicesStatic.find(s => s.slug === slug) || null;
+    }
+
+    // Map bilingual fields
+    return {
+      ...data,
+      title: language === 'ar' && data.title_ar ? data.title_ar : data.title,
+      shortDescription: language === 'ar' && data.short_description_ar 
+        ? data.short_description_ar 
+        : data.short_description,
+      longDescription: language === 'ar' && data.long_description_ar 
+        ? data.long_description_ar 
+        : data.long_description,
+      features: language === 'ar' && data.features_ar 
+        ? data.features_ar 
+        : data.features,
+      icon: data.icon || Code,
+    };
+  } catch (err) {
+    console.error('Error fetching service:', err);
+    return servicesStatic.find(s => s.slug === slug) || null;
+  }
+};

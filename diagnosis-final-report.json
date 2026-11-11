@@ -1,0 +1,43 @@
+{
+  "hero": {
+    "exists": true,
+    "text": "We Build Software Solutions That Scale",
+    "color": "rgb(15, 23, 42)",
+    "lines": 4
+  },
+  "servicesGrid": {
+    "exists": true,
+    "cardsCount": 8,
+    "titles": [
+      "Web Development",
+      "Web Application Development",
+      "Mobile Applications",
+      "Mobile Application Development",
+      "ERP System Development"
+    ]
+  },
+  "constellation": {
+    "exists": false,
+    "nodesCount": 0,
+    "linesCount": 0
+  },
+  "howWeWork": {
+    "exists": true,
+    "itemsCount": 0
+  },
+  "whyChoose": {
+    "exists": true,
+    "cardsCount": 0
+  },
+  "faq": {
+    "exists": true
+  },
+  "finalCTA": {
+    "exists": true,
+    "section": "py-16 lg:py-20 bg-white"
+  },
+  "miniVisuals": {
+    "total": 0,
+    "empty": 0
+  }
+}

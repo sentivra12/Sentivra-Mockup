@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Lightbulb, Users, Shield, TrendingUp } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 const iconMap = {
   Lightbulb,
@@ -17,6 +18,7 @@ const colorMap = {
 };
 
 const ValueCard = ({ value, delay = 0, layout = 'card' }) => {
+  const { t, language } = useTranslation();
   const Icon = iconMap[value.icon] || Lightbulb;
   const colorClass = colorMap[value.color] || colorMap.blue;
 
@@ -50,7 +52,7 @@ const ValueCard = ({ value, delay = 0, layout = 'card' }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay }}
-      className="bg-white rounded-xl p-8 shadow-lg hover:shadow-dropdown transition-all duration-300 group border border-frost hover:border-primary/30"
+      className="bg-color-background rounded-xl p-8 shadow-lg hover:shadow-dropdown transition-all duration-300 group border border-frost hover:border-primary/30"
     >
       {/* Icon */}
       <div className={`w-16 h-16 rounded-full ${colorClass} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>

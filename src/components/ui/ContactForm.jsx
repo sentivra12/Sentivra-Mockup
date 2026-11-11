@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { User, Phone, MessageSquare, Mail, FileText, ArrowRight } from 'lucide-react';
+import { User, Phone, MessageSquare, Mail, FileText, ArrowRight, X, ExternalLink } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import FormField from '@/components/ui/FormField';
 import CountrySelect from '@/components/ui/CountrySelect';
 import { useCountries } from '@/hooks/useContent';
 import { useCreateMessage } from '@/hooks/useContent';
+import { useTranslation } from '@/i18n/useTranslation';
+import { getAttributionForSubmission } from '@/lib/attribution';
+import { analytics } from '@/lib/analytics';
 
-const ContactForm = () => {
+const ContactForm = ({ selectedMockup = null, onRemoveMockup = null }) => {
   const { toast } = useToast();
+  const { t, language } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -36,17 +40,20 @@ const ContactForm = () => {
 
   const [sameAsPhone, setSameAsPhone] = useState(false);
 
-  // Pre-fill from query params (e.g., from Mockups page)
+  // Pre-fill from mockup selection
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const mockupName = params.get('mockup');
-    if (mockupName) {
+    if (selectedMockup) {
+      const mockupTitle = language === 'ar' ? selectedMockup.title_ar : selectedMockup.title_en;
+      const prefix = language === 'ar' 
+        ? `أنا مهتم بتصميم "${mockupTitle}". `
+        : `I'm interested in the "${mockupTitle}" mockup design. `;
+      
       setFormData(prev => ({
         ...prev,
-        projectDetails: `I'm interested in the "${mockupName}" mockup design. `
+        projectDetails: prefix + (prev.projectDetails || '')
       }));
     }
-  }, []);
+  }, [selectedMockup, language]);
 
   // Sync WhatsApp with Phone if checkbox is checked
   useEffect(() => {
@@ -58,37 +65,37 @@ const ContactForm = () => {
   const validateField = (name, value) => {
     switch (name) {
       case 'fullName':
-        if (!value.trim()) return 'Full name is required';
-        if (value.trim().length < 2) return 'Name must be at least 2 characters';
+        if (!value.trim()) return t('contact.form.required');
+        if (value.trim().length < 2) return t('contact.form.nameTooShort');
         return '';
       
       case 'country':
-        if (!value) return 'Please select your country';
+        if (!value) return t('contact.form.selectCountry');
         return '';
       
       case 'phone':
-        if (!value.trim()) return 'Phone number is required';
+        if (!value.trim()) return t('contact.form.required');
         // Accept international formats: +20, 0100, etc.
-        if (!/^[\d\s\-\+\(\)]+$/.test(value)) return 'Please enter a valid phone number';
-        if (value.replace(/\D/g, '').length < 8) return 'Phone number is too short';
+        if (!/^[\d\s\-\+\(\)]+$/.test(value)) return t('contact.form.invalidPhone');
+        if (value.replace(/\D/g, '').length < 8) return t('contact.form.phoneTooShort');
         return '';
       
       case 'whatsapp':
-        if (!value.trim()) return 'WhatsApp number is required';
-        if (!/^[\d\s\-\+\(\)]+$/.test(value)) return 'Please enter a valid WhatsApp number';
-        if (value.replace(/\D/g, '').length < 8) return 'WhatsApp number is too short';
+        if (!value.trim()) return t('contact.form.required');
+        if (!/^[\d\s\-\+\(\)]+$/.test(value)) return t('contact.form.invalidWhatsapp');
+        if (value.replace(/\D/g, '').length < 8) return t('contact.form.whatsappTooShort');
         return '';
       
       case 'email':
         // Email is optional
         if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          return 'Please enter a valid email address';
+          return t('contact.form.invalidEmail');
         }
         return '';
       
       case 'projectDetails':
-        if (!value.trim()) return 'Please tell us about your project';
-        if (value.trim().length < 10) return 'Please provide more details (at least 10 characters)';
+        if (!value.trim()) return t('contact.form.required');
+        if (value.trim().length < 10) return t('contact.form.detailsTooShort');
         return '';
       
       default:
@@ -154,6 +161,9 @@ const ContactForm = () => {
 
     setIsSubmitting(true);
 
+    // Get attribution data
+    const attribution = getAttributionForSubmission();
+    
     // Prepare data for Supabase
     const messageData = {
       full_name: formData.fullName,
@@ -162,17 +172,28 @@ const ContactForm = () => {
       whatsapp: formData.whatsapp,
       email: formData.email || null,
       message: formData.projectDetails,
+      project_details: formData.projectDetails, // Additional field for design requests
+      mockup_id: selectedMockup?.id || null, // Link to mockup if design request
       status: 'new',
-      source: 'contact_form'
+      source: 'contact_form',
+      type: selectedMockup ? 'mockup_request' : 'contact',
+      // Attribution fields
+      ...attribution,
     };
 
     try {
       await createMessage.mutateAsync(messageData);
 
+      // Track conversion
+      analytics.contactFormSubmit();
+      if (selectedMockup) {
+        analytics.designRequestSubmit(selectedMockup.id);
+      }
+
       // Success
       toast({
-        title: '✅ Message Sent Successfully!',
-        description: "We've received your message and will get back to you within 24 hours.",
+        title: t('contact.form.successTitle'),
+        description: t('contact.form.success'),
         duration: 5000,
       });
 
@@ -193,8 +214,8 @@ const ContactForm = () => {
     } catch (error) {
       console.error('Supabase Error:', error);
       toast({
-        title: '❌ Failed to Send Message',
-        description: 'Something went wrong. Please try again or contact us directly via WhatsApp.',
+        title: t('contact.form.errorTitle'),
+        description: t('contact.form.error'),
         duration: 5000,
         variant: 'destructive'
       });
@@ -204,14 +225,69 @@ const ContactForm = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-dropdown p-8 border border-frost">
+    <div className="bg-color-background rounded-2xl shadow-dropdown p-8 border border-frost">
+      {/* Selected Mockup Chip */}
+      {selectedMockup && (
+        <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center gap-4">
+          {/* Mockup Thumbnail */}
+          {(selectedMockup.cover_image_url || selectedMockup.desktop_screenshot_url) && (
+            <img
+              src={selectedMockup.cover_image_url || selectedMockup.desktop_screenshot_url}
+              alt={language === 'ar' ? selectedMockup.title_ar : selectedMockup.title_en}
+              className="w-16 h-12 object-cover rounded-lg"
+            />
+          )}
+          
+          {/* Mockup Info */}
+          <div className="flex-1">
+            <div className="text-xs text-primary font-semibold uppercase tracking-wider mb-1">
+              {language === 'ar' ? 'طلب تصميم' : 'Design Request'}
+            </div>
+            <div className="font-bold text-primary-deep">
+              {language === 'ar' ? selectedMockup.title_ar : selectedMockup.title_en}
+            </div>
+          </div>
+
+          {/* View & Remove Buttons */}
+          <div className="flex items-center gap-2">
+            <a
+              href={`/mockups/${selectedMockup.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 hover:bg-primary/10 rounded-lg transition-colors text-primary"
+              title={language === 'ar' ? 'عرض التصميم' : 'View Design'}
+            >
+              <ExternalLink className="w-4 h-4" />
+            </a>
+            {onRemoveMockup && (
+              <button
+                type="button"
+                onClick={onRemoveMockup}
+                className="p-2 hover:bg-red-500/10 rounded-lg transition-colors text-red-500"
+                title={language === 'ar' ? 'إزالة' : 'Remove'}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-primary-deep mb-2">
-          Send Us a Message
+          {selectedMockup 
+            ? (language === 'ar' ? 'طلب هذا التصميم' : 'Request This Design')
+            : t('contact.form.title')
+          }
         </h2>
         <p className="text-text-muted">
-          Fill out the form and we'll get back to you soon.
+          {selectedMockup
+            ? (language === 'ar' 
+                ? 'املأ النموذج أدناه وسنتواصل معك قريباً'
+                : 'Fill out the form below and we\'ll get back to you soon')
+            : t('contact.form.subtitle')
+          }
         </p>
       </div>
 
@@ -234,8 +310,8 @@ const ContactForm = () => {
           id="fullName"
           name="fullName"
           type="text"
-          label="Full Name"
-          placeholder="Enter your full name"
+          label={t('contact.form.name')}
+          placeholder={t('contact.form.namePlaceholder')}
           value={formData.fullName}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -250,7 +326,7 @@ const ContactForm = () => {
         <CountrySelect
           id="country"
           name="country"
-          label="Country"
+          label={t('contact.form.country')}
           value={formData.country}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -265,8 +341,8 @@ const ContactForm = () => {
           id="phone"
           name="phone"
           type="tel"
-          label="Phone Number"
-          placeholder="Enter your phone number"
+          label={t('contact.form.phone')}
+          placeholder={t('contact.form.phonePlaceholder')}
           value={formData.phone}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -283,8 +359,8 @@ const ContactForm = () => {
             id="whatsapp"
             name="whatsapp"
             type="tel"
-            label="WhatsApp Number"
-            placeholder="Enter your WhatsApp number"
+            label={t('contact.form.whatsapp')}
+            placeholder={t('contact.form.whatsappPlaceholder')}
             value={formData.whatsapp}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -296,7 +372,7 @@ const ContactForm = () => {
           />
           
           {/* Same as Phone Checkbox */}
-          <div className="mt-2 flex items-center">
+          <div className={`mt-2 flex items-center ${language === 'ar' ? 'flex-row-reverse justify-end' : ''}`}>
             <input
               type="checkbox"
               id="sameAsPhone"
@@ -305,8 +381,8 @@ const ContactForm = () => {
               disabled={isSubmitting}
               className="h-4 w-4 text-primary border-frost rounded focus:ring-primary"
             />
-            <label htmlFor="sameAsPhone" className="ml-2 text-sm text-text-muted">
-              Same as phone number
+            <label htmlFor="sameAsPhone" className={`text-sm text-text-muted ${language === 'ar' ? 'mr-2' : 'ml-2'}`}>
+              {t('contact.form.sameAsPhone')}
             </label>
           </div>
         </div>
@@ -316,8 +392,8 @@ const ContactForm = () => {
           id="email"
           name="email"
           type="email"
-          label="Email Address (Optional)"
-          placeholder="Enter your email address"
+          label={t('contact.form.email')}
+          placeholder={t('contact.form.emailPlaceholder')}
           value={formData.email}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -332,8 +408,8 @@ const ContactForm = () => {
           id="projectDetails"
           name="projectDetails"
           type="textarea"
-          label="Project Details"
-          placeholder="Tell us about your project, your goals, and any specific requirements..."
+          label={t('contact.form.message')}
+          placeholder={t('contact.form.messagePlaceholder')}
           value={formData.projectDetails}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -353,23 +429,23 @@ const ContactForm = () => {
         >
           {isSubmitting ? (
             <>
-              <svg className="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+              <svg className={`animate-spin h-5 w-5 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Sending...
+              {t('contact.form.sending')}
             </>
           ) : (
             <>
-              Send Message
-              <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              {t('contact.form.send')}
+              <ArrowRight className={`h-5 w-5 group-hover:translate-x-1 transition-transform ${language === 'ar' ? 'mr-2 rotate-180' : 'ml-2'}`} />
             </>
           )}
         </Button>
 
         {/* Success/Error Message Region */}
         <div role="status" aria-live="polite" className="sr-only">
-          {isSubmitting && 'Sending your message...'}
+          {isSubmitting && t('contact.form.sendingAria')}
         </div>
       </form>
     </div>

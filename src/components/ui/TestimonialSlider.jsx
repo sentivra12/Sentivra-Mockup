@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 const TestimonialSlider = ({ testimonials = [] }) => {
+  const { t, language } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Safety check for empty testimonials
   if (!testimonials || testimonials.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-text-muted">No testimonials available at the moment.</p>
+        <p className="text-text-muted">{t('testimonials.noTestimonials')}</p>
       </div>
     );
   }
@@ -39,10 +41,10 @@ const TestimonialSlider = ({ testimonials = [] }) => {
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="region"
-      aria-label="Client testimonials"
+      aria-label={t('testimonials.ariaLabel')}
     >
       {/* Main Testimonial Card */}
-      <div className="relative bg-white rounded-2xl shadow-dropdown border border-frost p-8 md:p-12">
+      <div className="relative bg-color-background rounded-2xl shadow-dropdown border border-frost p-8 md:p-12">
         {/* Quote Icon */}
         <div className="absolute top-6 right-6 opacity-10">
           <Quote className="h-20 w-20 text-primary" />
@@ -89,18 +91,18 @@ const TestimonialSlider = ({ testimonials = [] }) => {
         <>
           <button
             onClick={goToPrevious}
-            aria-label="Previous testimonial"
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 w-10 h-10 rounded-full bg-white shadow-lg border border-frost flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+            aria-label={t('testimonials.previous')}
+            className={`absolute ${language === 'ar' ? 'right-0 translate-x-4 md:translate-x-12' : 'left-0 -translate-x-4 md:-translate-x-12'} top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-color-background shadow-lg border border-frost flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all duration-300`}
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className={`h-5 w-5 ${language === 'ar' ? 'rotate-180' : ''}`} />
           </button>
 
           <button
             onClick={goToNext}
-            aria-label="Next testimonial"
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 w-10 h-10 rounded-full bg-white shadow-lg border border-frost flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all duration-300"
+            aria-label={t('testimonials.next')}
+            className={`absolute ${language === 'ar' ? 'left-0 -translate-x-4 md:-translate-x-12' : 'right-0 translate-x-4 md:translate-x-12'} top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-color-background shadow-lg border border-frost flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary transition-all duration-300`}
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className={`h-5 w-5 ${language === 'ar' ? 'rotate-180' : ''}`} />
           </button>
         </>
       )}
@@ -112,7 +114,7 @@ const TestimonialSlider = ({ testimonials = [] }) => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              aria-label={`Go to testimonial ${index + 1}`}
+              aria-label={`${t('testimonials.goTo')} ${index + 1}`}
               className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                 index === currentIndex
                   ? 'bg-primary w-8'

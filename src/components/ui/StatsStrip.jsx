@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useMotionValue, useSpring } from 'framer-motion';
 import { Briefcase, Users, Globe, UserCheck, Award } from 'lucide-react';
+import { Bidi } from './Bidi';
 
 const iconMap = {
   Briefcase,
@@ -62,7 +63,7 @@ const StatItem = ({ stat, index }) => {
       {/* Number and Label */}
       <div className="flex flex-col">
         <div className="text-2xl md:text-3xl font-bold text-primary-deep">
-          {displayValue}{stat.suffix}
+          <Bidi>{displayValue}{stat.suffix}</Bidi>
         </div>
         <p className="text-xs text-text-muted font-medium">
           {stat.label}
@@ -74,7 +75,7 @@ const StatItem = ({ stat, index }) => {
 
 const StatsStrip = ({ stats }) => {
   return (
-    <section className="py-12 bg-white">
+    <section className="py-12 bg-color-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-frost-soft rounded-2xl py-8 px-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 divide-x-0 md:divide-x divide-frost">

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://sentivra.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sentivra.com/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://sentivra.com/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sentivra.com/" />
+    <lastmod>2024-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Services Page -->
+  <url>
+    <loc>https://sentivra.com/services</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sentivra.com/services" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://sentivra.com/services" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sentivra.com/services" />
+    <lastmod>2024-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Mockups Page -->
+  <url>
+    <loc>https://sentivra.com/mockups</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sentivra.com/mockups" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://sentivra.com/mockups" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sentivra.com/mockups" />
+    <lastmod>2024-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- About Page -->
+  <url>
+    <loc>https://sentivra.com/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sentivra.com/about" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://sentivra.com/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sentivra.com/about" />
+    <lastmod>2024-11-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- Contact Page -->
+  <url>
+    <loc>https://sentivra.com/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://sentivra.com/contact" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://sentivra.com/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://sentivra.com/contact" />
+    <lastmod>2024-11-07</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+</urlset>

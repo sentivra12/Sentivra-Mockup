@@ -26,7 +26,7 @@ const FAQAccordion = ({ faqs = [] }) => {
         return (
           <div
             key={index}
-            className="bg-white rounded-xl border border-frost overflow-hidden"
+            className="bg-color-background rounded-xl border border-frost overflow-hidden"
           >
             <button
               id={accordionId}

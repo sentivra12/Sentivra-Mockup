@@ -23,9 +23,14 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
+import { useTranslation } from '@/i18n/useTranslation';
+import { SEO, useSEO } from '@/components/SEO';
 
 const AboutPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { getMetadata } = useSEO();
+  const seoData = getMetadata('about');
 
   // Fetch data from Supabase
   const { data: countries = [], isLoading: countriesLoading } = useCountries();
@@ -54,7 +59,7 @@ const AboutPage = () => {
       <div className="min-h-screen flex items-center justify-center pt-16">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -66,35 +71,40 @@ const AboutPage = () => {
       animate={{ opacity: 1 }} 
       exit={{ opacity: 0 }}
     >
+      <SEO 
+        title={seoData.title}
+        description={seoData.description}
+        type="website"
+      />
       <Helmet>
-        <title>About Us - A Team That Builds Real Impact | Sentivra</title>
+        <title>{seoData.title}</title>
         <meta 
           name="description" 
-          content="We are a full-service software company specialized in building modern digital solutions that help businesses grow and succeed in the digital world." 
+          content={seoData.description} 
         />
       </Helmet>
 
       {/* Hero Section with Floating Card */}
       <PageHero
         breadcrumbs={[
-          { label: 'Home', href: '/' },
-          { label: 'About Us' }
+          { label: t('nav.home'), href: '/' },
+          { label: t('nav.about') }
         ]}
-        label="ABOUT SENTIVRA"
-        title="A Team That"
-        titleAccent="Builds Real Impact"
-        description="We are a full-service software company specialized in building modern digital solutions that help businesses grow and succeed in the digital world."
+        label={t('about.hero.label')}
+        title={t('about.hero.title')}
+        titleAccent={t('about.hero.titleAccent')}
+        description={t('about.hero.description')}
         primaryButton={{
-          label: 'Start Your Project',
+          label: t('about.hero.primaryButton'),
           href: '/#contact'
         }}
         secondaryButton={{
-          label: 'Learn More',
+          label: t('about.hero.secondaryButton'),
           onClick: () => handleScrollToSection('our-story')
         }}
         backgroundImage="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=800&fit=crop"
         floatingCard={{
-          title: 'A Bigger Team, A Stronger Future'
+          title: t('about.hero.floatingCardTitle')
         }}
         teamAvatars={teamAvatars}
       />
@@ -156,7 +166,7 @@ const AboutPage = () => {
       <StatsStrip stats={stats} />
 
       {/* Our Story Section */}
-      <Section id="our-story" spacing="xl" className="bg-white">
+      <Section id="our-story" spacing="xl" className="bg-color-background">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             {/* Left - Story Content */}

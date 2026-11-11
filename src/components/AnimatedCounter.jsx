@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useInView, useMotionValue, useSpring } from 'framer-motion';
+import { Bidi } from './ui/Bidi';
 
-const AnimatedCounter = ({ value, className }) => {
+const AnimatedCounter = ({ value, suffix = '', className }) => {
   const ref = useRef(null);
   // Always start with the value as a string for SSR/JS-disabled fallback
   const [displayValue, setDisplayValue] = useState(() => Intl.NumberFormat('en-US').format(value));
@@ -30,7 +31,11 @@ const AnimatedCounter = ({ value, className }) => {
   }, [springValue, isInView, value]);
 
   // Defensive: Always render the value as fallback for SSR/JS-disabled/mobile issues
-  return <span ref={ref} className={className} aria-label={displayValue}>{displayValue}</span>;
+  return (
+    <span ref={ref} className={className} aria-label={`${displayValue}${suffix}`}>
+      <Bidi>{displayValue}{suffix}</Bidi>
+    </span>
+  );
 };
 
 export default AnimatedCounter;

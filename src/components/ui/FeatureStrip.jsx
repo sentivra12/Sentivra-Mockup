@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const FeatureStrip = ({ features = [] }) => {
   return (
-    <section className="py-12 bg-white border-y border-frost">
+    <section className="py-12 bg-color-background border-y border-frost">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {features.map((feature, index) => (

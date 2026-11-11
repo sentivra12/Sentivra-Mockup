@@ -70,7 +70,7 @@ const DataTable = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={searchPlaceholder}
-              className="w-full pl-11 pr-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full ps-11 pe-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
           </div>
         </div>

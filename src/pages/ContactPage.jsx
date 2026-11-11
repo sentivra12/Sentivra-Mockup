@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useFAQs, useSiteSettings } from '@/hooks/useContent';
 import PageHero from '../components/ui/PageHero';
@@ -11,17 +12,50 @@ import WhatsAppButton from '../components/ui/WhatsAppButton';
 import Footer from '../components/Footer';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
+import { useTranslation } from '@/i18n/useTranslation';
+import { SEO, useSEO } from '@/components/SEO';
+import supabase from '@/lib/supabase';
 
 const ContactPage = () => {
+  const { t, language } = useTranslation();
+  const { getMetadata } = useSEO();
+  const seoData = getMetadata('contact');
+  const [searchParams] = useSearchParams();
+  
   // Fetch data from Supabase
   const { data: faqs = [], isLoading: faqsLoading } = useFAQs('contact');
   const { data: siteSettings } = useSiteSettings();
+  
+  // Design request state
+  const [selectedMockup, setSelectedMockup] = useState(null);
+  const [loadingMockup, setLoadingMockup] = useState(false);
+
+  // Load mockup from URL parameter
+  useEffect(() => {
+    const designSlug = searchParams.get('design');
+    if (designSlug) {
+      setLoadingMockup(true);
+      supabase
+        .from('mockups')
+        .select('id, slug, title_en, title_ar, desktop_screenshot_url, cover_image_url')
+        .eq('slug', designSlug)
+        .eq('is_active', true)
+        .single()
+        .then(({ data, error }) => {
+          if (data && !error) {
+            setSelectedMockup(data);
+          }
+          setLoadingMockup(false);
+        })
+        .catch(() => setLoadingMockup(false));
+    }
+  }, [searchParams]);
 
   // Hero features (hardcoded for now - could be moved to database if needed)
   const heroFeatures = [
-    { text: 'Quick Response' },
-    { text: '24/7 Available' },
-    { text: 'Free Consultation' }
+    { text: t('contact.hero.feature1') },
+    { text: t('contact.hero.feature2') },
+    { text: t('contact.hero.feature3') }
   ];
 
   // Contact info from site settings
@@ -39,22 +73,28 @@ const ContactPage = () => {
 
   const handleWhatsAppClick = (e) => {
     e.preventDefault();
-    const url = `https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hello! I would like to discuss a project with you.')}`;
+    const url = `https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(t('contact.whatsappMessage'))}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <SEO 
+        title={seoData.title}
+        description={seoData.description}
+        type="website"
+      />
+      <div className="min-h-screen bg-color-background dark:bg-gray-900">
       {/* Hero Section */}
       <PageHero
         breadcrumbs={[
-          { label: 'Home', href: '/' },
-          { label: 'Contact' }
+          { label: t('nav.home'), href: '/' },
+          { label: t('nav.contact') }
         ]}
-        label="GET IN TOUCH"
-        title="Let's Build Something"
-        titleAccent="Amazing Together"
-        description="Have a project in mind? We're here to turn your ideas into reality. Reach out to us and let's start the conversation."
+        label={t('contact.hero.label')}
+        title={t('contact.hero.title')}
+        titleAccent={t('contact.hero.titleAccent')}
+        description={t('contact.hero.description')}
         featureBadges={heroFeatures}
       />
 
@@ -71,7 +111,7 @@ const ContactPage = () => {
               className="lg:col-span-2"
               id="contact-form"
             >
-              <ContactForm />
+              <ContactForm selectedMockup={selectedMockup} onRemoveMockup={() => setSelectedMockup(null)} />
             </motion.div>
 
             {/* Right Column - Info Cards (1/3 width on desktop, hidden on mobile) */}
@@ -101,7 +141,7 @@ const ContactPage = () => {
       </Section>
 
       {/* FAQ Section */}
-      <Section spacing="xl" className="bg-white">
+      <Section spacing="xl" className="bg-color-background">
         <Container>
           {/* Section Header */}
           <motion.div
@@ -112,13 +152,13 @@ const ContactPage = () => {
             className="text-center mb-12"
           >
             <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-3">
-              FAQ
+              {t('contact.faq.label')}
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-deep mb-4">
-              Frequently Asked Questions
+              {t('contact.faq.title')}
             </h2>
             <p className="text-lg text-text-muted max-w-2xl mx-auto">
-              Find answers to common questions about our services, process, and how we can help you.
+              {t('contact.faq.description')}
             </p>
           </motion.div>
 
@@ -149,15 +189,15 @@ const ContactPage = () => {
 
       {/* CTA Band */}
       <CTABand
-        title="Ready to Start Your Project?"
-        description="Get in touch with us today and let's discuss how we can help bring your vision to life."
+        title={t('contact.cta.title')}
+        description={t('contact.cta.description')}
         primaryButton={{
-          label: 'Send Message',
+          label: t('contact.cta.primaryButton'),
           href: '#contact-form',
           onClick: handleScrollToForm
         }}
         secondaryButton={{
-          label: 'Chat on WhatsApp',
+          label: t('contact.cta.secondaryButton'),
           href: '#whatsapp',
           onClick: handleWhatsAppClick
         }}
@@ -169,9 +209,10 @@ const ContactPage = () => {
       {/* WhatsApp Floating Button */}
       <WhatsAppButton
         phoneNumber={contactInfo.whatsapp.replace(/[^0-9]/g, '')}
-        message="Hello! I would like to discuss a project with you."
+        message={t('contact.whatsappMessage')}
       />
     </div>
+    </>
   );
 };
 

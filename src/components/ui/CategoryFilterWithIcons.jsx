@@ -48,7 +48,7 @@ const CategoryFilterWithIcons = ({
               className={`flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-full font-medium text-sm whitespace-nowrap transition-all duration-300 flex-shrink-0 ${
                 isActive
                   ? 'bg-primary text-white shadow-card-hover'
-                  : 'bg-white text-text-muted hover:bg-frost-soft border border-frost hover:border-primary/30'
+                  : 'bg-color-background text-text-muted hover:bg-frost-soft border border-frost hover:border-primary/30'
               }`}
             >
               <IconComponent className="h-4 w-4" />

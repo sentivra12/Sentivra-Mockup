@@ -1,0 +1,210 @@
+[
+  {
+    "page": "/admin/login",
+    "colorScheme": "light",
+    "reducedMotion": "reduce",
+    "description": "Login button",
+    "exists": true,
+    "isVisible": true,
+    "selector": "button[type=\"submit\"]",
+    "normal": {
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "rgb(229, 231, 235)",
+      "opacity": "1",
+      "visibility": "visible",
+      "display": "flex",
+      "transform": "none",
+      "classes": "w-full py-3 px-4 bg-primary-strong text-white font-medium rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-primary-strong disabled:hover:shadow-lg flex items-center justify-center gap-2"
+    },
+    "hover": {
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "rgb(229, 231, 235)",
+      "opacity": "1",
+      "visibility": "visible",
+      "display": "flex",
+      "transform": "matrix(1.02, 0, 0, 1.02, 0, 0)"
+    }
+  },
+  {
+    "page": "/admin/settings",
+    "colorScheme": "light",
+    "reducedMotion": "reduce",
+    "description": "Save changes button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/hero",
+    "colorScheme": "light",
+    "reducedMotion": "reduce",
+    "description": "Hero Save button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/mockups",
+    "colorScheme": "light",
+    "reducedMotion": "reduce",
+    "description": "Add Mockup button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/login",
+    "colorScheme": "dark",
+    "reducedMotion": "reduce",
+    "description": "Login button",
+    "exists": true,
+    "isVisible": true,
+    "selector": "button[type=\"submit\"]",
+    "normal": {
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "rgb(229, 231, 235)",
+      "opacity": "1",
+      "visibility": "visible",
+      "display": "flex",
+      "transform": "matrix(1.02, 0, 0, 1.02, 0, 0)",
+      "classes": "w-full py-3 px-4 bg-primary-strong text-white font-medium rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-primary-strong disabled:hover:shadow-lg flex items-center justify-center gap-2"
+    },
+    "hover": {
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "rgb(229, 231, 235)",
+      "opacity": "1",
+      "visibility": "visible",
+      "display": "flex",
+      "transform": "none"
+    }
+  },
+  {
+    "page": "/admin/settings",
+    "colorScheme": "dark",
+    "reducedMotion": "reduce",
+    "description": "Save changes button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/hero",
+    "colorScheme": "dark",
+    "reducedMotion": "reduce",
+    "description": "Hero Save button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/mockups",
+    "colorScheme": "dark",
+    "reducedMotion": "reduce",
+    "description": "Add Mockup button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/login",
+    "colorScheme": "light",
+    "reducedMotion": "no-preference",
+    "description": "Login button",
+    "exists": true,
+    "isVisible": true,
+    "selector": "button[type=\"submit\"]",
+    "normal": {
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "rgb(229, 231, 235)",
+      "opacity": "1",
+      "visibility": "visible",
+      "display": "flex",
+      "transform": "none",
+      "classes": "w-full py-3 px-4 bg-primary-strong text-white font-medium rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-primary-strong disabled:hover:shadow-lg flex items-center justify-center gap-2"
+    },
+    "hover": {
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "rgb(229, 231, 235)",
+      "opacity": "1",
+      "visibility": "visible",
+      "display": "flex",
+      "transform": "matrix(1.01967, 0, 0, 1.01967, 0, 0)"
+    }
+  },
+  {
+    "page": "/admin/settings",
+    "colorScheme": "light",
+    "reducedMotion": "no-preference",
+    "description": "Save changes button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/hero",
+    "colorScheme": "light",
+    "reducedMotion": "no-preference",
+    "description": "Hero Save button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/mockups",
+    "colorScheme": "light",
+    "reducedMotion": "no-preference",
+    "description": "Add Mockup button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/login",
+    "colorScheme": "dark",
+    "reducedMotion": "no-preference",
+    "description": "Login button",
+    "exists": true,
+    "isVisible": true,
+    "selector": "button[type=\"submit\"]",
+    "normal": {
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "rgb(229, 231, 235)",
+      "opacity": "1",
+      "visibility": "visible",
+      "display": "flex",
+      "transform": "none",
+      "classes": "w-full py-3 px-4 bg-primary-strong text-white font-medium rounded-xl shadow-lg shadow-primary/20 hover:bg-primary-dark hover:shadow-xl hover:shadow-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-strong focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-primary-strong disabled:hover:shadow-lg flex items-center justify-center gap-2"
+    },
+    "hover": {
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderColor": "rgb(229, 231, 235)",
+      "opacity": "1",
+      "visibility": "visible",
+      "display": "flex",
+      "transform": "matrix(1.01967, 0, 0, 1.01967, 0, 0)"
+    }
+  },
+  {
+    "page": "/admin/settings",
+    "colorScheme": "dark",
+    "reducedMotion": "no-preference",
+    "description": "Save changes button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/hero",
+    "colorScheme": "dark",
+    "reducedMotion": "no-preference",
+    "description": "Hero Save button",
+    "exists": false,
+    "error": "Button not found"
+  },
+  {
+    "page": "/admin/mockups",
+    "colorScheme": "dark",
+    "reducedMotion": "no-preference",
+    "description": "Add Mockup button",
+    "exists": false,
+    "error": "Button not found"
+  }
+]

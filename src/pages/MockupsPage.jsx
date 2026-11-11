@@ -2,7 +2,10 @@ import React, { useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useMockups, useFAQs } from '@/hooks/useContent';
-import PageHero from '@/components/ui/PageHero';
+import { useTranslation } from '@/i18n/useTranslation';
+import { SEO, useSEO } from '@/components/SEO';
+import MockupsHero from '@/components/mockups/MockupsHeroPremium';
+import StickyMobileCTA from '@/components/mockups/StickyMobileCTA';
 import CategoryFilterWithIcons from '@/components/ui/CategoryFilterWithIcons';
 import SearchInput from '@/components/ui/SearchInput';
 import MockupCard from '@/components/ui/MockupCard';
@@ -21,6 +24,9 @@ import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 
 const MockupsPage = () => {
+  const { t, language } = useTranslation();
+  const { getMetadata } = useSEO();
+  const seoData = getMetadata('mockups');
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMockup, setSelectedMockup] = useState(null);
@@ -70,8 +76,18 @@ const MockupsPage = () => {
   }, []);
 
   const handleViewMockup = (mockup) => {
-    setSelectedMockup(mockup);
-    setIsModalOpen(true);
+    // If mockup has a live_url, open it directly instead of showing modal
+    if (mockup.live_url) {
+      if (mockup.open_in_new_tab) {
+        window.open(mockup.live_url, '_blank', 'noopener,noreferrer');
+      } else {
+        window.location.href = mockup.live_url;
+      }
+    } else {
+      // No live_url: show detail modal as before
+      setSelectedMockup(mockup);
+      setIsModalOpen(true);
+    }
   };
 
   const handleRequestDesign = (mockup) => {
@@ -91,7 +107,7 @@ const MockupsPage = () => {
       <div className="min-h-screen flex items-center justify-center pt-16">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading mockups...</p>
+          <p className="text-muted-foreground">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -103,62 +119,24 @@ const MockupsPage = () => {
       animate={{ opacity: 1 }} 
       exit={{ opacity: 0 }}
     >
+      <SEO 
+        title={seoData.title}
+        description={seoData.description}
+        type="website"
+      />
       <Helmet>
-        <title>Website Mockups - Ready-Made Designs | Sentivra</title>
+        <title>{seoData.title}</title>
         <meta 
           name="description" 
-          content="Explore our collection of ready-made website mockups. Choose a design you like and we'll customize it for your business needs." 
+          content={seoData.description}
         />
       </Helmet>
 
-      {/* Hero Section with Handwriting Annotation */}
-      <div className="relative">
-        <PageHero
-          breadcrumbs={[
-            { label: 'Home', href: '/' },
-            { label: 'Mockups' }
-          ]}
-          label="WEBSITE MOCKUPS"
-          title="Ready-Made"
-          titleAccent="Website Mockups"
-          description="Explore ready-made website designs for different industries. Choose a design you like and contact us to get it customized for your business."
-          primaryButton={{
-            label: 'Find Your Mockup',
-            href: '#mockups-section'
-          }}
-          secondaryButton={{
-            label: 'Contact Us',
-            href: '/#contact'
-          }}
-          backgroundImage="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&h=800&fit=crop"
-        />
-
-        {/* Handwriting Annotation - Desktop Only */}
-        <div className="hidden xl:block absolute top-40 right-32 text-2xl text-primary rotate-[-5deg] pointer-events-none z-20" style={{ fontFamily: 'Caveat, cursive' }}>
-          <div className="relative">
-            <span className="font-bold">Modern Designs</span>
-            <br />
-            <span className="font-bold">For Your Business</span>
-            <svg className="absolute -bottom-2 -right-8 w-20 h-20" viewBox="0 0 100 100">
-              <path
-                d="M 10 50 Q 30 20, 50 40 T 90 30"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-              />
-              <path
-                d="M 85 25 L 90 30 L 85 35"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
+      {/* NEW PREMIUM HERO */}
+      <MockupsHero />
+      
+      {/* Sticky Mobile CTA (shows after scrolling) */}
+      <StickyMobileCTA />
 
       {/* Category Filter Section */}
       <Section spacing="md" className="bg-frost-soft border-b border-frost">
@@ -172,20 +150,20 @@ const MockupsPage = () => {
       </Section>
 
       {/* Mockups Grid Section */}
-      <Section id="mockups-section" spacing="xl" className="bg-white">
+      <Section id="mockups-section" spacing="xl" className="bg-color-background">
         <Container>
           {/* Section Header with Search */}
           <div className="mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end mb-8">
               <div>
                 <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-3">
-                  OUR MOCKUPS
+                  {t('mockups.section.label')}
                 </span>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-deep mb-4">
-                  Explore Our Website Designs
+                  {t('mockups.section.title')}
                 </h2>
                 <p className="text-lg text-text-muted">
-                  Browse our collection of ready-made designs. Click on any project to view more details.
+                  {t('mockups.section.description')}
                 </p>
               </div>
               <div className="lg:flex lg:justify-end">
@@ -201,8 +179,8 @@ const MockupsPage = () => {
             {searchQuery && (
               <div className="mb-6" role="status" aria-live="polite">
                 <p className="text-text-muted">
-                  Found <span className="font-bold text-primary">{filteredMockups.length}</span> mockup{filteredMockups.length !== 1 ? 's' : ''} 
-                  {searchQuery && ` matching "${searchQuery}"`}
+                  {t('mockups.results.found')} <span className="font-bold text-primary">{filteredMockups.length}</span> {filteredMockups.length !== 1 ? t('mockups.results.mockupsPlural') : t('mockups.results.mockupsSingular')}
+                  {searchQuery && ` ${t('mockups.results.matching')} "${searchQuery}"`}
                 </p>
               </div>
             )}
@@ -250,10 +228,10 @@ const MockupsPage = () => {
                   <Button
                     onClick={handleViewMore}
                     size="lg"
-                    className="bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-lg group"
+                    className={`bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-lg group ${language === 'ar' ? 'flex-row-reverse' : ''}`}
                   >
-                    View More Mockups
-                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    {t('mockups.actions.viewMore')}
+                    <ArrowRight className={`h-5 w-5 ${language === 'ar' ? 'mr-2 group-hover:-translate-x-1 rotate-180' : 'ml-2 group-hover:translate-x-1'} transition-transform`} />
                   </Button>
                 </motion.div>
               )}
@@ -271,9 +249,9 @@ const MockupsPage = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-primary-deep mb-3">No mockups found</h3>
+                <h3 className="text-2xl font-bold text-primary-deep mb-3">{t('mockups.empty.title')}</h3>
                 <p className="text-text-muted mb-6">
-                  We couldn't find any mockups matching your search. Try adjusting your filters or search terms.
+                  {t('mockups.empty.description')}
                 </p>
                 <Button
                   onClick={() => {
@@ -283,7 +261,7 @@ const MockupsPage = () => {
                   variant="outline"
                   className="border-2 border-primary text-primary hover:bg-primary hover:text-white"
                 >
-                  Clear Filters
+                  {t('mockups.empty.resetButton')}
                 </Button>
               </div>
             </motion.div>

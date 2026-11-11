@@ -2,8 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '../../i18n/useTranslation';
 
 const ServiceCardWithImage = ({ service, delay = 0, variant = 'desktop' }) => {
+  const { t, language } = useTranslation();
+  
   if (variant === 'mobile') {
     // Mobile: horizontal card with small image on left
     return (
@@ -12,7 +15,7 @@ const ServiceCardWithImage = ({ service, delay = 0, variant = 'desktop' }) => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay }}
-        className="bg-white rounded-xl shadow-card hover:shadow-card-hover transition-all duration-300 border border-frost overflow-hidden"
+        className="bg-color-background rounded-xl shadow-card hover:shadow-card-hover transition-all duration-300 border border-frost overflow-hidden"
       >
         <div className="flex gap-4 p-4">
           <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-frost-soft">
@@ -34,10 +37,10 @@ const ServiceCardWithImage = ({ service, delay = 0, variant = 'desktop' }) => {
             </p>
             <Link 
               to={`/services/${service.slug}`}
-              className="inline-flex items-center gap-1 text-primary text-sm font-medium group"
+              className={`inline-flex items-center gap-1 text-primary text-sm font-medium group ${language === 'ar' ? 'flex-row-reverse' : ''}`}
             >
-              Learn More
-              <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+              {t('services.card.learnMore')}
+              <ArrowRight className={`h-3 w-3 ${language === 'ar' ? 'rotate-180 group-hover:-translate-x-1' : 'group-hover:translate-x-1'} transition-transform`} />
             </Link>
           </div>
         </div>
@@ -52,7 +55,7 @@ const ServiceCardWithImage = ({ service, delay = 0, variant = 'desktop' }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      className="group bg-white rounded-2xl shadow-card hover:shadow-dropdown transition-all duration-300 border border-frost overflow-hidden"
+      className="group bg-color-background rounded-2xl shadow-card hover:shadow-dropdown transition-all duration-300 border border-frost overflow-hidden"
     >
       <div className="relative overflow-hidden aspect-[4/3] bg-frost-soft">
         <img
@@ -73,10 +76,10 @@ const ServiceCardWithImage = ({ service, delay = 0, variant = 'desktop' }) => {
         </p>
         <Link 
           to={`/services/${service.slug}`}
-          className="inline-flex items-center gap-2 text-primary font-medium group/link"
+          className={`inline-flex items-center gap-2 text-primary font-medium group/link ${language === 'ar' ? 'flex-row-reverse' : ''}`}
         >
-          Learn More
-          <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform" />
+          {t('services.card.learnMore')}
+          <ArrowRight className={`h-4 w-4 ${language === 'ar' ? 'rotate-180 group-hover/link:-translate-x-1' : 'group-hover/link:translate-x-1'} transition-transform`} />
         </Link>
       </div>
     </motion.div>

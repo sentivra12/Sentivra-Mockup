@@ -1,63 +1,287 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Primary fonts with display swap for better performance */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 
 /* Frosted Aura Color Palette - Unified with shadcn tokens */
 @layer base {
   :root {
     /* Frosted Aura Primary Colors */
-    --primary: #5C7E8F;
-    --primary-strong: #476574;
-    --primary-deep: #1F3440;
-    --primary-foreground: #FFFFFF;
+    --color-primary: #5C7E8F;
+    --color-primary-strong: #476574;
+    --color-primary-deep: #1F3440;
+    --color-primary-foreground: #FFFFFF;
     
     /* Frost System */
-    --frost: #D4DDE2;
-    --frost-soft: #EEF2F4;
+    --color-frost: #D4DDE2;
+    --color-frost-soft: #EEF2F4;
     
-    /* Text Colors */
-    --text-muted: #5E6A71;
-    --muted-color: #A2A2A2;
+    /* Hero-specific tokens (cinematic dark hero in both themes) */
+    --hero-deep: #0B171E;
+    --hero-grade: #0F1E26;
+    --hero-frost: #D4DDE2;
+    --hero-headline: #F4F8FA;
+    --hero-accent: #6FD3D8;
+    --hero-accent-light: #8FC3D1;
+    --hero-pill-bg: rgba(15, 30, 38, 0.6);
+    --hero-pill-border: rgba(212, 221, 226, 0.12);
+    --hero-chip-bg: rgba(15, 30, 38, 0.55);
+    --hero-chip-border: rgba(255, 255, 255, 0.12);
+    --hero-vignette: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, rgba(11, 23, 30, 0.6) 100%);
     
-    /* Shadcn Semantic Tokens - Mapped to Frosted Aura */
-    --background: #FFFFFF;
-    --foreground: #1F3440;
+    /* Impact section tokens (dark band in both themes) */
+    --impact-start: #1F3440;
+    --impact-mid: #2A4756;
+    --impact-end: #1F3440;
+    --impact-accent: #6FD3D8;
+    --impact-muted: rgba(255, 255, 255, 0.7);
+    --impact-divider: rgba(255, 255, 255, 0.1);
+    --impact-icon-glow: rgba(111, 211, 216, 0.4);
     
-    --card: #FFFFFF;
-    --card-foreground: #1F3440;
+    /* Marquee band tokens (deep slate band in both themes) */
+    --marquee-deep: #1F3440;
+    --marquee-text: rgba(255, 255, 255, 0.9);
+    --marquee-accent: #8FB3C4;
+    --marquee-glow: rgba(143, 179, 196, 0.3);
+    --marquee-chip: rgba(143, 179, 196, 0.1);
+    --marquee-chip-border: rgba(143, 179, 196, 0.2);
+    --marquee-chip-hover: rgba(143, 179, 196, 0.15);
     
-    --popover: #FFFFFF;
-    --popover-foreground: #1F3440;
+    /* Testimonials tokens (dark surface in both themes) */
+    --testimonial-surface: #0F1E26;
+    --testimonial-card: #1A2930;
+    --testimonial-border: rgba(143, 179, 196, 0.15);
+    --testimonial-text: #E6EDF0;
+    --testimonial-name: #FFFFFF;
+    --testimonial-meta: rgba(255, 255, 255, 0.6);
+    --testimonial-accent: #8FB3C4;
+    --testimonial-glow: rgba(143, 179, 196, 0.1);
+    --testimonial-heading: #FFFFFF;
+    --testimonial-subtitle: rgba(255, 255, 255, 0.7);
+    --testimonial-avatar: rgba(143, 179, 196, 0.1);
+    --testimonial-ring: rgba(143, 179, 196, 0.3);
+    --testimonial-nav-bg: rgba(26, 41, 48, 0.8);
+    --testimonial-nav-border: rgba(143, 179, 196, 0.2);
+    --testimonial-nav-hover: rgba(143, 179, 196, 0.2);
+    --testimonial-nav-icon: #8FB3C4;
+    --testimonial-dot: rgba(255, 255, 255, 0.3);
+    --testimonial-dot-hover: rgba(255, 255, 255, 0.5);
+    --testimonial-progress-bg: rgba(143, 179, 196, 0.1);
     
-    --secondary: #EEF2F4;
-    --secondary-foreground: #1F3440;
+    /* CTA tokens (deep slate surface in both themes) */
+    --cta-deep: #1F3440;
+    --cta-hairline: rgba(143, 179, 196, 0.3);
+    --cta-aurora-1: rgba(111, 211, 216, 0.15);
+    --cta-aurora-2: rgba(143, 179, 196, 0.15);
+    --cta-accent: #6FD3D8;
+    --cta-heading: #FFFFFF;
+    --cta-subtitle: rgba(255, 255, 255, 0.8);
+    --cta-card-bg: rgba(26, 41, 48, 0.6);
+    --cta-card-border: rgba(143, 179, 196, 0.2);
+    --cta-card-heading: #FFFFFF;
+    --cta-channel-bg: rgba(143, 179, 196, 0.05);
+    --cta-channel-border: rgba(143, 179, 196, 0.15);
+    --cta-channel-border-hover: rgba(143, 179, 196, 0.3);
+    --cta-label: rgba(255, 255, 255, 0.6);
+    --cta-value: #FFFFFF;
+    --cta-icon-bg: rgba(143, 179, 196, 0.1);
+    --cta-icon-hover: rgba(143, 179, 196, 0.15);
+    --cta-icon: #8FB3C4;
+    --cta-copy: rgba(255, 255, 255, 0.5);
+    --cta-copy-hover: rgba(143, 179, 196, 0.1);
+    --cta-glass-bg: rgba(143, 179, 196, 0.05);
+    --cta-glass-border: rgba(143, 179, 196, 0.3);
+    --cta-glass-hover: rgba(143, 179, 196, 0.1);
+    --cta-glass-text: #FFFFFF;
     
-    --muted: #EEF2F4;
-    --muted-foreground: #5E6A71;
+    /* ============================================= */
+    /* INVERSE SURFACE SYSTEM - ALWAYS DARK         */
+    /* For sections that stay dark in both themes   */
+    /* Used by: Footer, Why Choose Us, Team bands   */
+    /* ============================================= */
     
-    --accent: #EEF2F4;
-    --accent-foreground: #1F3440;
+    /* Light theme: Deep slate with gradient to slightly lighter at top */
+    --inverse-bg: #12232C;
+    --inverse-bg-gradient-start: #1A3340;
+    --inverse-bg-gradient-end: #12232C;
+    --inverse-bg-raised: #1A3340;
     
-    --destructive: #EF4444;
-    --destructive-foreground: #FFFFFF;
+    /* Typography - always light on dark */
+    --inverse-fg: #FFFFFF;
+    --inverse-fg-muted: #D4DDE2;
+    --inverse-fg-subtle: #9DB0BA;
     
-    --border: #D4DDE2;
-    --input: #D4DDE2;
-    --ring: #5C7E8F;
+    /* Borders and dividers */
+    --inverse-border: rgba(255, 255, 255, 0.12);
+    --inverse-border-subtle: rgba(255, 255, 255, 0.06);
+    --inverse-hairline: rgba(143, 179, 196, 0.3);
     
+    /* Interactive elements */
+    --inverse-accent: #8FC3D1;
+    --inverse-accent-hover: #A5D4DF;
+    --inverse-accent-strong: #6FD3D8;
+    
+    /* Glass effects in inverse surface */
+    --inverse-glass-bg: rgba(143, 179, 196, 0.08);
+    --inverse-glass-border: rgba(255, 255, 255, 0.15);
+    --inverse-glass-hover: rgba(143, 179, 196, 0.12);
+    
+    /* Button variants in inverse surface */
+    --inverse-button-primary-bg: #FFFFFF;
+    --inverse-button-primary-fg: #1F3440;
+    --inverse-button-primary-hover: rgba(255, 255, 255, 0.9);
+    --inverse-button-secondary-bg: rgba(143, 179, 196, 0.12);
+    --inverse-button-secondary-border: rgba(143, 179, 196, 0.4);
+    --inverse-button-secondary-hover: rgba(143, 179, 196, 0.2);
+    
+    /* Focus rings */
+    --inverse-ring: rgba(143, 195, 209, 0.5);
+    
+    /* Input fields in inverse surface */
+    --inverse-input-bg: rgba(255, 255, 255, 0.05);
+    --inverse-input-border: rgba(255, 255, 255, 0.2);
+    --inverse-input-focus: rgba(143, 195, 209, 0.4);
+    
+    /* Grid and pattern overlays */
+    --inverse-grid: rgba(143, 179, 196, 0.03);
+    --inverse-glow: rgba(143, 179, 196, 0.15);
+    
+    /* Semantic Light Theme */
+    --color-background: #FFFFFF;
+    --color-foreground: #1F3440;
+    --color-surface: #FFFFFF;
+    --color-surface-raised: #F9FAFB;
+    
+    --color-border: rgba(212, 221, 226, 0.6);
+    --color-border-strong: #D4DDE2;
+    
+    --color-text: #1F3440;
+    --color-text-muted: #5E6A71;
+    --color-text-subtle: #9DB0BA;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(92, 126, 143, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(92, 126, 143, 0.1), 0 2px 4px -1px rgba(92, 126, 143, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(92, 126, 143, 0.1), 0 4px 6px -2px rgba(92, 126, 143, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(92, 126, 143, 0.1), 0 10px 10px -5px rgba(92, 126, 143, 0.04);
+    
+    /* Glass effect */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    
+    /* Overlay */
+    --overlay-bg: rgba(31, 52, 64, 0.4);
+    
+    /* Shadcn Semantic Tokens */
+    --background: 0 0% 100%;
+    --foreground: 200 35% 19%;
+    --card: 0 0% 100%;
+    --card-foreground: 200 35% 19%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 35% 19%;
+    --primary: 199 23% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 200 26% 94%;
+    --secondary-foreground: 200 35% 19%;
+    --muted: 200 26% 94%;
+    --muted-foreground: 199 10% 39%;
+    --accent: 200 26% 94%;
+    --accent-foreground: 200 35% 19%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 83%;
+    --input: 0 0% 83%;
+    --ring: 199 23% 46%;
     --radius: 0.5rem;
   }
 
-  /* Remove default focus outline globally and use primary ring */
-  *:focus {
-    outline: none;
+  /* Dark mode color overrides */
+  .dark {
+    /* Frosted Aura Dark Mode - Deep blue-slate palette */
+    --color-primary: #8FB3C4;
+    --color-primary-strong: #A5C4D3;
+    --color-primary-deep: #B8D4E0;
+    --color-primary-foreground: #0B1419;
+    
+    /* Dark Frost */
+    --color-frost: rgba(255, 255, 255, 0.1);
+    --color-frost-soft: rgba(255, 255, 255, 0.05);
+    
+    /* Marquee, Testimonials, CTA tokens remain the same in dark mode (already dark) */
+    /* These sections are designed to be dark in both themes for consistency */
+    
+    /* ============================================= */
+    /* INVERSE SURFACE - DARK MODE ADJUSTMENTS      */
+    /* Slightly darker but still clearly dark       */
+    /* ============================================= */
+    --inverse-bg: #070E12;
+    --inverse-bg-gradient-start: #0F1A20;
+    --inverse-bg-gradient-end: #070E12;
+    --inverse-bg-raised: #0F1A20;
+    
+    /* Typography stays the same (already light) */
+    /* Borders slightly more subtle in dark mode */
+    --inverse-border: rgba(255, 255, 255, 0.08);
+    --inverse-border-subtle: rgba(255, 255, 255, 0.04);
+    --inverse-hairline: rgba(143, 179, 196, 0.2);
+    
+    /* Top hairline glow more visible in dark mode */
+    --inverse-glow: rgba(143, 179, 196, 0.2);
+    
+    /* Semantic Dark Theme */
+    --color-background: #0B1419;
+    --color-foreground: #E6EDF0;
+    --color-surface: #101C23;
+    --color-surface-raised: #1A2930;
+    
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-border-strong: rgba(255, 255, 255, 0.14);
+    
+    --color-text: #E6EDF0;
+    --color-text-muted: #9DB0BA;
+    --color-text-subtle: #6B7F8C;
+    
+    /* Dark Shadows become glows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+    
+    /* Dark Glass effect */
+    --glass-bg: rgba(16, 28, 35, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
+    /* Dark Overlay */
+    --overlay-bg: rgba(11, 20, 25, 0.6);
+    
+    /* Shadcn Dark Mode */
+    --background: 205 30% 8%;
+    --foreground: 200 10% 92%;
+    --card: 205 25% 10%;
+    --card-foreground: 200 10% 92%;
+    --popover: 205 25% 10%;
+    --popover-foreground: 200 10% 92%;
+    --primary: 199 23% 65%;
+    --primary-foreground: 205 30% 8%;
+    --secondary: 205 20% 15%;
+    --secondary-foreground: 200 10% 92%;
+    --muted: 205 20% 15%;
+    --muted-foreground: 199 10% 65%;
+    --accent: 205 20% 15%;
+    --accent-foreground: 200 10% 92%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 205 15% 20%;
+    --input: 205 15% 20%;
+    --ring: 199 23% 65%;
   }
 
+  /* Use focus-visible only (removes the stuck black outline bug) */
   *:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
     border-radius: 2px;
   }
@@ -68,13 +292,123 @@
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+  
+  /* ============================================= */
+  /* INVERSE SURFACE SEMANTIC REMAPPING           */
+  /* Remap semantic tokens inside inverse surface */
+  /* so nested components use inverse colors      */
+  /* ============================================= */
+  /* 
+   * IMPORTANT DEVELOPMENT RULE:
+   * 
+   * Dark sections (footer, CTA bands, team sections, etc.) 
+   * should ALWAYS use the InverseSurface component wrapper:
+   * 
+   *   <InverseSurface>
+   *     <YourContent />
+   *   </InverseSurface>
+   * 
+   * DO NOT use bg-primary-deep or other semantic tokens 
+   * for always-dark sections. They flip with theme changes!
+   * 
+   * See DEVELOPMENT.md for complete guidelines.
+   */
+  .inverse-surface {
+    /* Remap text colors for nested elements */
+    --color-foreground: var(--inverse-fg);
+    --color-text: var(--inverse-fg);
+    --color-text-muted: var(--inverse-fg-muted);
+    --color-text-subtle: var(--inverse-fg-subtle);
+    
+    /* Remap borders */
+    --color-border: var(--inverse-border);
+    --color-border-strong: var(--inverse-border);
+    
+    /* Remap surfaces for nested cards/elements */
+    --color-surface: var(--inverse-bg-raised);
+    --color-surface-raised: var(--inverse-bg-raised);
+    
+    /* Remap primary color to inverse accent */
+    --color-primary: var(--inverse-accent);
+    --color-primary-strong: var(--inverse-accent-hover);
+    
+    /* Links and interactive elements */
+    color: var(--inverse-fg);
+  }
+  
+  /* Links inside inverse surface */
+  .inverse-surface a {
+    color: var(--inverse-fg-muted);
+    transition: color 0.2s ease;
+  }
+  
+  .inverse-surface a:hover {
+    color: var(--inverse-accent);
+  }
+  
+  /* Headings inside inverse surface */
+  .inverse-surface h1,
+  .inverse-surface h2,
+  .inverse-surface h3,
+  .inverse-surface h4,
+  .inverse-surface h5,
+  .inverse-surface h6 {
+    color: var(--inverse-fg);
+  }
+  
+  /* Buttons inside inverse surface - primary style */
+  .inverse-surface button.btn-inverse-primary,
+  .inverse-surface .btn-inverse-primary {
+    background-color: var(--inverse-button-primary-bg);
+    color: var(--inverse-button-primary-fg);
+    border: none;
+  }
+  
+  .inverse-surface button.btn-inverse-primary:hover,
+  .inverse-surface .btn-inverse-primary:hover {
+    background-color: var(--inverse-button-primary-hover);
+  }
+  
+  /* Buttons inside inverse surface - secondary/glass style */
+  .inverse-surface button.btn-inverse-secondary,
+  .inverse-surface .btn-inverse-secondary {
+    background-color: var(--inverse-button-secondary-bg);
+    border: 1px solid var(--inverse-button-secondary-border);
+    color: var(--inverse-fg);
+  }
+  
+  .inverse-surface button.btn-inverse-secondary:hover,
+  .inverse-surface .btn-inverse-secondary:hover {
+    background-color: var(--inverse-button-secondary-hover);
+  }
+  
+  /* Focus rings inside inverse surface */
+  .inverse-surface *:focus-visible {
+    outline-color: var(--inverse-accent);
+    box-shadow: 0 0 0 3px var(--inverse-ring);
+  }
+  
+  /* Dividers/borders inside inverse surface */
+  .inverse-surface hr,
+  .inverse-surface .border-t,
+  .inverse-surface .border-b,
+  .inverse-surface .border-l,
+  .inverse-surface .border-r,
+  .inverse-surface .border {
+    border-color: var(--inverse-border);
   }
 }
 
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 /* Respect user's motion preferences */
@@ -87,13 +421,30 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
-  color: #111827;
-  background-color: #f9fafb;
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Arabic font support */
+html[lang="ar"] body {
+  font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
+  line-height: 1.8; /* Larger line-height for Arabic */
+  letter-spacing: normal; /* Remove letter-spacing for Arabic */
+}
+
+/* Remove letter-spacing from Arabic text */
+html[lang="ar"] * {
+  letter-spacing: normal;
 }
 
 /* Custom scrollbar */
@@ -102,16 +453,22 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--color-surface-raised);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary);
+  background: var(--color-primary);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-strong);
+  background: var(--color-primary-strong);
+}
+
+/* Custom selection */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
 }
 
 /* Horizontal scrollbar for filter tabs on mobile */
@@ -179,6 +536,16 @@ body {
   display: flex;
 }
 
+/* Shimmer Animation for Image Loading */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 /* Hide scrollbar for BrandBand carousel */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -187,4 +554,49 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* SVG logos now handle dark mode internally - no filter needed */
+
+/* Alternative logo solution - add backdrop for contrast */
+.dark .logo-with-backdrop {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+/* Hero grain texture */
+.hero-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+
+/* Custom utilities for hero animations */
+@layer utilities {
+  .bg-gradient-radial {
+    background-image: radial-gradient(var(--tw-gradient-stops));
+  }
+  
+  .hero-grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

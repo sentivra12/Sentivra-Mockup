@@ -1,0 +1,197 @@
+{
+  "timestamp": 1794226526562,
+  "h1": {
+    "name": "h1",
+    "element": "text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-6 max-w-[600px] text-slate-900 dark:text-white",
+    "computed": {
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationFillMode": "none",
+      "animationPlayState": "running",
+      "animationDelay": "0s",
+      "animationDuration": "0s",
+      "transition": "all",
+      "willChange": "auto",
+      "visibility": "visible",
+      "display": "block"
+    },
+    "parent": {
+      "className": "",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationPlayState": "running"
+    },
+    "grandparent": {
+      "className": "grid lg:grid-cols-2 gap-12 lg:gap-16 items-center ",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none"
+    },
+    "boundingBox": {
+      "x": 108,
+      "y": 137.60000610351562,
+      "width": 576,
+      "height": 317
+    }
+  },
+  "paragraph": {
+    "name": "paragraph",
+    "element": "text-lg sm:text-xl leading-relaxed mb-8 max-w-2xl",
+    "computed": {
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationFillMode": "none",
+      "animationPlayState": "running",
+      "animationDelay": "0s",
+      "animationDuration": "0s",
+      "transition": "all",
+      "willChange": "auto",
+      "visibility": "visible",
+      "display": "block"
+    },
+    "parent": {
+      "className": "",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationPlayState": "running"
+    },
+    "grandparent": {
+      "className": "grid lg:grid-cols-2 gap-12 lg:gap-16 items-center ",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none"
+    },
+    "boundingBox": {
+      "x": 108,
+      "y": 478.3999938964844,
+      "width": 576,
+      "height": 56
+    }
+  },
+  "primaryButton": {
+    "name": "primaryButton",
+    "element": "",
+    "computed": {
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationFillMode": "none",
+      "animationPlayState": "running",
+      "animationDelay": "0s",
+      "animationDuration": "0s",
+      "transition": "all",
+      "willChange": "auto",
+      "visibility": "visible",
+      "display": "block"
+    },
+    "parent": {
+      "className": "hidden md:flex items-center  space-x-6",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationPlayState": "running"
+    },
+    "grandparent": {
+      "className": "flex justify-between items-center h-20 md:h-16",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none"
+    },
+    "boundingBox": {
+      "x": 1180.8499755859375,
+      "y": 11.199999809265137,
+      "width": 143,
+      "height": 42
+    }
+  },
+  "secondaryButton": {
+    "name": "secondaryButton",
+    "element": "px-8 h-12 rounded-xl font-semibold transition-all border hover:shadow-lg",
+    "computed": {
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationFillMode": "none",
+      "animationPlayState": "running",
+      "animationDelay": "0s",
+      "animationDuration": "0s",
+      "transition": "0.15s cubic-bezier(0.4, 0, 0.2, 1)",
+      "willChange": "auto",
+      "visibility": "visible",
+      "display": "block"
+    },
+    "parent": {
+      "className": "flex flex-wrap gap-4 mb-8",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationPlayState": "running"
+    },
+    "grandparent": {
+      "className": "",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none"
+    },
+    "boundingBox": {
+      "x": 350.5625,
+      "y": 566.4000244140625,
+      "width": 195,
+      "height": 48
+    }
+  },
+  "eyebrow": {
+    "name": "eyebrow",
+    "element": "bg-white dark:bg-slate-950 absolute inset-0",
+    "computed": {
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationFillMode": "none",
+      "animationPlayState": "running",
+      "animationDelay": "0s",
+      "animationDuration": "0s",
+      "transition": "all",
+      "willChange": "auto",
+      "visibility": "visible",
+      "display": "block"
+    },
+    "parent": {
+      "className": "absolute inset-0",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none",
+      "animationName": "none",
+      "animationPlayState": "running"
+    },
+    "grandparent": {
+      "className": "relative min-h-[88vh] flex items-center overflow-hidden",
+      "opacity": "1",
+      "filter": "none",
+      "transform": "none"
+    },
+    "boundingBox": {
+      "x": 0,
+      "y": 0,
+      "width": 1432,
+      "height": 812
+    }
+  },
+  "factsRow": {
+    "name": "factsRow",
+    "error": "Element not found"
+  }
+}

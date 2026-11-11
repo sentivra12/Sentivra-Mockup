@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-11-09T11:37:40.865Z",
+  "url": "http://localhost:4173/services",
+  "findings": [
+    {
+      "check": "React Root",
+      "result": "FOUND"
+    },
+    {
+      "check": "Loading Spinner",
+      "result": "STUCK IN LOADING"
+    },
+    {
+      "check": "Error Messages",
+      "result": "NONE"
+    },
+    {
+      "check": "Hero Heading",
+      "color": "rgb(31, 52, 64)",
+      "opacity": "1",
+      "filter": "none",
+      "fontWeight": "800",
+      "fontSize": "72px",
+      "textContent": "We Build Software Solutions That Scale"
+    },
+    {
+      "check": "Constellation",
+      "result": "NOT FOUND"
+    },
+    {
+      "check": "Services Grid",
+      "cardsCount": 0,
+      "titles": [],
+      "sectionHTML": "<div class=\"absolute inset-0\"><span class=\"bg-white dark:bg-slate-950 absolute inset-0\"></span></div><div class=\"absolute inset-0 pointer-events-none overflow-hidden\" aria-hidden=\"true\"><div class=\"absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-400/5 rounded-full blur-3xl animate-pulse\" style=\"animation-duration: 8s;\"></div><div class=\"absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-400/5 rounded-full blur-3xl animate-pulse\" style=\"animation-duration: 10s; animation-delay: 1s;\"></div><div class=\"absolute inset-0 opacity-[0.02] dark:opacity-[0.04]\" style=\"background-image: linear-gradient(to right, currentcolor 1px, transparent 1px), linear-gradient(currentcolor 1px, transparent 1px); background-size: 48px 48px; transform: perspective(1000px) rotateX(60d"
+    },
+    {
+      "check": "API Calls",
+      "calls": [
+        {
+          "url": "http://localhost:4173/assets/supabase-vendor-59e9be4d.js",
+          "status": 200,
+          "duration": 16.899999976158142
+        },
+        {
+          "url": "https://sgpmklrdglrgbvbxshrf.supabase.co/rest/v1/services?select=*&is_active=eq.true&order=display_order.asc",
+          "status": 200,
+          "duration": 622.7000000476837
+        },
+        {
+          "url": "https://sgpmklrdglrgbvbxshrf.supabase.co/rest/v1/site_settings?select=*&limit=1",
+          "status": 200,
+          "duration": 622.8999999761581
+        }
+      ]
+    },
+    {
+      "check": "Supabase",
+      "hasSupabase": false,
+      "hasAuth": false
+    }
+  ]
+}

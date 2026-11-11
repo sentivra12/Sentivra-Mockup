@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
@@ -7,32 +7,41 @@ import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 import { 
   useServices, 
-  useProjects, 
   useClientLogos, 
   useTrustBadges, 
   useProcessSteps, 
   useWhyChooseUs,
-  useHero 
+  useHero,
+  useTestimonials,
+  useStats
 } from '@/hooks/useContent';
 import SectionHeader from '@/components/ui/SectionHeader';
-import ServiceCard from '@/components/ui/ServiceCard';
-import ProjectCard from '@/components/ui/ProjectCard';
-import FeatureItem from '@/components/ui/FeatureItem';
-import BrandBand from '@/components/ui/BrandBand';
+import PremiumMarqueeBand from '@/components/home/PremiumMarqueeBand';
+import PremiumHero from '@/components/home/PremiumHero';
+import PremiumServices from '@/components/home/PremiumServices';
+import PremiumStats from '@/components/home/PremiumStats';
+import PremiumTestimonials from '@/components/home/PremiumTestimonials';
+import PremiumCTA from '@/components/home/PremiumCTA';
+import PageTransition from '@/components/PageTransition';
+import TrustedBySection from '@/components/sections/TrustedBySection';
+import OurImpactSection from '@/components/sections/OurImpactSection';
+import { LoadingState, ErrorState } from '@/components/ui/EmptyState';
 import * as LucideIcons from 'lucide-react';
+import { useTranslation } from '@/i18n/useTranslation';
+import { SEO, useSEO } from '@/components/SEO';
 import '../index.css';
 
 const HomePage = () => {
   const location = useLocation();
-  const [activeFilter, setActiveFilter] = useState('All');
-  const [showPlayButton, setShowPlayButton] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = React.useRef(null);
+  const { t, language } = useTranslation();
+  const { getMetadata } = useSEO();
+  const seoData = getMetadata('home');
 
-  // Fetch data from Supabase
-  const { data: hero, isLoading: heroLoading } = useHero();
-  const { data: services = [], isLoading: servicesLoading } = useServices();
-  const { data: allProjects = [], isLoading: projectsLoading } = useProjects();
+  // Fetch data from Supabase with timeout handling
+  const { data: hero, isLoading: heroLoading, error: heroError } = useHero();
+  const { data: services = [], isLoading: servicesLoading, error: servicesError } = useServices();
+  const { data: testimonials = [], isLoading: testimonialsLoading, error: testimonialsError } = useTestimonials();
+  const { data: stats = [], isLoading: statsLoading, error: statsError } = useStats();
   const { data: clientLogos = [], isLoading: logosLoading } = useClientLogos();
   const { data: trustBadges = [], isLoading: badgesLoading } = useTrustBadges();
   const { data: processSteps = [], isLoading: processLoading } = useProcessSteps();
@@ -42,49 +51,6 @@ const HomePage = () => {
   const getIcon = (iconName) => {
     const Icon = LucideIcons[iconName];
     return Icon || LucideIcons.Box;
-  };
-
-  // Handle video playback with ref to ensure muted attribute is set
-  useEffect(() => {
-    if (videoRef.current) {
-      const video = videoRef.current;
-      
-      // Explicitly set muted to ensure autoplay works
-      video.muted = true;
-      
-      console.log('[Hero Video] Attempting to play video...');
-      
-      // Attempt to play the video
-      const playPromise = video.play();
-      
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log('[Hero Video] Video playing successfully');
-            setIsPlaying(true);
-          })
-          .catch((error) => {
-            console.warn('[Hero Video] Autoplay failed:', error.message);
-            // Show play button if autoplay fails
-            setShowPlayButton(true);
-            setIsPlaying(false);
-          });
-      }
-    }
-  }, []);
-
-  const toggleVideoPlayback = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        videoRef.current.muted = true;
-        videoRef.current.play()
-          .then(() => setIsPlaying(true))
-          .catch((error) => console.warn('Play failed:', error));
-      }
-    }
   };
 
   useEffect(() => {
@@ -99,404 +65,56 @@ const HomePage = () => {
     }
   }, [location.hash]);
 
-  const filterCategories = ['All', 'Web Apps', 'Mobile', 'ERP', 'CRM', 'AI & Chatbots', 'Other'];
-  
-  const filteredProjects = activeFilter === 'All' 
-    ? allProjects 
-    : allProjects.filter(project => project.category === activeFilter);
+  // DON'T block the whole page - render shell and let sections handle their own loading
+  // Only check for critical errors that prevent any render
+  const hasCriticalError = heroError && servicesError;
 
-  // Show loading state
-  if (heroLoading || servicesLoading || projectsLoading) {
+  if (hasCriticalError) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
+      <ErrorState 
+        error={heroError || servicesError} 
+        message={t('common.errorLoading')}
+        onRetry={() => window.location.reload()}
+      />
     );
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <PageTransition>
+      <SEO 
+        title={seoData.title}
+        description={seoData.description}
+        type="website"
+      />
       <Helmet>
-        <title>Sentivra - From Ideas to Real Digital Products</title>
-        <meta name="description" content="Complete digital solutions for your business. We build web applications, mobile apps, ERP systems, CRM solutions, and more." />
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
       </Helmet>
 
-      {/* Hero Section with Video Background */}
-      <section id="home" className="relative min-h-[600px] md:min-h-[650px] flex items-center overflow-hidden">
-        {/* Video Background Layer */}
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster={hero?.video_poster_url || "/videos/hero-poster.jpg"}
-          aria-hidden="true"
-          tabIndex={-1}
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          onError={(e) => {
-            // Fallback to poster if video fails to load
-            console.warn('[Hero Video] Video failed to load, showing play button');
-            setShowPlayButton(true);
-          }}
-        >
-          {hero?.video_webm_url && <source src={hero.video_webm_url} type="video/webm" />}
-          {hero?.video_url && <source src={hero.video_url} type="video/mp4" />}
-          {!hero?.video_url && !hero?.video_webm_url && (
-            <>
-              <source src="/videos/hero.webm" type="video/webm" />
-              <source src="/videos/hero.mp4" type="video/mp4" />
-            </>
-          )}
-        </video>
+      {/* Premium Hero Section */}
+      <PremiumHero hero={hero} trustBadges={trustBadges} />
 
-        {/* Primary Gradient Overlay - Left to Right (text side to video side, desktop only) */}
-        <div 
-          className="absolute inset-0 z-10 hidden md:block pointer-events-none"
-          style={{
-            background: 'linear-gradient(to right, rgba(238, 242, 244, 0.98) 0%, rgba(238, 242, 244, 0.96) 35%, rgba(238, 242, 244, 0.75) 50%, rgba(238, 242, 244, 0.35) 60%, transparent 70%)',
-          }}
-        />
+      {/* Client Logos Section - New Marquee Design */}
+      <TrustedBySection />
 
-        {/* Mobile Gradient Overlay - Top to Bottom (stronger for mobile readability) */}
-        <div 
-          className="absolute inset-0 z-10 md:hidden pointer-events-none"
-          style={{
-            background: 'linear-gradient(to bottom, rgba(238, 242, 244, 0.95) 0%, rgba(238, 242, 244, 0.92) 40%, rgba(238, 242, 244, 0.85) 70%, rgba(238, 242, 244, 0.7) 100%)',
-          }}
-        />
+      {/* Premium Services Section */}
+      <PremiumServices services={services} featured={true} />
 
-        {/* Subtle Tint Overlay on Video Side - Blends dark blue video with palette */}
-        <div 
-          className="hidden lg:block absolute inset-0 z-10 bg-primary-deep/25 pointer-events-none"
-          style={{
-            maskImage: 'linear-gradient(to right, transparent 0%, transparent 55%, black 70%, black 100%)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, transparent 55%, black 70%, black 100%)',
-          }}
-        />
+      {/* Our Impact Section - New Dark Band Design */}
+      <OurImpactSection />
 
-        {/* Bottom Fade to Next Section */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-24 z-20 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.8) 100%)',
-          }}
-        />
+      {/* Premium Marquee Band #1 */}
+      <PremiumMarqueeBand />
 
-        {/* Play/Pause Button - shown when reduced motion or autoplay fails */}
-        {showPlayButton && (
-          <button
-            onClick={toggleVideoPlayback}
-            className="absolute bottom-8 right-8 z-40 bg-primary-strong hover:bg-primary-deep text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            aria-label={isPlaying ? 'Pause video' : 'Play video'}
-          >
-            {isPlaying ? (
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="6" y="4" width="4" height="16" rx="1" />
-                <rect x="14" y="4" width="4" height="16" rx="1" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-          </button>
-        )}
+      {/* Premium Testimonials Section */}
+      <PremiumTestimonials testimonials={testimonials} />
 
-        {/* Content Layer */}
-        <div className="relative z-30 w-full pt-24 pb-16 md:pt-32 md:pb-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-2xl">
-              {/* Left Content */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="space-y-6"
-              >
-                <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-xs font-bold uppercase tracking-wider">
-                  Software Company
-                </span>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-deep leading-tight">
-                  {hero?.headline || 'From ideas to real digital products'}
-                </h1>
-                <p className="text-lg text-text-muted leading-relaxed">
-                  {hero?.subheadline || 'We transform your vision into powerful digital solutions.'}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Button size="lg" asChild>
-                    <a href={hero?.cta_primary_link || '/#contact'}>
-                      {hero?.cta_primary_text || 'Start Your Project'}
-                    </a>
-                  </Button>
-                  <Button size="lg" variant="outline" asChild>
-                    <a href={hero?.cta_secondary_link || '/#about'}>
-                      {hero?.cta_secondary_text || 'Learn More'}
-                    </a>
-                  </Button>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Premium Marquee Band #2 */}
+      <PremiumMarqueeBand />
 
-      {/* Trust Badges Section */}
-      <Section spacing="sm" background="white" className="border-b border-frost">
-        <Container>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {trustBadges.map((badge, index) => {
-              const BadgeIcon = getIcon(badge.icon);
-              return (
-                <motion.div
-                  key={badge.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex items-center gap-4"
-                >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <BadgeIcon className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-primary-deep">{badge.title}</h3>
-                    <p className="text-sm text-text-muted">{badge.description}</p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </Container>
-      </Section>
-
-      {/* Client Logos Section */}
-      <Section spacing="md" background="white" className="border-t border-frost border-b border-frost">
-        <Container>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-            {clientLogos.map((logo, index) => (
-              <motion.div
-                key={logo.id}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="w-24 h-24 rounded-lg bg-white shadow-card flex items-center justify-center border border-frost overflow-hidden"
-              >
-                {logo.logo_url ? (
-                  <img 
-                    loading="lazy"
-                    src={logo.logo_url} 
-                    alt={logo.client_name}
-                    className="w-full h-full object-contain p-2"
-                    width="96"
-                    height="96"
-                  />
-                ) : (
-                  <span className="text-muted font-bold text-xl">
-                    {logo.client_name.charAt(0)}
-                  </span>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      {/* Services Section */}
-      <section id="services" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader 
-            label="OUR SERVICES"
-            title="Our Services" 
-            subtitle="Complete Digital Solutions for Your Business"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => {
-              const ServiceIcon = getIcon(service.icon);
-              return (
-                <ServiceCard
-                  key={service.id}
-                  icon={ServiceIcon}
-                  title={service.title}
-                  description={service.short_description}
-                  delay={index * 0.1}
-                />
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Blue Brand Band #1 */}
-      <BrandBand />
-
-      {/* Process Section */}
-      <section id="process" className="py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header - Left Aligned */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="mb-16 text-left"
-          >
-            <span className="inline-block text-sm font-bold text-primary uppercase tracking-wider mb-4">
-              OUR PROCESS
-            </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-primary-deep mb-4">
-              Our Process
-            </h2>
-            <p className="text-xl text-text-muted max-w-3xl">
-              A complete journey to success
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-            {/* Left: Process Steps in a Column */}
-            <div className="space-y-8">
-              {processSteps.map((step, index) => {
-                const StepIcon = getIcon(step.icon);
-                return (
-                  <motion.div
-                    key={step.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: index * 0.2 }}
-                    className="bg-white p-8 rounded-xl shadow-card border border-frost"
-                  >
-                    <div className="flex items-start gap-6">
-                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <StepIcon className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-4xl font-bold text-primary">{step.step_number}</span>
-                          <h3 className="text-xl font-bold text-primary-deep">{step.title}</h3>
-                        </div>
-                        <p className="text-text-muted">{step.description}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-
-              {/* CTA Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: processSteps.length * 0.2 }}
-              >
-                <Button size="lg" asChild>
-                  <a href="/#contact">Start Your Project</a>
-                </Button>
-              </motion.div>
-            </div>
-
-            {/* Right: iMac Mockup Placeholder */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="hidden lg:block"
-            >
-              {/* PLACEHOLDER: iMac mockup */}
-              <div className="relative bg-frost rounded-2xl shadow-card-hover p-12 aspect-[16/10] flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <div className="text-8xl">🖥️</div>
-                  <div className="text-primary-deep font-bold text-lg">iMac Mockup</div>
-                  <div className="text-text-muted">[Placeholder - needs image]</div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Blue Brand Band #2 */}
-      <BrandBand />
-
-      {/* Projects Section */}
-      <section id="work" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader 
-            label="OUR WORK"
-            title="Our Work" 
-            subtitle="Projects We're Proud Of"
-          />
-
-          {/* Filter Tabs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-wrap justify-center gap-4 mb-12"
-          >
-            {filterCategories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveFilter(category)}
-                className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                  activeFilter === category
-                    ? 'bg-primary-strong text-white shadow-card-hover'
-                    : 'bg-white text-text-muted hover:bg-frost-soft border border-frost'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </motion.div>
-
-          {/* Project Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                image={project.image_url}
-                title={project.title}
-                category={project.category}
-                delay={index * 0.1}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us Section */}
-      <section id="about" className="py-24 bg-frost-soft">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader 
-            label="WHY CHOOSE US"
-            title="Innovation and Excellence" 
-            subtitle="Why Choose Sentivra"
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {whyChooseUs.map((item, index) => {
-              const ItemIcon = getIcon(item.icon);
-              return (
-                <FeatureItem
-                  key={item.id}
-                  icon={ItemIcon}
-                  title={item.title}
-                  description={item.description}
-                  delay={index * 0.1}
-                />
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    </motion.div>
+      {/* Premium CTA Section */}
+      <PremiumCTA />
+    </PageTransition>
   );
 };
 

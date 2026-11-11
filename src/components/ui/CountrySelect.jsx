@@ -1,5 +1,6 @@
 import React from 'react';
 import { Globe } from 'lucide-react';
+import { useTranslation } from '@/i18n/useTranslation';
 
 const CountrySelect = ({
   id,
@@ -14,6 +15,8 @@ const CountrySelect = ({
   disabled = false,
   className = ''
 }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className={className}>
       {/* Label */}
@@ -55,7 +58,7 @@ const CountrySelect = ({
             ${!value ? 'text-muted' : 'text-primary-deep'}
           `.trim()}
         >
-          <option value="" disabled>Select your country</option>
+          <option value="" disabled>{t('contact.form.selectCountryPlaceholder')}</option>
           {countries.map((country) => (
             <option key={country.value} value={country.value}>
               {country.label}

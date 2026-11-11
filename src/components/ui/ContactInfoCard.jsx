@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { contactInfo } from '../../data/contactData';
+import { useTranslation } from '@/i18n/useTranslation';
+import { Bidi } from './Bidi';
 
 const ContactInfoCard = () => {
   const [copiedField, setCopiedField] = useState(null);
+  const { t, language } = useTranslation();
 
   const handleCopy = async (text, field) => {
     try {
@@ -18,7 +21,7 @@ const ContactInfoCard = () => {
   const contactItems = [
     {
       icon: Mail,
-      label: 'Email',
+      label: t('contact.info.email'),
       value: contactInfo.email,
       link: `mailto:${contactInfo.email}`,
       field: 'email',
@@ -26,7 +29,7 @@ const ContactInfoCard = () => {
     },
     {
       icon: Phone,
-      label: 'Phone',
+      label: t('contact.info.phone'),
       value: contactInfo.phone,
       link: `tel:${contactInfo.phone}`,
       field: 'phone',
@@ -42,7 +45,7 @@ const ContactInfoCard = () => {
     },
     {
       icon: MapPin,
-      label: 'Location',
+      label: t('contact.info.address'),
       value: contactInfo.location,
       link: null,
       field: 'location',
@@ -51,14 +54,14 @@ const ContactInfoCard = () => {
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-frost p-6 lg:p-8 shadow-card">
+    <div className="bg-color-background rounded-2xl border border-frost p-6 lg:p-8 shadow-card">
       {/* Header */}
       <div className="mb-6">
         <h3 className="text-xl font-bold text-primary-deep mb-2">
-          Contact Information
+          {t('contact.info.title')}
         </h3>
         <p className="text-sm text-text-muted">
-          Reach out to us through any of these channels
+          {t('contact.info.description')}
         </p>
       </div>
 
@@ -71,9 +74,9 @@ const ContactInfoCard = () => {
           return (
             <div
               key={item.field}
-              className="group relative bg-frost-soft rounded-xl p-4 hover:bg-frost transition-colors"
+              className={`group relative bg-frost-soft rounded-xl p-4 hover:bg-frost transition-colors ${language === 'ar' ? 'text-right' : ''}`}
             >
-              <div className="flex items-start gap-3">
+              <div className={`flex items-start gap-3 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
                 {/* Icon */}
                 <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Icon className="w-5 h-5 text-primary" />
@@ -91,11 +94,11 @@ const ContactInfoCard = () => {
                       rel={item.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                       className="text-sm font-medium text-primary-deep hover:text-primary transition-colors break-all"
                     >
-                      {item.value}
+                      <Bidi>{item.value}</Bidi>
                     </a>
                   ) : (
                     <p className="text-sm font-medium text-primary-deep break-all">
-                      {item.value}
+                      <Bidi>{item.value}</Bidi>
                     </p>
                   )}
                 </div>
@@ -108,10 +111,10 @@ const ContactInfoCard = () => {
                     backgroundColor: isCopied ? '#10b981' : '#e5e7eb',
                     color: isCopied ? '#ffffff' : '#6b7280'
                   }}
-                  aria-label={`Copy ${item.label}`}
+                  aria-label={`${t('contact.info.copy')} ${item.label}`}
                 >
                   <span className="transition-opacity duration-200">
-                    {isCopied ? 'Copied!' : 'Copy'}
+                    {isCopied ? t('contact.info.copied') : t('contact.info.copy')}
                   </span>
                 </button>
               </div>
@@ -123,8 +126,8 @@ const ContactInfoCard = () => {
       {/* Bottom Note */}
       <div className="mt-6 pt-6 border-t border-frost">
         <p className="text-xs text-text-muted text-center">
-          Available{' '}
-          <span className="font-medium text-primary-deep">24/7</span> to assist you
+          {t('contact.info.available')}{' '}
+          <span className="font-medium text-primary-deep">{t('contact.info.availableTime')}</span> {t('contact.info.toAssist')}
         </p>
       </div>
     </div>

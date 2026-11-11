@@ -1,0 +1,447 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "errorLoading": "Failed to load content",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "breadcrumb": "Breadcrumb",
+    "learnMore": "Learn More",
+    "getStarted": "Get Started",
+    "viewDetails": "View Details",
+    "readMore": "Read More",
+    "contactUs": "Contact Us",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mobileNavigation": "Mobile navigation",
+    "whatsappChat": "Chat with us",
+    "whatsappAria": "Contact us on WhatsApp",
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right",
+    "play": "Play",
+    "pause": "Pause",
+    "demoMode": "Demo Mode: Add Real Testimonials",
+    "demoModeDesc": "Go to Admin Dashboard → Testimonials to add real client testimonials."
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "mockups": "Mockups",
+    "about": "About",
+    "contact": "Contact",
+    "contactUs": "Contact Us",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "theme": {
+    "title": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "title": "Language"
+  },
+  "accessibility": {
+    "skipToContent": "Skip to main content",
+    "loading": "Loading content, please wait",
+    "errorOccurred": "An error occurred while loading content"
+  },
+  "hero": {
+    "badge": "Software Company",
+    "headline": "From Ideas to Real Digital Products",
+    "subheadline": "We transform your business ideas into powerful software solutions",
+    "defaultHeadline": "From ideas to real digital products",
+    "defaultSubheadline": "We transform your vision into powerful digital solutions.",
+    "ctaPrimary": "Start Your Project",
+    "ctaSecondary": "Learn More",
+    "playVideo": "Play video",
+    "pauseVideo": "Pause video",
+    "scrollDown": "Scroll down"
+  },
+  "footer": {
+    "cta": {
+      "title": "Let's Turn Your Ideas Into Real Products",
+      "description": "Ready to bring your vision to life? Get in touch with us today and let's build something amazing together.",
+      "primaryButton": "Start Your Project",
+      "secondaryButton": "Our Services"
+    },
+    "tagline": "Transforming ideas into digital excellence through innovative technology solutions.",
+    "quickLinks": "Quick Links",
+    "ourServices": "Our Services",
+    "contactUs": "Contact Us",
+    "followUs": "Follow Us",
+    "home": "Home",
+    "aboutUs": "About Us",
+    "ourProcess": "Our Process",
+    "copyright": "© {year} Sentivra. All rights reserved.",
+    "backToTop": "Back to top",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "location": "Sadat City, Egypt"
+  },
+  "home": {
+    "meta": {
+      "title": "Sentivra - From Ideas to Real Digital Products",
+      "description": "Complete digital solutions for your business. We build web applications, mobile apps, ERP systems, CRM solutions, and more."
+    },
+    "services": {
+      "label": "OUR SERVICES",
+      "title": "Our Services",
+      "subtitle": "Comprehensive digital solutions tailored to your business needs",
+      "viewAll": "View All Services"
+    },
+    "projects": {
+      "label": "OUR WORK",
+      "title": "Our Work",
+      "subtitle": "Projects We're Proud Of",
+      "viewAll": "View All Projects",
+      "filterAll": "All",
+      "filterWebApps": "Web Apps",
+      "filterMobile": "Mobile",
+      "filterERP": "ERP",
+      "filterCRM": "CRM",
+      "filterAI": "AI & Chatbots",
+      "filterOther": "Other"
+    },
+    "trustBadges": {
+      "title": "Why Choose Us"
+    },
+    "process": {
+      "label": "OUR PROCESS",
+      "title": "Our Process",
+      "subtitle": "A complete journey to success",
+      "cta": "Start Your Project",
+      "mockupTitle": "iMac Mockup",
+      "mockupPlaceholder": "[Placeholder - needs image]"
+    },
+    "whyChooseUs": {
+      "label": "WHY CHOOSE US",
+      "title": "Innovation and Excellence",
+      "subtitle": "Why Choose Sentivra"
+    },
+    "stats": {
+      "label": "Our Impact",
+      "projectsCompleted": "Projects Completed",
+      "happyClients": "Happy Clients",
+      "satisfaction": "Client Satisfaction",
+      "yearsExperience": "Years Experience"
+    },
+    "testimonials": {
+      "label": "Client Testimonials",
+      "title": "What Our Clients Say",
+      "subtitle": "Real feedback from businesses we've helped grow"
+    },
+    "clients": {
+      "title": "Trusted By",
+      "subtitle": "Companies that trust us with their digital transformation",
+      "trustedBy": "Trusted by leading companies"
+    },
+    "cta": {
+      "title": "Let's Turn Your Ideas Into Real Products",
+      "description": "Let's discuss how we can help bring your vision to life",
+      "button": "Contact Us Today",
+      "badge": "Ready to Start?",
+      "subtitle": "Transform your ideas into reality with our expert team. Get started today with a free consultation.",
+      "primaryButton": "Start a Project",
+      "secondaryButton": "View Services",
+      "whatsapp": "WhatsApp",
+      "trustedBy": "Trusted by leading companies across the region",
+      "eyebrow": "Let's Turn Your Ideas Into Real Products",
+      "contactTitle": "Get in Touch",
+      "email": "Email",
+      "phone": "Phone"
+    }
+  },
+  "services": {
+    "card": {
+      "learnMore": "Learn More"
+    },
+    "hero": {
+      "label": "OUR SERVICES",
+      "title": "Digital Solutions That",
+      "titleAccent": "Drive Real Results",
+      "description": "From custom web applications to mobile apps and enterprise systems, we deliver software that transforms your business operations and accelerates growth.",
+      "primaryCTA": "View All Services",
+      "secondaryCTA": "Get Free Consultation"
+    },
+    "list": {
+      "title": "What We Build",
+      "subtitle": "Comprehensive software development services tailored to your business needs",
+      "viewAll": "View All Services"
+    },
+    "whyChoose": {
+      "label": "WHY CHOOSE SENTIVRA",
+      "title": "Innovation and Excellence",
+      "description": "We combine cutting-edge technology with industry best practices to deliver solutions that exceed expectations.",
+      "cta": "Learn More About Us"
+    },
+    "faq": {
+      "label": "COMMON QUESTIONS",
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know about our services and process",
+      "imageAlt": "FAQ Illustration"
+    }
+  },
+  "ourWork": {
+    "meta": {
+      "title": "Our Work - Real Projects, Real Impact | Sentivra",
+      "description": "Explore our portfolio of successful projects. From web applications to mobile apps, ERP systems, and AI solutions. See how we transform ideas into digital reality."
+    },
+    "hero": {
+      "label": "OUR WORK",
+      "title": "Real Projects.",
+      "titleAccent": "Real Impact.",
+      "description": "A showcase of our recent projects that showcase our expertise and commitment to delivering exceptional digital solutions.",
+      "primaryCTA": "Start Your Project",
+      "secondaryCTA": "See Our Process"
+    },
+    "projects": {
+      "title": "Featured Projects",
+      "subtitle": "Explore our portfolio of successful projects across various industries and technologies",
+      "viewMore": "View More Projects",
+      "noProjects": "No projects found in this category."
+    },
+    "process": {
+      "label": "OUR PROCESS",
+      "title": "From Ideas to Real Products",
+      "description": "We follow a proven methodology to ensure your project's success from conception to launch and beyond.",
+      "cta": "Start Your Project"
+    },
+    "impact": {
+      "label": "OUR IMPACT",
+      "title": "Turning Ideas Into Successful Products",
+      "description": "Delivering exceptional results and building long-term partnerships with businesses worldwide."
+    },
+    "testimonials": {
+      "label": "CLIENT TESTIMONIAL",
+      "title": "What Our Clients Say"
+    },
+    "faq": {
+      "label": "FAQ",
+      "title": "Frequently Asked Questions",
+      "subtitle": "Find answers to common questions about our work and processes"
+    },
+    "cta": {
+      "title": "Let's Build Your Next Success Story",
+      "description": "Ready to transform your ideas into reality? Let's start your project today.",
+      "primaryButton": "Start Your Project",
+      "secondaryButton": "Contact Us"
+    },
+    "error": {
+      "title": "Failed to Load Projects",
+      "description": "We couldn't load the projects. Please try again.",
+      "retry": "Retry"
+    }
+  },
+  "mockups": {
+    "meta": {
+      "title": "Website Mockups - Ready-Made Designs | Sentivra",
+      "description": "Explore our collection of ready-made website mockups. Choose a design you like and we'll customize it for your business needs."
+    },
+    "hero": {
+      "label": "WEBSITE MOCKUPS",
+      "title": "Ready-Made",
+      "titleAccent": "Website Mockups",
+      "description": "Explore ready-made website designs for different industries. Choose a design you like and contact us to get it customized for your business.",
+      "primaryCTA": "Find Your Mockup",
+      "secondaryCTA": "Contact Us"
+    },
+    "section": {
+      "label": "OUR MOCKUPS",
+      "title": "Explore Our Website Designs",
+      "description": "Browse our collection of ready-made designs. Click on any project to view more details."
+    },
+    "results": {
+      "found": "Found",
+      "mockupsSingular": "mockup",
+      "mockupsPlural": "mockups",
+      "matching": "matching"
+    },
+    "actions": {
+      "viewMore": "View More Mockups"
+    },
+    "empty": {
+      "title": "No mockups found",
+      "description": "We couldn't find any mockups matching your search. Try adjusting your filters or search terms.",
+      "resetButton": "Reset Filters"
+    },
+    "card": {
+      "view": "View",
+      "request": "Request",
+      "viewMockup": "View Mockup",
+      "requestDesign": "Request Design"
+    },
+    "modal": {
+      "close": "Close modal",
+      "whatsIncluded": "What's Included:",
+      "feature1": "Fully responsive design (mobile, tablet, desktop)",
+      "feature2": "Modern UI/UX with smooth animations",
+      "feature3": "SEO-optimized structure and clean code",
+      "feature4": "Full customization to match your brand",
+      "viewDemo": "View Live Demo",
+      "requestDesign": "Request This Design"
+    }
+  },
+  "about": {
+    "meta": {
+      "title": "About Us - Sentivra",
+      "description": "Learn about Sentivra's mission, vision, and the team behind your digital transformation."
+    },
+    "hero": {
+      "label": "ABOUT SENTIVRA",
+      "title": "A Team That",
+      "titleAccent": "Builds Real Impact",
+      "description": "We are a full-service software company specialized in building modern digital solutions that help businesses grow and succeed in the digital world.",
+      "primaryButton": "Start Your Project",
+      "secondaryButton": "Learn More",
+      "floatingCardTitle": "A Bigger Team, A Stronger Future"
+    },
+    "title": "About Sentivra",
+    "subtitle": "Building digital excellence since day one",
+    "mission": {
+      "title": "Our Mission",
+      "description": "To empower businesses through innovative digital solutions"
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "To be the leading digital transformation partner in the region"
+    },
+    "values": {
+      "title": "Our Values"
+    },
+    "team": {
+      "title": "Meet Our Team",
+      "subtitle": "The talented people behind Sentivra"
+    },
+    "timeline": {
+      "title": "Our Journey",
+      "subtitle": "Milestones that shaped who we are today"
+    },
+    "stats": {
+      "title": "By the Numbers"
+    },
+    "countries": {
+      "title": "Where We Operate",
+      "subtitle": "Serving clients across multiple regions"
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact Us - Sentivra",
+      "description": "Get in touch with Sentivra. We're here to help with your digital transformation needs."
+    },
+    "hero": {
+      "label": "GET IN TOUCH",
+      "title": "Let's Build Something",
+      "titleAccent": "Great Together",
+      "description": "Ready to start your project? Get in touch with our team and let's discuss how we can help transform your business.",
+      "feature1": "Free consultation",
+      "feature2": "24-hour response time",
+      "feature3": "Flexible engagement models"
+    },
+    "title": "Contact Us",
+    "subtitle": "Let's discuss your project",
+    "form": {
+      "required": "This field is required",
+      "nameTooShort": "Name must be at least 2 characters",
+      "selectCountry": "Please select your country",
+      "invalidPhone": "Please enter a valid phone number",
+      "phoneTooShort": "Phone number is too short",
+      "invalidWhatsapp": "Please enter a valid WhatsApp number",
+      "whatsappTooShort": "WhatsApp number is too short",
+      "invalidEmail": "Please enter a valid email address",
+      "detailsTooShort": "Message must be at least 10 characters",
+      "successTitle": "Message Sent!",
+      "success": "Thank you for reaching out. We'll get back to you within 24 hours.",
+      "errorTitle": "Sending Failed",
+      "error": "Something went wrong. Please try again or contact us directly.",
+      "title": "Send Us a Message",
+      "subtitle": "Fill out the form below and we'll get back to you as soon as possible",
+      "name": "Full Name",
+      "namePlaceholder": "John Doe",
+      "country": "Country",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+1 234 567 8900",
+      "whatsapp": "WhatsApp Number",
+      "whatsappPlaceholder": "+1 234 567 8900",
+      "sameAsPhone": "Same as phone",
+      "email": "Email Address",
+      "emailPlaceholder": "john@example.com",
+      "message": "Project Details",
+      "messagePlaceholder": "Tell us about your project...",
+      "sending": "Sending...",
+      "send": "Send Message",
+      "sendingAria": "Sending your message",
+      "selectCountryPlaceholder": "Select your country"
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "title": "Contact Information",
+      "description": "Reach out to us through any of these channels",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "available": "Available",
+      "availableTime": "Mon-Fri 9AM-6PM (GMT+2)",
+      "toAssist": "to assist you"
+    },
+    "social": {
+      "title": "Follow Us"
+    },
+    "faq": {
+      "label": "COMMON QUESTIONS",
+      "title": "Frequently Asked Questions",
+      "description": "Quick answers to questions you may have about working with us"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "description": "Let's discuss your project and find the perfect solution for your business",
+      "primaryButton": "Start Your Project",
+      "secondaryButton": "View Our Work"
+    },
+    "whatsappMessage": "Hello! I'm interested in your services",
+    "checklist": {
+      "title": "Why Work With Us?",
+      "description": "Join hundreds of satisfied clients",
+      "join": "Join",
+      "clientCount": "50+",
+      "trusted": "trusted clients across Egypt, UAE, and Oman"
+    }
+  },
+  "testimonials": {
+    "ariaLabel": "Client testimonials",
+    "previous": "Previous testimonial",
+    "next": "Next testimonial",
+    "goTo": "Go to testimonial",
+    "noTestimonials": "No testimonials available at the moment."
+  },
+  "search": {
+    "placeholder": "Search...",
+    "ariaLabel": "Search",
+    "clear": "Clear search"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to Home",
+    "viewServices": "View Our Services"
+  },
+  "error": {
+    "title": "Something Went Wrong",
+    "description": "The application encountered an error and couldn't continue. Please try refreshing the page or return to the home page.",
+    "reload": "Reload Page",
+    "backHome": "Back to Home"
+  }
+}

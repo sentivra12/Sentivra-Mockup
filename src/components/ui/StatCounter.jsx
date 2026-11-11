@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useInView, useMotionValue, useSpring } from 'framer-motion';
+import { Bidi } from './Bidi';
 
 const StatCounter = ({ value, suffix = '', icon: Icon, label, duration = 2 }) => {
   const ref = useRef(null);
@@ -38,13 +39,13 @@ const StatCounter = ({ value, suffix = '', icon: Icon, label, duration = 2 }) =>
 
   return (
     <div ref={ref} className="flex flex-col items-center text-center">
-      <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4">
-        <Icon className="h-8 w-8 text-white" />
+      <div className="w-16 h-16 rounded-full bg-primary/10 dark:bg-white/10 flex items-center justify-center mb-4">
+        <Icon className="h-8 w-8 text-primary dark:text-white" />
       </div>
-      <div className="text-4xl md:text-5xl font-bold text-white mb-2">
-        {displayValue}{suffix}
+      <div className="text-4xl md:text-5xl font-bold text-primary-deep dark:text-white mb-2">
+        <Bidi>{displayValue}{suffix}</Bidi>
       </div>
-      <p className="text-white/80 text-sm md:text-base">{label}</p>
+      <p className="text-text-muted dark:text-white/80 text-sm md:text-base">{label}</p>
     </div>
   );
 };

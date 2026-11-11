@@ -1,0 +1,51 @@
+{
+  "reducedMotionMode": "reduce",
+  "screens": [
+    {
+      "name": "Site Settings",
+      "url": "/admin/settings",
+      "saveButtonFound": false,
+      "saveButtonVisible": false,
+      "saveButtonPosition": null,
+      "saveButtonStyles": {},
+      "blockedBy": [],
+      "networkRequests": [],
+      "error": "page.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"site_name\"]')\u001b[22m\n"
+    },
+    {
+      "name": "Hero Section",
+      "url": "/admin/hero",
+      "saveButtonFound": false,
+      "saveButtonVisible": false,
+      "saveButtonPosition": null,
+      "saveButtonStyles": {},
+      "blockedBy": [],
+      "networkRequests": [],
+      "error": "page.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"title\"]')\u001b[22m\n"
+    },
+    {
+      "name": "Services",
+      "url": "/admin/services",
+      "saveButtonFound": false,
+      "saveButtonVisible": false,
+      "saveButtonPosition": null,
+      "saveButtonStyles": {},
+      "blockedBy": [],
+      "networkRequests": [],
+      "error": "page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Add Service\")')\u001b[22m\n"
+    },
+    {
+      "name": "FAQs",
+      "url": "/admin/faqs",
+      "saveButtonFound": false,
+      "saveButtonVisible": false,
+      "saveButtonPosition": null,
+      "saveButtonStyles": {},
+      "blockedBy": [],
+      "networkRequests": [],
+      "error": "page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"Add FAQ\")')\u001b[22m\n"
+    }
+  ],
+  "timestamp": "2026-11-11T09:51:28.155Z",
+  "fatalError": "page.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"site_name\"]')\u001b[22m\n"
+}

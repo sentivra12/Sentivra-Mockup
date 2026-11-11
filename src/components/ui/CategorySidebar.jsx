@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const CategorySidebar = ({ categories = [], activeCategory, onCategoryChange }) => {
   return (
     <div className="hidden lg:block w-64 flex-shrink-0">
-      <div className="bg-white rounded-2xl shadow-card border border-frost p-2">
+      <div className="bg-color-background rounded-2xl shadow-card border border-frost p-2">
         {categories.map((category, index) => {
           const isActive = activeCategory === category.id;
           const Icon = category.icon;
@@ -23,7 +23,7 @@ const CategorySidebar = ({ categories = [], activeCategory, onCategoryChange }) 
               }`}
             >
               <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-primary'}`} />
-              <span className="font-medium text-sm">{category.name}</span>
+              <span className="font-medium text-sm">{category.name || category.label}</span>
             </motion.button>
           );
         })}

@@ -1,7 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from '../../i18n/useTranslation';
 
 const ProcessStepsList = ({ steps = [] }) => {
+  const { language } = useTranslation();
+  
   // Safety check for empty steps
   if (!steps || steps.length === 0) {
     return null;
@@ -22,7 +25,7 @@ const ProcessStepsList = ({ steps = [] }) => {
             className="relative flex flex-col items-center text-center"
           >
             {/* Number Badge */}
-            <div className="absolute -top-2 -left-2 md:relative md:top-0 md:left-0 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg mb-4 z-10">
+            <div className={`absolute -top-2 ${language === 'ar' ? '-right-2' : '-left-2'} md:relative md:top-0 md:${language === 'ar' ? 'right' : 'left'}-0 w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg mb-4 z-10`}>
               {String(index + 1).padStart(2, '0')}
             </div>
 
@@ -43,7 +46,7 @@ const ProcessStepsList = ({ steps = [] }) => {
 
             {/* Connector Line - Desktop Only */}
             {index < steps.length - 1 && (
-              <div className="hidden lg:block absolute top-10 left-[60%] w-full h-0.5 bg-gradient-to-r from-brand-blue to-transparent"></div>
+              <div className={`hidden lg:block absolute top-10 ${language === 'ar' ? 'right-[60%]' : 'left-[60%]'} w-full h-0.5 bg-gradient-to-${language === 'ar' ? 'l' : 'r'} from-brand-blue to-transparent`}></div>
             )}
           </motion.div>
         );

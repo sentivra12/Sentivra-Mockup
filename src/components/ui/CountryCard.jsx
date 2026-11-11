@@ -8,7 +8,7 @@ const CountryCard = ({ country, delay = 0 }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay }}
-      className="bg-white rounded-xl overflow-hidden shadow-card-hover hover:shadow-dropdown transition-shadow duration-300 group"
+      className="bg-color-background rounded-xl overflow-hidden shadow-card-hover hover:shadow-dropdown transition-shadow duration-300 group"
     >
       {/* Country Image */}
       <div className="relative h-40 overflow-hidden">
@@ -23,7 +23,7 @@ const CountryCard = ({ country, delay = 0 }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         
         {/* Flag Badge - Bottom Left */}
-        <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-sm rounded-md px-2 py-1 flex items-center justify-center text-xl shadow-card-hover">
+        <div className="absolute bottom-3 left-3 bg-color-background/95 backdrop-blur-sm rounded-md px-2 py-1 flex items-center justify-center text-xl shadow-card-hover">
           {country.flag}
         </div>
       </div>

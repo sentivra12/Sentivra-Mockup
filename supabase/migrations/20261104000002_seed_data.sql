@@ -255,7 +255,11 @@ VALUES
 -- =============================================
 -- 9. TESTIMONIALS
 -- =============================================
-INSERT INTO testimonials (client_name, client_role, client_company, testimonial_text, rating, display_order, is_featured, is_active)
+-- IMPORTANT: These are DEMO testimonials for development/testing only
+-- They are inserted with is_active = FALSE and is_seeded = TRUE
+-- Real testimonials should be added through the admin dashboard
+
+INSERT INTO testimonials (client_name, client_role, client_company, testimonial_text, rating, display_order, is_featured, is_active, is_seeded)
 VALUES
   (
     'Sarah Johnson',
@@ -264,8 +268,9 @@ VALUES
     'Working with Sentivra was a game-changer for our business. They delivered our ERP system ahead of schedule and exceeded all our expectations. Their team is professional, responsive, and truly understands business needs.',
     5,
     1,
-    true,
-    true
+    false,
+    false,  -- Unpublished by default
+    true    -- Marked as seed data
   ),
   (
     'Michael Chen',
@@ -274,8 +279,9 @@ VALUES
     'The mobile app they developed for us has received outstanding feedback from our users. The attention to detail and performance optimization is impressive. Highly recommend Sentivra for any serious development project.',
     5,
     2,
-    true,
-    true
+    false,
+    false,  -- Unpublished by default
+    true    -- Marked as seed data
   ),
   (
     'Emma Williams',
@@ -284,8 +290,9 @@ VALUES
     'Our new e-commerce platform built by Sentivra has increased our online sales by 300%. The team was collaborative, patient with our requests, and delivered a beautiful, functional solution.',
     5,
     3,
-    true,
-    true
+    false,
+    false,  -- Unpublished by default
+    true    -- Marked as seed data
   );
 
 -- =============================================

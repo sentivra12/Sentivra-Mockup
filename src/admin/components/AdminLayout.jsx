@@ -18,6 +18,8 @@ import {
   LogOut,
   Sparkles,
   FolderOpen,
+  BookOpen,
+  Grid,
 } from 'lucide-react';
 import { signOut, getCurrentUser } from '@/lib/supabase';
 import { useToast } from '@/components/ui/use-toast';
@@ -67,7 +69,9 @@ const AdminLayout = () => {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
     { icon: Settings, label: 'Site Settings', path: '/admin/settings' },
     { icon: Globe, label: 'Hero Section', path: '/admin/hero' },
+    { icon: BookOpen, label: 'Page Content', path: '/admin/page-content' },
     { icon: Briefcase, label: 'Services', path: '/admin/services' },
+    { icon: Grid, label: 'Service Categories', path: '/admin/service-categories' },
     { icon: FolderOpen, label: 'Projects', path: '/admin/projects' },
     { icon: Image, label: 'Mockups', path: '/admin/mockups' },
     { icon: Star, label: 'Testimonials', path: '/admin/testimonials' },

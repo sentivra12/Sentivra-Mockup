@@ -85,7 +85,7 @@ const LoginPage = () => {
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
+                <Mail className="absolute start-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   type="email"
                   id="email"
@@ -93,7 +93,7 @@ const LoginPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-background border border-frost rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                  className="w-full ps-11 pe-4 py-3 bg-background border border-frost rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                   placeholder="admin@sentivra.com"
                 />
               </div>
@@ -105,7 +105,7 @@ const LoginPage = () => {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
+                <Lock className="absolute start-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted" />
                 <input
                   type="password"
                   id="password"
@@ -113,7 +113,7 @@ const LoginPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-11 pr-4 py-3 bg-background border border-frost rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                  className="w-full ps-11 pe-4 py-3 bg-background border border-frost rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                   placeholder="••••••••"
                 />
               </div>

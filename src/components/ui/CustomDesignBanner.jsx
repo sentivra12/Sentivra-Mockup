@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
+import InverseSurface from '@/components/ui/InverseSurface';
 
 const CustomDesignBanner = ({ 
   title, 
@@ -12,32 +14,26 @@ const CustomDesignBanner = ({
   image,
   className = '' 
 }) => {
+  const { language } = useTranslation();
+  
   return (
-    <section className={`py-16 md:py-20 bg-primary-deep relative overflow-hidden ${className}`}>
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-          backgroundSize: '30px 30px'
-        }}></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <InverseSurface className={`py-16 md:py-20 ${className}`} withTopGlow withGrid>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
+            initial={{ opacity: 0, x: language === 'ar' ? 40 : -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="space-y-6"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-inverse-fg leading-tight">
               {title}
             </h2>
             
             {description && (
-              <p className="text-lg text-white/80 leading-relaxed">
+              <p className="text-lg text-inverse-fg-muted leading-relaxed">
                 {description}
               </p>
             )}
@@ -48,20 +44,20 @@ const CustomDesignBanner = ({
                   <a href={buttonHref} onClick={buttonOnClick}>
                     <Button 
                       size="lg" 
-                      className="bg-primary hover:bg-primary-dark text-white px-8 py-6 text-lg rounded-lg group"
+                      className={`btn-inverse-primary px-8 py-6 text-lg rounded-lg group ${language === 'ar' ? 'flex-row-reverse' : ''}`}
                     >
                       {buttonLabel}
-                      <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className={`h-5 w-5 ${language === 'ar' ? 'mr-2 group-hover:-translate-x-1 rotate-180' : 'ml-2 group-hover:translate-x-1'} transition-transform`} />
                     </Button>
                   </a>
                 ) : (
                   <Button 
                     onClick={buttonOnClick}
                     size="lg" 
-                    className="bg-primary hover:bg-primary-dark text-white px-8 py-6 text-lg rounded-lg group"
+                    className={`btn-inverse-primary px-8 py-6 text-lg rounded-lg group ${language === 'ar' ? 'flex-row-reverse' : ''}`}
                   >
                     {buttonLabel}
-                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className={`h-5 w-5 ${language === 'ar' ? 'mr-2 group-hover:-translate-x-1 rotate-180' : 'ml-2 group-hover:translate-x-1'} transition-transform`} />
                   </Button>
                 )}
               </div>
@@ -70,7 +66,7 @@ const CustomDesignBanner = ({
 
           {/* Right Image */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
+            initial={{ opacity: 0, x: language === 'ar' ? -40 : 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -80,22 +76,20 @@ const CustomDesignBanner = ({
               <img
                 src={image}
                 alt="Custom design illustration"
-                className="w-full h-auto rounded-2xl shadow-lg-primary"
+                className="w-full h-auto rounded-2xl shadow-lg"
                 width="800"
                 height="600"
               />
             )}
             
-            {/* Floating Elements */}
-            <div className="hidden lg:block absolute -top-8 -right-8 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
-            <div className="hidden lg:block absolute -bottom-8 -left-8 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+            {/* Floating Elements - using inverse glow */}
+            <div className="hidden lg:block absolute -top-8 -right-8 w-32 h-32 rounded-full blur-3xl" style={{ backgroundColor: 'var(--inverse-glow)' }}></div>
+            <div className="hidden lg:block absolute -bottom-8 -left-8 w-40 h-40 rounded-full blur-3xl opacity-50" style={{ backgroundColor: 'var(--inverse-glow)' }}></div>
           </motion.div>
         </div>
       </div>
-    </section>
+    </InverseSurface>
   );
 };
 
 export default CustomDesignBanner;
-
-

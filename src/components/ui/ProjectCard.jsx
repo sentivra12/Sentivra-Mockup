@@ -8,7 +8,7 @@ const ProjectCard = ({ image, title, category, delay = 0 }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300"
+      className="group cursor-pointer bg-color-background rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300"
     >
       <div className="relative overflow-hidden aspect-[4/3]">
         <img

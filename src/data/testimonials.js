@@ -1,4 +1,7 @@
-export const testimonials = [
+import { supabase, isMissingEnv } from '../lib/supabase';
+
+// Static fallback data (used when Supabase is not configured)
+export const testimonialsStatic = [
   {
     id: 1,
     text: "Working with Sentivra was an absolute pleasure. They transformed our vision into a powerful platform that exceeded our expectations. Their attention to detail and commitment to quality is unmatched.",
@@ -27,3 +30,79 @@ export const testimonials = [
     rating: 5
   }
 ];
+
+// Default export for backward compatibility
+export const testimonials = testimonialsStatic;
+
+/**
+ * Fetch testimonials from Supabase
+ * Falls back to static data if Supabase is not configured
+ * @param {Object} options - Query options
+ * @param {boolean} options.featured - Filter featured testimonials
+ * @param {number} options.limit - Limit number of results
+ * @param {string} options.language - Language code ('en' or 'ar')
+ * @returns {Promise<Array>} Testimonials array
+ */
+export const fetchTestimonials = async ({ featured, limit, language = 'en' } = {}) => {
+  // If Supabase is not configured, return static data
+  if (isMissingEnv) {
+    console.warn('Using static testimonials data (Supabase not configured)');
+    let filtered = testimonialsStatic;
+    
+    if (featured) {
+      filtered = filtered.filter(t => t.rating === 5);
+    }
+    
+    if (limit) {
+      filtered = filtered.slice(0, limit);
+    }
+    
+    return filtered;
+  }
+
+  try {
+    let query = supabase
+      .from('testimonials')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+
+    if (featured) {
+      query = query.eq('is_featured', true);
+    }
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching testimonials:', error);
+      return testimonialsStatic;
+    }
+
+    // Map bilingual fields and convert database structure to frontend format
+    return data.map(testimonial => ({
+      id: testimonial.id,
+      text: language === 'ar' && testimonial.testimonial_text_ar 
+        ? testimonial.testimonial_text_ar 
+        : testimonial.testimonial_text,
+      clientName: language === 'ar' && testimonial.client_name_ar 
+        ? testimonial.client_name_ar 
+        : testimonial.client_name,
+      clientRole: language === 'ar' && testimonial.client_role_ar 
+        ? testimonial.client_role_ar 
+        : testimonial.client_role,
+      clientCompany: language === 'ar' && testimonial.client_company_ar 
+        ? testimonial.client_company_ar 
+        : testimonial.client_company,
+      clientPhoto: testimonial.client_photo_url,
+      rating: testimonial.rating,
+    }));
+  } catch (err) {
+    console.error('Error fetching testimonials:', err);
+    return testimonialsStatic;
+  }
+};
+

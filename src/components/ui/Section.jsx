@@ -32,7 +32,7 @@ const Section = ({
 
   // Background color variants
   const backgroundClasses = {
-    white: 'bg-white',
+    white: 'bg-color-background',
     frost: 'bg-frost',
     'frost-soft': 'bg-frost-soft',
     dark: 'bg-primary-deep text-white',

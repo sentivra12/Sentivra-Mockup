@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-11-09T11:43:48.773Z",
+  "url": "http://localhost:4173/services",
+  "bugs": [
+    {
+      "id": 1,
+      "name": "HERO BLUR/FADE",
+      "element": "text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-6 max-w-[16ch] text-slate-900 dark:text-white",
+      "position": {
+        "x": 112,
+        "y": 138,
+        "width": 576,
+        "height": 316.75
+      },
+      "computedStyles": {
+        "element": "text-4xl sm:text-5xl lg:text-6xl xl:text-7xl mb-6 max-w-[16ch] text-slate-900 dark:text-white",
+        "filter": "none",
+        "opacity": "1",
+        "transform": "none",
+        "willChange": "auto",
+        "backdropFilter": "none",
+        "animationFillMode": "none",
+        "animationPlayState": "running",
+        "animationName": "none",
+        "animationDelay": "0s",
+        "visibility": "visible",
+        "parent": {
+          "className": "",
+          "filter": "none",
+          "opacity": "1",
+          "transform": "none",
+          "animationPlayState": "running"
+        },
+        "grandparent": {
+          "className": "grid lg:grid-cols-2 gap-12 lg:gap-16 items-center ",
+          "filter": "none",
+          "opacity": "1",
+          "transform": "none"
+        }
+      },
+      "diagnosis": "OK"
+    },
+    {
+      "id": 2,
+      "name": "HERO ALIGNMENT",
+      "navLogoX": 112,
+      "heroEyebrowX": 112,
+      "offset": 0,
+      "diagnosis": "OK"
+    },
+    {
+      "id": 3,
+      "name": "HERO HEADLINE",
+      "text": "We Build Software Solutions That Scale",
+      "fontSize": "72px",
+      "lineHeight": "79.2px",
+      "maxWidth": "768.375px",
+      "textWrap": "balance",
+      "width": 576,
+      "height": 317,
+      "lines": 4,
+      "diagnosis": "TOO MANY LINES (4)"
+    },
+    {
+      "id": 7,
+      "name": "DUPLICATE SERVICES",
+      "totalServices": 0,
+      "duplicates": [],
+      "diagnosis": "OK"
+    },
+    {
+      "id": 9,
+      "name": "FINAL CTA CONTRAST",
+      "sectionBg": "rgb(255, 255, 255)",
+      "sectionColor": "rgb(31, 52, 64)",
+      "headingColor": "rgb(31, 52, 64)",
+      "headingText": "Frequently Asked Questions",
+      "className": "py-16 lg:py-20 bg-white",
+      "diagnosis": "OK"
+    }
+  ]
+}

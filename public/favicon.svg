@@ -1,0 +1,18 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simplified version for favicon -->
+  <rect width="32" height="32" rx="6" fill="url(#favicon-gradient)" />
+  
+  <!-- Bold S for better visibility at small sizes -->
+  <path d="M19 10C19 10 17 9 15 10C13 11 12.5 12.5 13 14C13.5 15.5 15 16 16.5 16.5C18 17 19.5 17.5 20 19C20.5 20.5 19.5 22.5 17 23C14.5 23.5 13 22 13 22" 
+        stroke="white" 
+        stroke-width="2.5" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+  
+  <defs>
+    <linearGradient id="favicon-gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5C7E8F" />
+      <stop offset="100%" stop-color="#476574" />
+    </linearGradient>
+  </defs>
+</svg>

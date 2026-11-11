@@ -60,65 +60,48 @@ const MediaUploadField = ({
     return null;
   };
 
-  // Resize image in browser - fail-safe with multiple fallbacks
+  // Resize image in browser
   const resizeImage = (file, maxWidth = 1920) => {
     return new Promise((resolve, reject) => {
-      // Don't resize SVG or GIF (could be animated)
-      if (file.type === 'image/svg+xml' || file.type === 'image/gif') {
-        resolve(file);
-        return;
-      }
-
-      // Skip processing for small files (< 300KB)
-      if (file.size < 300 * 1024) {
+      // Don't resize SVG
+      if (file.type === 'image/svg+xml') {
         resolve(file);
         return;
       }
 
       const reader = new FileReader();
-      const timeoutId = setTimeout(() => reject(new Error('Read timeout')), 8000);
       
       reader.onerror = () => {
-        clearTimeout(timeoutId);
         reject(new Error('Failed to read file'));
       };
 
       reader.onload = (e) => {
-        clearTimeout(timeoutId);
-        const img = new Image();
-        const imgTimeoutId = setTimeout(() => reject(new Error('Load timeout')), 8000);
+        const img = document.createElement('img');
         
         img.onerror = () => {
-          clearTimeout(imgTimeoutId);
           reject(new Error('Failed to load image'));
         };
         
         img.onload = () => {
-          clearTimeout(imgTimeoutId);
-          
           try {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
 
-            // Only resize if actually larger
-            if (width <= maxWidth) {
-              resolve(file);
-              return;
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
             }
 
-            height = (height * maxWidth) / width;
-            width = maxWidth;
             canvas.width = width;
             canvas.height = height;
-            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
 
-            const blobTimeoutId = setTimeout(() => reject(new Error('Convert timeout')), 8000);
             canvas.toBlob(
               (blob) => {
-                clearTimeout(blobTimeoutId);
-                if (!blob || blob.size >= file.size) {
-                  resolve(file);
+                if (!blob) {
+                  reject(new Error('Failed to convert image to WebP'));
                   return;
                 }
                 resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), {
@@ -126,16 +109,14 @@ const MediaUploadField = ({
                 }));
               },
               'image/webp',
-              0.85
+              0.9
             );
           } catch (err) {
-            reject(err);
+            reject(new Error(`Image processing failed: ${err.message}`));
           }
         };
-        
         img.src = e.target.result;
       };
-      
       reader.readAsDataURL(file);
     });
   };
@@ -164,28 +145,28 @@ const MediaUploadField = ({
     try {
       let processedFile = file;
 
-      // Try to process images (resize/convert to WebP), but ALWAYS fall back to original if it fails
-      if (fileType === 'image' && file.type !== 'image/svg+xml' && file.type !== 'image/gif') {
-        setProgress(5); // Show we're starting
+      // Try to process images (resize/convert to WebP), but fall back to original if it fails
+      if (fileType === 'image' && file.type !== 'image/svg+xml') {
+        setProgress(10); // Show we're processing
         try {
-          // Short timeout for processing: 8 seconds
           processedFile = await Promise.race([
             resizeImage(file),
             new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Processing timeout')), 8000)
+              setTimeout(() => reject(new Error('Image processing timeout (30s)')), 30000)
             )
           ]);
-          setProgress(15);
-          console.log('✓ Image processed successfully');
+          setProgress(20);
+          console.log('Image processed successfully:', processedFile.name);
         } catch (processingError) {
-          console.warn('⚠ Image processing failed, uploading original:', processingError.message);
-          // Fall back to original file - ALWAYS continue with upload
+          console.warn('Image processing failed, uploading original file:', processingError.message);
+          // Fall back to original file - it's better to upload a bigger file than to fail
           processedFile = file;
-          setProgress(15);
-          // Don't show error toast - processing failure is not a critical error
+          setProgress(20);
+          toast({
+            title: 'Processing skipped',
+            description: 'Uploading original file',
+          });
         }
-      } else {
-        setProgress(15); // Skip processing for videos/SVG/GIF
       }
 
       // Generate unique filename
@@ -195,24 +176,19 @@ const MediaUploadField = ({
       const filename = `${timestamp}-${randomStr}.${ext}`;
       const filePath = `${fileType}s/${filename}`;
 
-      console.log('Starting upload:', filePath, processedFile.size, 'bytes');
-
-      // Show realistic upload progress (can't get real progress from Supabase SDK)
-      let currentProgress = 15;
+      // Show upload progress (simulated)
       progressInterval = setInterval(() => {
-        currentProgress = Math.min(currentProgress + 8, 85);
-        setProgress(currentProgress);
-      }, 800);
+        setProgress((prev) => Math.min(prev + 10, 85));
+      }, 500);
 
-      // Upload to Supabase Storage with timeout (60s for large files)
-      const uploadTimeout = fileType === 'video' ? 120000 : 60000; // 2min for video, 1min for others
+      // Upload to Supabase Storage with timeout
       const publicUrl = await Promise.race([
         uploadFile('site-media', filePath, processedFile),
         new Promise((_, reject) => 
           setTimeout(() => {
             uploadAborted = true;
-            reject(new Error(`Upload timeout (${uploadTimeout / 1000}s). File may be too large.`));
-          }, uploadTimeout)
+            reject(new Error('Upload timeout (60s). File may be too large.'));
+          }, 60000)
         )
       ]);
 
@@ -220,12 +196,10 @@ const MediaUploadField = ({
         clearInterval(progressInterval);
       }
       setProgress(100);
-      
-      console.log('✓ Upload successful:', publicUrl);
 
       // Get image dimensions if it's an image
       if (fileType === 'image') {
-        const img = new Image();
+        const img = document.createElement('img');
         img.onload = () => {
           setFileInfo({
             name: file.name,
@@ -257,23 +231,21 @@ const MediaUploadField = ({
         description: `${file.name} uploaded successfully`,
       });
     } catch (error) {
-      console.error('❌ Upload error:', error);
+      console.error('Upload error:', error);
       
       // Parse Supabase storage errors for user-friendly messages
       let errorMessage = error.message || 'Failed to upload file. Please try again.';
       
       if (uploadAborted) {
         errorMessage = 'Upload timed out. Please try a smaller file or check your connection.';
-      } else if (error.message?.includes('bucket') || error.message?.includes('not found')) {
-        errorMessage = 'Storage not configured. Please ensure the site-media bucket exists.';
-      } else if (error.message?.includes('policy') || error.message?.includes('permission') || error.message?.includes('row-level security')) {
-        errorMessage = 'Permission denied. Please ensure you are logged in as admin.';
-      } else if (error.message?.includes('size') || error.message?.includes('large') || error.message?.includes('payload')) {
+      } else if (error.message?.includes('bucket')) {
+        errorMessage = 'Storage bucket not configured. Please contact support.';
+      } else if (error.message?.includes('policy') || error.message?.includes('permission')) {
+        errorMessage = 'Permission denied. Please ensure you are logged in.';
+      } else if (error.message?.includes('size') || error.message?.includes('large')) {
         errorMessage = `File too large. Maximum size: ${(maxFileSize / (1024 * 1024)).toFixed(0)}MB`;
       } else if (error.message?.includes('type') || error.message?.includes('MIME')) {
         errorMessage = 'Invalid file type. Please check the allowed formats.';
-      } else if (error.message?.includes('duplicate') || error.message?.includes('already exists')) {
-        errorMessage = 'File already exists. Please try again (new filename will be generated).';
       }
       
       setValidationError(errorMessage);
@@ -373,7 +345,7 @@ const MediaUploadField = ({
       {/* Label */}
       <label className="block text-sm font-medium text-text-primary">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 ms-1">*</span>}
       </label>
 
       {/* Upload Area */}

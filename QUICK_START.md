@@ -1,187 +1,189 @@
-# 🚀 Quick Start - Do This Right Now
+# 🚀 Quick Start - Services Page Round 1
 
-Follow these 8 steps in exact order. Each step must work before moving to the next.
+## TL;DR - Get Running in 5 Minutes
 
----
+### 1. Run Migration (1 minute)
+1. Go to: https://app.supabase.com
+2. Open SQL Editor
+3. Copy file: `supabase/migrations/20261102000001_add_services_arabic_and_faqs.sql`
+4. Paste & Run
 
-## 1️⃣ FILL .ENV.LOCAL
+### 2. Add Translations (2 minutes)
+1. Open `QUICK_SETUP.sql`
+2. Copy Section 1 (Arabic translations)
+3. Replace Arabic text with yours (or keep template)
+4. Paste & Run in Supabase SQL Editor
 
-**File location:** `d:\Sentivra-main\.env.local`
+### 3. Add Contact Info (1 minute)
+1. In `QUICK_SETUP.sql`, Section 2
+2. Replace `+20 XXX XXX XXXX` with your real WhatsApp/phone
+3. Replace `contact@sentivra.com` with your real email
+4. Paste & Run
 
-1. Open https://app.supabase.com
-2. Click your project → Settings → API
-3. Copy **Project URL** and **anon public key**
-4. Open `.env.local` in Notepad
-5. Replace the placeholder values:
-
-```env
-VITE_SUPABASE_URL=https://your-id-here.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+### 4. Start Dev Server (1 minute)
+```bash
+cd d:\Sentivra-main
+npm run dev
 ```
 
-6. Save file
-7. In terminal: Press Ctrl+C, then run: `npm run dev`
-8. **Verify**: Open http://localhost:5174 - yellow banner should be GONE
+### 5. Test in Browser
+Open: `http://localhost:5173/services`
+
+**Done! 🎉**
 
 ---
 
-## 2️⃣ CREATE DATABASE TABLES
+## What You Get
 
-1. Go to: https://app.supabase.com → Your Project
-2. Click **SQL Editor** (left sidebar)
-3. Click **New Query**
-4. Open file: `d:\Sentivra-main\supabase\migrations\20261104000001_initial_schema.sql`
-5. Copy ALL content (Ctrl+A, Ctrl+C)
-6. Paste in SQL Editor (Ctrl+V)
-7. Click **RUN**
-8. Wait for "Success" message
+### 🎨 Premium Design
+- Animated services orbit hero
+- Searchable service gallery (type or press `/`)
+- 3-step "How We Work" strip
+- "Why Choose Us" section (4 tiles)
+- FAQ accordion (numbered, smooth animation)
+- Final CTA with magnetic button + WhatsApp
 
----
+### 🌍 Full Bilingual
+- English/Arabic from database
+- RTL/LTR support
+- Light/Dark themes
+- Real-time language switching
 
-## 3️⃣ ADD SAMPLE DATA
+### ♿ Accessible
+- ARIA labels
+- Keyboard navigation (Tab, Enter, Space, `/`)
+- Screen reader friendly
+- Reduced motion support
 
-1. Click **New Query** in SQL Editor
-2. Open file: `d:\Sentivra-main\supabase\migrations\20261104000002_seed_data.sql`
-3. Copy ALL content (Ctrl+A, Ctrl+C)
-4. Paste in SQL Editor
-5. Click **RUN**
-6. **Verify**: Go to http://localhost:5174 - should show services, not empty
-
----
-
-## 4️⃣ CREATE STORAGE BUCKETS
-
-In Supabase, click **Storage** → Create these 6 buckets (all public):
-
-1. `services` ✅ Public
-2. `projects` ✅ Public
-3. `mockups` ✅ Public
-4. `logos` ✅ Public
-5. `testimonials` ✅ Public
-6. `hero` ✅ Public
-
-For each bucket:
-- Click bucket → **Policies** → **New Policy**
-- Choose: "Give users authenticated or anon read access"
-- Save
+### ⚡ Performant
+- Target: Lighthouse 90+ on all metrics
+- CLS ~0 (no layout shift)
+- LCP <2s
+- Optimized animations
 
 ---
 
-## 5️⃣ CREATE ADMIN USER
+## Quick Commands
 
-### A. Create User
-1. In Supabase: **Authentication** → **Users**
-2. Click **Add user** → **Create user**
-3. Email: your-email@example.com
-4. Password: (your strong password)
-5. ✅ Check "Auto Confirm User"
-6. Click **Create user**
+### Development
+```bash
+# Start dev server
+npm run dev
 
-### B. Grant Admin Role
-1. **SQL Editor** → **New Query**
-2. First, create user_roles table:
+# Build for production
+npm run build
 
+# Preview production build
+npm run preview
+```
+
+### Testing URLs
+```
+# English Light
+http://localhost:5173/services
+
+# Arabic Light
+http://localhost:5173/services?lang=ar
+
+# Then toggle dark mode in browser for dark variants
+```
+
+### Database Quick Checks
 ```sql
-CREATE TABLE IF NOT EXISTS user_roles (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  role TEXT NOT NULL DEFAULT 'user',
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id)
-);
+-- Check Arabic fields exist
+SELECT column_name FROM information_schema.columns 
+WHERE table_name = 'services' AND column_name LIKE '%_ar';
 
-ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
+-- Check services
+SELECT slug, title_en, title_ar FROM services WHERE is_active = true;
 
-CREATE POLICY "Admin users can view all roles"
-  ON user_roles FOR SELECT
-  TO authenticated
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = auth.uid() AND role = 'admin'
-    )
-  );
+-- Check FAQs
+SELECT display_order, question FROM faqs WHERE page_key = 'services';
+
+-- Check contact info
+SELECT whatsapp_number, primary_email FROM site_settings;
 ```
 
-3. Click **RUN**
-4. **New Query** again, add your user as admin:
+---
 
+## Files You Need
+
+### Essential
+- ✅ `supabase/migrations/20261102000001_add_services_arabic_and_faqs.sql` - Run this first
+- ✅ `QUICK_SETUP.sql` - Helper queries for translations & contact
+- ✅ `CHECK_SETUP.md` - Full testing checklist
+
+### Components (Already Created)
+- ✅ 7 new components in `src/components/ui/`
+- ✅ Main page: `src/pages/ServicesPageRound1.jsx`
+- ✅ Language hook: `src/i18n/useLanguage.js`
+
+### Documentation
+- ✅ `SERVICES_PAGE_ROUND1_GUIDE.md` - Full guide (English)
+- ✅ Artifact above - Full guide (Arabic)
+- ✅ This file - Quick start
+
+---
+
+## Troubleshooting (90% of Issues)
+
+### Page is blank?
+→ Run migration first (Step 1)
+
+### Services show English only in Arabic mode?
+→ Add translations (Step 2)
+
+### WhatsApp button not showing?
+→ Add real number (Step 3)
+
+### FAQ not showing?
+→ Check migration ran, activate FAQs:
 ```sql
-INSERT INTO user_roles (user_id, role)
-SELECT id, 'admin'
-FROM auth.users
-WHERE email = 'your-email@example.com';
+UPDATE faqs SET is_active = true WHERE page_key = 'services';
 ```
 
-5. Replace email with YOUR email
-6. Click **RUN**
+### Search not working?
+→ Check console (F12), refresh page
 
 ---
 
-## 6️⃣ TEST ADMIN LOGIN
+## Next Steps
 
-1. Go to: http://localhost:5174/admin
-2. Login with your email and password
-3. Should see dashboard with stats
-4. **If error "Not authorized"**: Check step 5B completed correctly
+After testing locally:
 
----
-
-## 7️⃣ TEST: ADD A SERVICE
-
-1. In admin, click **Services**
-2. Click **Add Service**
-3. Fill in:
-   - Title: "Test Service"
-   - Category: "Web & Mobile"
-   - Short Description: "Test"
-   - Icon: "Code"
-4. Click **Save**
-5. Go to: http://localhost:5174/services
-6. Your service should appear!
+1. ✅ Test all 4 modes (light/dark × EN/AR)
+2. ✅ Test mobile (360px) and desktop (1920px)
+3. ✅ Run Lighthouse (target: 90+ all scores)
+4. ✅ Get stakeholder approval on design
+5. ✅ Deploy to production
 
 ---
 
-## 8️⃣ TEST: CONTACT FORM
+## Success Metrics
 
-1. Go to: http://localhost:5174/contact
-2. Fill and submit form
-3. Green toast: "Message Sent Successfully!"
-4. Go to: http://localhost:5174/admin/messages
-5. Your message should appear!
-
----
-
-## ✅ Final Checklist
-
-All these should work now:
-
-- [ ] http://localhost:5174 - Shows services (not empty)
-- [ ] http://localhost:5174/services - 9 services visible
-- [ ] http://localhost:5174/admin - Can login
-- [ ] http://localhost:5174/admin/services - Can add service
-- [ ] http://localhost:5174/admin/messages - Can see messages
-- [ ] Contact form submission works
+Your page is ready when:
+- ✅ All services display in both EN & AR
+- ✅ Search works (type or press `/`)
+- ✅ FAQ accordion animates smoothly
+- ✅ WhatsApp button appears (bottom right)
+- ✅ Magnetic button pulls on hover (desktop)
+- ✅ All 4 modes look good
+- ✅ Lighthouse ≥90 on all metrics
+- ✅ No console errors
 
 ---
 
-## 🆘 If Something Fails
+## Support
 
-### Yellow Banner Still Shows
-→ Check `.env.local` has correct values
-→ Restart dev server: Ctrl+C then `npm run dev`
-
-### Empty Data on Site
-→ Run Step 3 again (seed data)
-→ Check browser console (F12) for errors
-
-### Can't Login
-→ Check Step 5B completed
-→ Check email is exactly the same
-
-### Full Guide
-→ Open: `SUPABASE_SETUP_GUIDE.md`
+Check these in order:
+1. Console errors (F12)
+2. Network tab (see failed requests)
+3. `CHECK_SETUP.md` (full checklist)
+4. `SERVICES_PAGE_ROUND1_GUIDE.md` (detailed guide)
 
 ---
 
-**You're done! Time: ~15 minutes** 🎉
+**Time to first working page: ~5 minutes**
+**Time to production-ready: ~30 minutes** (with testing)
+
+Good luck! 🚀

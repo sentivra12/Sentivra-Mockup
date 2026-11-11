@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/i18n/useTranslation';
 
 const MockupCard = ({ 
   mockup, 
@@ -10,7 +11,10 @@ const MockupCard = ({
   delay = 0,
   layout = 'grid' // 'grid' or 'list'
 }) => {
-  const { title, category, description, image } = mockup;
+  const { t, language } = useTranslation();
+  const { title, category, description } = mockup;
+  // Fix: Use correct image field from database (cover_image_url or desktop_screenshot_url)
+  const image = mockup.cover_image_url || mockup.desktop_screenshot_url || mockup.image;
 
   if (layout === 'list') {
     // Mobile horizontal layout
@@ -19,7 +23,7 @@ const MockupCard = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
-        className="bg-white rounded-xl border border-frost overflow-hidden hover:shadow-card-hover transition-shadow duration-300"
+        className="bg-color-background rounded-xl border border-frost overflow-hidden hover:shadow-card-hover transition-shadow duration-300"
       >
         <div className="flex gap-4 p-4">
           {/* Image */}
@@ -51,23 +55,23 @@ const MockupCard = ({
             </div>
 
             {/* Buttons */}
-            <div className="flex gap-2 mt-3">
+            <div className={`flex gap-2 mt-3 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
               <Button
                 onClick={() => onViewMockup(mockup)}
                 size="sm"
-                className="bg-primary hover:bg-primary-dark text-white text-xs px-3 py-2 rounded-lg min-w-0"
+                className={`bg-primary hover:bg-primary-dark text-white text-xs px-3 py-2 rounded-lg min-w-0 ${language === 'ar' ? 'flex-row-reverse' : ''}`}
               >
-                <Eye className="h-3 w-3 mr-1 flex-shrink-0" />
-                <span className="whitespace-nowrap">View</span>
+                <Eye className={`h-3 w-3 ${language === 'ar' ? 'ml-1' : 'mr-1'} flex-shrink-0`} />
+                <span className="whitespace-nowrap">{t('mockups.card.view')}</span>
               </Button>
               <Button
                 onClick={() => onRequestDesign(mockup)}
                 size="sm"
                 variant="outline"
-                className="border border-primary text-primary hover:bg-primary hover:text-white text-xs px-2 py-2 rounded-lg flex-1 min-w-0"
+                className={`border border-primary text-primary hover:bg-primary hover:text-white text-xs px-2 py-2 rounded-lg flex-1 min-w-0 ${language === 'ar' ? 'flex-row-reverse' : ''}`}
               >
-                <span className="truncate">Request</span>
-                <ArrowRight className="h-3 w-3 ml-1 flex-shrink-0" />
+                <span className="truncate">{t('mockups.card.request')}</span>
+                <ArrowRight className={`h-3 w-3 ${language === 'ar' ? 'mr-1 rotate-180' : 'ml-1'} flex-shrink-0`} />
               </Button>
             </div>
           </div>
@@ -82,7 +86,7 @@ const MockupCard = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      className="group bg-white rounded-xl border border-frost overflow-hidden hover:shadow-dropdown hover:border-primary/30 transition-all duration-300"
+      className="group bg-color-background rounded-xl border border-frost overflow-hidden hover:shadow-dropdown hover:border-primary/30 transition-all duration-300"
     >
       {/* Image */}
       <div className="relative h-56 bg-frost-soft overflow-hidden">
@@ -119,19 +123,19 @@ const MockupCard = ({
           <Button
             onClick={() => onViewMockup(mockup)}
             size="sm"
-            className="bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg group/btn w-full"
+            className={`bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg group/btn w-full ${language === 'ar' ? 'flex-row-reverse' : ''}`}
           >
-            <Eye className="h-4 w-4 mr-2" />
-            <span className="whitespace-nowrap">View Mockup</span>
+            <Eye className={`h-4 w-4 ${language === 'ar' ? 'ml-2' : 'mr-2'}`} />
+            <span className="whitespace-nowrap">{t('mockups.card.viewMockup')}</span>
           </Button>
           <Button
             onClick={() => onRequestDesign(mockup)}
             size="sm"
             variant="outline"
-            className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-4 py-2.5 rounded-lg group/btn w-full"
+            className={`border-2 border-primary text-primary hover:bg-primary hover:text-white px-4 py-2.5 rounded-lg group/btn w-full ${language === 'ar' ? 'flex-row-reverse' : ''}`}
           >
-            <span className="whitespace-nowrap">Request Design</span>
-            <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+            <span className="whitespace-nowrap">{t('mockups.card.requestDesign')}</span>
+            <ArrowRight className={`h-4 w-4 ${language === 'ar' ? 'mr-2 group-hover/btn:-translate-x-1 rotate-180' : 'ml-2 group-hover/btn:translate-x-1'} transition-transform`} />
           </Button>
         </div>
       </div>

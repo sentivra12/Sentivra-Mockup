@@ -1,11 +1,56 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Github, Linkedin, Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { services } from '@/data/services';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Github, Linkedin, Facebook, Instagram, Mail, Phone, MapPin, ArrowUp } from 'lucide-react';
+import { motion } from 'framer-motion';
+import InverseSurface from '@/components/ui/InverseSurface';
+import { useSiteSettings, useServices } from '@/hooks/useContent';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useTheme } from '@/theme/useTheme';
 
 const Footer = () => {
   const navigate = useNavigate();
+  const { t, language } = useTranslation();
+  const { theme, setTheme } = useTheme();
+  const isRTL = language === 'ar';
+  
+  const { data: siteSettings } = useSiteSettings();
+  const { data: services = [] } = useServices();
+  
+  // Get only published services, limit to 6
+  const publishedServices = services.filter(s => s.is_active).slice(0, 6);
+  
+  // Get contact details from site_settings
+  const email = siteSettings?.primary_email || 'info@sentivra.com';
+  const phone = siteSettings?.primary_phone || '+20 123 456 7890';
+  const whatsapp = siteSettings?.whatsapp_number || phone;
+  const location = siteSettings?.location || t('footer.location');
+  const footerDescription = language === 'ar' 
+    ? (siteSettings?.footer_description_ar || t('footer.tagline'))
+    : (siteSettings?.footer_description_en || t('footer.tagline'));
+  
+  // Social links from site_settings
+  const socialLinks = [
+    { 
+      icon: Github, 
+      url: siteSettings?.github_url || 'https://github.com/sentivra12',
+      label: 'GitHub'
+    },
+    { 
+      icon: Linkedin, 
+      url: siteSettings?.linkedin_url || 'https://www.linkedin.com/in/sentivra',
+      label: 'LinkedIn'
+    },
+    { 
+      icon: Facebook, 
+      url: siteSettings?.facebook_url || 'https://www.facebook.com/share/16vwkvzbwi/',
+      label: 'Facebook'
+    },
+    { 
+      icon: Instagram, 
+      url: siteSettings?.instagram_url || 'https://instagram.com/sentivra',
+      label: 'Instagram'
+    },
+  ];
 
   const handleNavClick = (e, path) => {
     e.preventDefault();
@@ -14,158 +59,223 @@ const Footer = () => {
       const id = path.split('#')[1];
       setTimeout(() => {
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      }, 0);
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-primary-deep text-white">
-      {/* Large CTA Section */}
-      <div className="border-b border-frost/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
-            Let's Turn Your Ideas Into Real Products
-          </h2>
-          <p className="text-lg text-frost mb-8 max-w-2xl mx-auto">
-            Ready to bring your vision to life? Get in touch with us today and let's build something amazing together.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="light" asChild>
-              <a href="/#contact">Start Your Project</a>
-            </Button>
-            <Button size="lg" variant="outline-white" asChild>
-              <a href="/#services">Our Services</a>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer Content - 4 Columns */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Column 1: Logo + Description + Social */}
-          <div className="space-y-6">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/sentivra-logo.jpg" 
-                alt="Sentivra Logo" 
-                className="h-10 w-10 rounded-full"
-                width="40"
-                height="40"
-              />
-              <span className="s-logo text-2xl font-bold">
-                <span className="text-primary">S</span>entivra
+    <InverseSurface as="footer" withTopGlow withGrid>
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 ${isRTL ? 'text-right' : 'text-left'}`}>
+          
+          {/* Column 1: Brand + Description + Social */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="space-y-6"
+          >
+            {/* Logo */}
+            <Link 
+              to="/" 
+              onClick={(e) => handleNavClick(e, '/')}
+              className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''} group`}
+            >
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-inverse-glass-bg border border-inverse-glass-border group-hover:bg-inverse-glass-hover transition-colors">
+                <span className="text-2xl font-bold text-inverse-accent">S</span>
+              </div>
+              <span className="text-2xl font-bold text-inverse-fg">
+                entivra
               </span>
-            </div>
-            <p className="text-frost leading-relaxed">
-              Transforming ideas into digital excellence through innovative technology solutions.
+            </Link>
+
+            {/* Description */}
+            <p className="text-inverse-fg-muted leading-relaxed text-sm max-w-xs">
+              {footerDescription}
             </p>
-            <div className="flex space-x-4">
-              <a href="https://github.com/sentivra12" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                <Github className="h-5 w-5" />
-              </a>
-              <a href="https://www.linkedin.com/in/ٍٍsentivra" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                <Linkedin className="h-5 w-5" />
-              </a>
-              <a href="https://www.facebook.com/share/16vwkvzbwi/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="https://instagram.com/sentivra" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                <Instagram className="h-5 w-5" />
-              </a>
-            </div>
-          </div>
 
-          {/* Column 2: Quick Links */}
-          <div>
-            <h3 className="text-lg font-bold mb-6">Quick Links</h3>
-            <div className="space-y-3">
-              <a href="/#home" onClick={(e) => handleNavClick(e, '/#home')} className="block text-frost hover:text-primary transition-colors">
-                Home
-              </a>
-              <a href="/#about" onClick={(e) => handleNavClick(e, '/#about')} className="block text-frost hover:text-primary transition-colors">
-                About Us
-              </a>
-              <a href="/#services" onClick={(e) => handleNavClick(e, '/#services')} className="block text-frost hover:text-primary transition-colors">
-                Services
-              </a>
-              <a href="/#work" onClick={(e) => handleNavClick(e, '/#work')} className="block text-frost hover:text-primary transition-colors">
-                Our Work
-              </a>
-              <a href="/mockups" onClick={(e) => handleNavClick(e, '/mockups')} className="block text-frost hover:text-primary transition-colors">
-                Mockups
-              </a>
-              <a href="/#process" onClick={(e) => handleNavClick(e, '/#process')} className="block text-frost hover:text-primary transition-colors">
-                Our Process
-              </a>
-            </div>
-          </div>
-
-          {/* Column 3: Our Services */}
-          <div>
-            <h3 className="text-lg font-bold mb-6">Our Services</h3>
-            <div className="space-y-3">
-              {services.slice(0, 6).map((service) => (
-                <a 
-                  key={service.slug}
-                  href={`/services/${service.slug}`}
-                  className="block text-frost hover:text-primary transition-colors text-sm"
+            {/* Social Icons - Glass buttons */}
+            <div className={`flex gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              {socialLinks.map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-10 h-10 rounded-lg bg-inverse-glass-bg border border-inverse-glass-border hover:bg-inverse-glass-hover hover:border-inverse-accent transition-all duration-200 group"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label={social.label}
                 >
-                  {service.title}
-                </a>
+                  <social.icon className="w-5 h-5 text-inverse-fg-muted group-hover:text-inverse-accent transition-colors" />
+                </motion.a>
               ))}
             </div>
-          </div>
+          </motion.div>
+
+          {/* Column 2: Quick Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <h3 className="text-lg font-semibold mb-6 text-inverse-fg">
+              {t('footer.quickLinks')}
+            </h3>
+            <ul className="space-y-3">
+              {[
+                { label: t('nav.home'), path: '/' },
+                { label: t('footer.aboutUs'), path: '/about' },
+                { label: t('nav.services'), path: '/services' },
+                { label: t('nav.mockups'), path: '/mockups' },
+                { label: t('nav.contact'), path: '/contact' },
+              ].map((link, index) => (
+                <li key={index}>
+                  <a
+                    href={link.path}
+                    onClick={(e) => handleNavClick(e, link.path)}
+                    className="text-inverse-fg-muted hover:text-inverse-accent transition-colors text-sm inline-block min-h-[44px] flex items-center focus:outline-none focus:ring-2 focus:ring-inverse-ring rounded"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Column 3: Our Services */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <h3 className="text-lg font-semibold mb-6 text-inverse-fg">
+              {t('footer.ourServices')}
+            </h3>
+            <ul className="space-y-3">
+              {publishedServices.map((service) => (
+                <li key={service.id}>
+                  <Link
+                    to={`/services/${service.slug}`}
+                    onClick={(e) => handleNavClick(e, `/services/${service.slug}`)}
+                    className="text-inverse-fg-muted hover:text-inverse-accent transition-colors text-sm inline-block min-h-[44px] flex items-center focus:outline-none focus:ring-2 focus:ring-inverse-ring rounded"
+                  >
+                    {language === 'ar' ? (service.title_ar || service.title) : (service.title_en || service.title)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
 
           {/* Column 4: Contact Us */}
-          <div>
-            <h3 className="text-lg font-bold mb-6">Contact Us</h3>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <Mail className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                <a href="mailto:sentivra.tech@gmail.com" className="text-frost hover:text-primary transition-colors text-sm">
-                  sentivra.tech@gmail.com
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <h3 className="text-lg font-semibold mb-6 text-inverse-fg">
+              {t('footer.contactUs')}
+            </h3>
+            <ul className="space-y-4">
+              {/* Email */}
+              <li>
+                <a
+                  href={`mailto:${email}`}
+                  className={`flex items-start gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''} text-inverse-fg-muted hover:text-inverse-accent transition-colors text-sm group min-h-[44px] focus:outline-none focus:ring-2 focus:ring-inverse-ring rounded p-1 -m-1`}
+                >
+                  <Mail className="w-5 h-5 text-inverse-accent flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                  <span className="break-all" dir="ltr">{email}</span>
                 </a>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Phone className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                <a href="tel:+201558952126" className="text-frost hover:text-primary transition-colors text-sm">
-                  +201558952126
+              </li>
+
+              {/* Phone */}
+              <li>
+                <a
+                  href={`tel:${phone.replace(/\s/g, '')}`}
+                  className={`flex items-start gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''} text-inverse-fg-muted hover:text-inverse-accent transition-colors text-sm group min-h-[44px] focus:outline-none focus:ring-2 focus:ring-inverse-ring rounded p-1 -m-1`}
+                >
+                  <Phone className="w-5 h-5 text-inverse-accent flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                  <span dir="ltr">{phone}</span>
                 </a>
-              </div>
-              <div className="flex items-start space-x-3">
-                <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-frost text-sm">
-                  Sadat City, Egypt
-                </span>
-              </div>
-            </div>
-          </div>
+              </li>
+
+              {/* Location */}
+              <li>
+                <div className={`flex items-start gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''} text-inverse-fg-muted text-sm`}>
+                  <MapPin className="w-5 h-5 text-inverse-accent flex-shrink-0 mt-0.5" />
+                  <span>{location}</span>
+                </div>
+              </li>
+            </ul>
+          </motion.div>
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-frost/20">
+      {/* Bottom Bar with subtle top border */}
+      <div className="border-t border-inverse-border-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-muted text-sm">
-              © 2025 Sentivra. All rights reserved.
+          <div className={`flex flex-col md:flex-row justify-between items-center gap-4 ${isRTL ? 'md:flex-row-reverse' : ''}`}>
+            
+            {/* Copyright */}
+            <p className="text-inverse-fg-subtle text-sm text-center md:text-left">
+              {t('footer.copyright', { year: currentYear })}
             </p>
-            <div className="flex space-x-6">
-              <a href="#" className="text-muted hover:text-primary transition-colors text-sm">
-                Privacy Policy
-              </a>
-              <a href="#" className="text-muted hover:text-primary transition-colors text-sm">
-                Terms of Service
-              </a>
+
+            {/* Links + Controls */}
+            <div className={`flex flex-wrap items-center gap-6 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              {/* Legal Links - only if routes exist */}
+              <div className={`flex gap-6 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <a 
+                  href="/privacy" 
+                  onClick={(e) => handleNavClick(e, '/privacy')}
+                  className="text-inverse-fg-subtle hover:text-inverse-accent transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-inverse-ring rounded min-h-[44px] flex items-center"
+                >
+                  {t('footer.privacyPolicy')}
+                </a>
+                <a 
+                  href="/terms" 
+                  onClick={(e) => handleNavClick(e, '/terms')}
+                  className="text-inverse-fg-subtle hover:text-inverse-accent transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-inverse-ring rounded min-h-[44px] flex items-center"
+                >
+                  {t('footer.termsOfService')}
+                </a>
+              </div>
+
+              {/* Theme Toggle - Compact */}
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="text-inverse-fg-subtle hover:text-inverse-accent transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-inverse-ring rounded px-2 py-1"
+                aria-label={t('theme.title')}
+              >
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </button>
+
+              {/* Back to top button */}
+              <button
+                onClick={scrollToTop}
+                className="flex items-center justify-center w-10 h-10 rounded-lg bg-inverse-glass-bg border border-inverse-glass-border hover:bg-inverse-glass-hover hover:border-inverse-accent transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-inverse-ring"
+                aria-label={t('footer.backToTop')}
+              >
+                <ArrowUp className="w-5 h-5 text-inverse-fg-muted group-hover:text-inverse-accent transition-colors" />
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </footer>
+    </InverseSurface>
   );
 };
 
 export default Footer;
-
-

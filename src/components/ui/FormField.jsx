@@ -18,7 +18,7 @@ const FormField = ({
   className = ''
 }) => {
   const inputClasses = `
-    w-full pl-12 pr-4 py-3 
+    w-full ps-12 pe-4 py-3 
     border rounded-lg 
     text-primary-deep placeholder:text-muted
     focus:ring-2 focus:ring-primary focus:border-primary 
@@ -37,14 +37,14 @@ const FormField = ({
         className="block text-sm font-medium text-text-muted mb-2"
       >
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 ms-1">*</span>}
       </label>
 
       {/* Input Container */}
       <div className="relative">
         {/* Icon */}
         {Icon && (
-          <div className="absolute left-4 top-3.5 pointer-events-none">
+          <div className="absolute start-4 top-3.5 pointer-events-none">
             <Icon className="h-5 w-5 text-muted" />
           </div>
         )}
@@ -62,6 +62,7 @@ const FormField = ({
           autoComplete={autoComplete}
           disabled={disabled}
           rows={rows}
+          dir={type === 'tel' || type === 'email' ? 'ltr' : undefined}
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={error ? `${id}-error` : undefined}
           className={inputClasses}

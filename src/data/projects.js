@@ -1,4 +1,7 @@
-export const projects = [
+import { supabase, isMissingEnv } from '../lib/supabase';
+
+// Static fallback data (used when Supabase is not configured)
+export const projectsStatic = [
   {
     id: 1,
     slug: 'real-estate-platform',
@@ -109,6 +112,9 @@ export const projects = [
   }
 ];
 
+// Default export for backward compatibility
+export const projects = projectsStatic;
+
 export const projectCategories = [
   { id: 'all', name: 'All Projects' },
   { id: 'web-applications', name: 'Web Applications' },
@@ -118,3 +124,115 @@ export const projectCategories = [
   { id: 'ai-chatbots', name: 'AI & Chatbots' },
   { id: 'other', name: 'Other' }
 ];
+
+/**
+ * Fetch projects from Supabase with optional filters
+ * Falls back to static data if Supabase is not configured
+ * @param {Object} options - Query options
+ * @param {string} options.category - Filter by category
+ * @param {boolean} options.featured - Filter featured projects
+ * @param {string} options.language - Language code ('en' or 'ar')
+ * @returns {Promise<Array>} Projects array
+ */
+export const fetchProjects = async ({ category, featured, language = 'en' } = {}) => {
+  // If Supabase is not configured, return static data
+  if (isMissingEnv) {
+    console.warn('Using static projects data (Supabase not configured)');
+    let filtered = projectsStatic;
+    
+    if (category && category !== 'all') {
+      filtered = filtered.filter(p => p.category === category);
+    }
+    
+    if (featured) {
+      filtered = filtered.filter(p => p.featured);
+    }
+    
+    return filtered;
+  }
+
+  try {
+    let query = supabase
+      .from('projects')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+
+    if (category && category !== 'all') {
+      query = query.eq('category', category);
+    }
+
+    if (featured) {
+      query = query.eq('is_featured', true);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching projects:', error);
+      return projectsStatic;
+    }
+
+    // Map bilingual fields and convert database structure to frontend format
+    return data.map(project => ({
+      ...project,
+      title: language === 'ar' && project.title_ar ? project.title_ar : project.title,
+      shortDescription: language === 'ar' && project.short_description_ar 
+        ? project.short_description_ar 
+        : project.short_description,
+      description: language === 'ar' && project.long_description_ar 
+        ? project.long_description_ar 
+        : project.long_description,
+      techStack: project.technologies || [],
+      image: project.image_url,
+    }));
+  } catch (err) {
+    console.error('Error fetching projects:', err);
+    return projectsStatic;
+  }
+};
+
+/**
+ * Fetch a single project by slug
+ * @param {string} slug - Project slug
+ * @param {string} language - Language code ('en' or 'ar')
+ * @returns {Promise<Object|null>} Project object or null
+ */
+export const fetchProjectBySlug = async (slug, language = 'en') => {
+  // If Supabase is not configured, return from static data
+  if (isMissingEnv) {
+    console.warn('Using static projects data (Supabase not configured)');
+    return projectsStatic.find(p => p.slug === slug) || null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_active', true)
+      .single();
+
+    if (error) {
+      console.error('Error fetching project:', error);
+      return projectsStatic.find(p => p.slug === slug) || null;
+    }
+
+    // Map bilingual fields
+    return {
+      ...data,
+      title: language === 'ar' && data.title_ar ? data.title_ar : data.title,
+      shortDescription: language === 'ar' && data.short_description_ar 
+        ? data.short_description_ar 
+        : data.short_description,
+      description: language === 'ar' && data.long_description_ar 
+        ? data.long_description_ar 
+        : data.long_description,
+      techStack: data.technologies || [],
+      image: data.image_url,
+    };
+  } catch (err) {
+    console.error('Error fetching project:', err);
+    return projectsStatic.find(p => p.slug === slug) || null;
+  }
+};

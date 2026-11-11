@@ -1,5 +1,7 @@
-// Website mockup designs data
-export const mockups = [
+import { supabase, isMissingEnv } from '../lib/supabase';
+
+// Website mockup designs data (static fallback)
+export const mockupsStatic = [
   {
     id: 1,
     slug: 'modern-real-estate',
@@ -122,6 +124,9 @@ export const mockups = [
   }
 ];
 
+// Default export for backward compatibility
+export const mockups = mockupsStatic;
+
 // Category configuration with icons
 export const mockupCategories = [
   { id: 'all', name: 'All', icon: 'LayoutGrid' },
@@ -135,7 +140,7 @@ export const mockupCategories = [
   { id: 'other', name: 'Other', icon: 'MoreHorizontal' }
 ];
 
-// FAQ data for mockups page
+// FAQ data for mockups page (static)
 export const mockupsFAQs = [
   {
     question: 'Can I customize the mockup after choosing it?',
@@ -170,3 +175,60 @@ export const mockupsFAQs = [
     answer: '[PLACEHOLDER] Yes! Click "View Mockup" on any design to see a detailed preview. For interactive demos, please contact us and we\'ll arrange a personalized walkthrough.'
   }
 ];
+
+/**
+ * Fetch mockups from Supabase with optional filters
+ * Falls back to static data if Supabase is not configured
+ * @param {Object} options - Query options
+ * @param {string} options.category - Filter by category
+ * @param {string} options.language - Language code ('en' or 'ar')
+ * @returns {Promise<Array>} Mockups array
+ */
+export const fetchMockups = async ({ category, language = 'en' } = {}) => {
+  // If Supabase is not configured, return static data
+  if (isMissingEnv) {
+    console.warn('Using static mockups data (Supabase not configured)');
+    let filtered = mockupsStatic;
+    
+    if (category && category !== 'all') {
+      filtered = filtered.filter(m => m.categoryId === category);
+    }
+    
+    return filtered;
+  }
+
+  try {
+    let query = supabase
+      .from('mockups')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
+
+    if (category && category !== 'all') {
+      query = query.eq('category', category);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching mockups:', error);
+      return mockupsStatic;
+    }
+
+    // Map bilingual fields
+    return data.map(mockup => ({
+      ...mockup,
+      title: language === 'ar' && mockup.title_ar ? mockup.title_ar : mockup.title,
+      description: language === 'ar' && mockup.description_ar 
+        ? mockup.description_ar 
+        : mockup.description,
+      category: language === 'ar' && mockup.category_ar 
+        ? mockup.category_ar 
+        : mockup.category,
+      image: mockup.image_url,
+    }));
+  } catch (err) {
+    console.error('Error fetching mockups:', err);
+    return mockupsStatic;
+  }
+};

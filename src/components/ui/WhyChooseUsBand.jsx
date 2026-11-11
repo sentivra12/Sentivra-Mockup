@@ -3,19 +3,36 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import StatCounter from '@/components/ui/StatCounter';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 const WhyChooseUsBand = ({ stats = [], label, title, description, ctaButton }) => {
+  const { language } = useTranslation();
+  
+  // Fallbacks for missing content (development warnings)
+  const isDev = import.meta.env.DEV;
+  
+  const safeLabel = label || (isDev ? '[Missing: label]' : '');
+  const safeTitle = title || (isDev ? '[Missing: title]' : '');
+  const safeDescription = description || (isDev ? '[Missing: description]' : '');
+  const safeCtaButton = ctaButton?.label ? ctaButton : null;
+  
+  // Log warnings in development
+  if (isDev) {
+    if (!label) console.warn('[WhyChooseUsBand] Missing prop: label');
+    if (!title) console.warn('[WhyChooseUsBand] Missing prop: title');
+    if (!description) console.warn('[WhyChooseUsBand] Missing prop: description');
+    if (ctaButton && !ctaButton.label) console.warn('[WhyChooseUsBand] CTA button has no label');
+  }
+  
   return (
-    <section className="py-20 md:py-28 bg-primary-deep relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-          backgroundSize: '30px 30px'
-        }}></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="relative py-20 md:py-28 bg-frost-soft dark:bg-surface overflow-hidden">
+      {/* Grid pattern */}
+      <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]" style={{
+        backgroundImage: 'linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px)',
+        backgroundSize: '64px 64px'
+      }} />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -24,27 +41,29 @@ const WhyChooseUsBand = ({ stats = [], label, title, description, ctaButton }) =
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          {label && (
-            <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-4">
-              {label}
+          {safeLabel && (
+            <span className={`inline-block text-sm font-semibold text-primary uppercase tracking-wider mb-4 ${isDev && !label ? 'bg-red-500/20 px-2 py-1 rounded' : ''}`}>
+              {safeLabel}
             </span>
           )}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-            {title}
-          </h2>
-          {description && (
-            <p className="text-lg text-white/80 max-w-3xl mx-auto mb-8">
-              {description}
+          {safeTitle && (
+            <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold text-primary-deep dark:text-white mb-6 ${isDev && !title ? 'text-red-400' : ''}`}>
+              {safeTitle}
+            </h2>
+          )}
+          {safeDescription && (
+            <p className={`text-lg text-text-muted dark:text-slate-400 max-w-3xl mx-auto mb-8 ${isDev && !description ? 'text-red-300' : ''}`}>
+              {safeDescription}
             </p>
           )}
-          {ctaButton && (
-            <a href={ctaButton.href} onClick={ctaButton.onClick}>
+          {safeCtaButton && (
+            <a href={safeCtaButton.href} onClick={safeCtaButton.onClick}>
               <Button 
                 size="lg" 
-                className="bg-primary hover:bg-primary-dark text-white px-8 py-6 text-lg rounded-lg group"
+                className={`bg-primary hover:bg-primary-strong text-white px-8 py-6 text-lg rounded-lg group ${language === 'ar' ? 'flex-row-reverse' : ''}`}
               >
-                {ctaButton.label}
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                {safeCtaButton.label}
+                <ArrowRight className={`h-5 w-5 ${language === 'ar' ? 'mr-2 group-hover:-translate-x-1 rotate-180' : 'ml-2 group-hover:translate-x-1'} transition-transform`} />
               </Button>
             </a>
           )}
@@ -75,5 +94,3 @@ const WhyChooseUsBand = ({ stats = [], label, title, description, ctaButton }) =
 };
 
 export default WhyChooseUsBand;
-
-

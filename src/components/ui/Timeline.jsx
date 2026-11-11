@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Lightbulb, Rocket, Globe, Users, TrendingUp, ChevronRight } from 'lucide-react';
+import { useTranslation } from '../../i18n/useTranslation';
+import { Bidi } from './Bidi';
 
 const iconMap = {
   Lightbulb,
@@ -11,6 +13,8 @@ const iconMap = {
 };
 
 const Timeline = ({ milestones }) => {
+  const { language } = useTranslation();
+  
   return (
     <>
       {/* Desktop - Horizontal Timeline */}
@@ -47,10 +51,10 @@ const Timeline = ({ milestones }) => {
                     : 'bg-primary'
                 }`} />
 
-                {/* Content - Left Aligned */}
-                <div className="text-left">
+                {/* Content - Left/Right Aligned based on language */}
+                <div className={language === 'ar' ? 'text-right' : 'text-left'}>
                   <div className="text-lg font-bold text-primary mb-1">
-                    {milestone.year}
+                    <Bidi>{milestone.year}</Bidi>
                   </div>
                   <h4 className="text-base font-bold text-primary-deep mb-2">
                     {milestone.title}
@@ -67,24 +71,24 @@ const Timeline = ({ milestones }) => {
 
       {/* Mobile/Tablet - Vertical Timeline */}
       <div className="lg:hidden">
-        <ol className="relative border-l-2 border-frost ml-6 space-y-8" role="list">
+        <ol className={`relative border-l-2 border-frost ${language === 'ar' ? 'mr-6 border-r-2 border-l-0' : 'ml-6'} space-y-8`} role="list">
           {milestones.map((milestone, index) => {
             const Icon = iconMap[milestone.icon] || Lightbulb;
             
             return (
               <motion.li
                 key={index}
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: language === 'ar' ? 20 : -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="ml-6"
+                className={language === 'ar' ? 'mr-6' : 'ml-6'}
               >
                 {/* Dot */}
-                <div className="absolute -left-3 w-6 h-6 bg-primary rounded-full border-4 border-white" />
+                <div className={`absolute ${language === 'ar' ? '-right-3' : '-left-3'} w-6 h-6 bg-primary rounded-full border-4 border-white`} />
 
                 {/* Content Card */}
-                <div className="bg-white rounded-lg p-5 shadow-card-hover hover:shadow-dropdown transition-shadow duration-300">
+                <div className="bg-color-background rounded-lg p-5 shadow-card-hover hover:shadow-dropdown transition-shadow duration-300">
                   <div className="flex items-start gap-4">
                     {/* Icon */}
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -93,11 +97,11 @@ const Timeline = ({ milestones }) => {
 
                     {/* Text Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
+                      <div className={`flex items-center gap-3 mb-2 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
                         <span className="text-xl font-bold text-primary">
-                          {milestone.year}
+                          <Bidi>{milestone.year}</Bidi>
                         </span>
-                        <ChevronRight className="h-4 w-4 text-muted" />
+                        <ChevronRight className={`h-4 w-4 text-muted ${language === 'ar' ? 'rotate-180' : ''}`} />
                         <h4 className="text-base font-bold text-primary-deep">
                           {milestone.title}
                         </h4>

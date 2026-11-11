@@ -104,7 +104,7 @@ const RegionMap = ({ countries }) => {
       </svg>
 
       {/* Legend */}
-      <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-card-hover">
+      <div className="absolute bottom-4 right-4 bg-color-background/90 backdrop-blur-sm rounded-lg p-3 shadow-card-hover">
         <div className="flex items-center gap-2 text-sm text-text-muted">
           <MapPin className="h-4 w-4 text-primary" />
           <span className="font-medium">Our Locations</span>

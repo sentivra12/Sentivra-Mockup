@@ -2,19 +2,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from '@/i18n/useTranslation';
+import InverseSurface from '@/components/ui/InverseSurface';
 
 const CTABand = ({ title, description, primaryButton, secondaryButton, className = '' }) => {
+  const { language } = useTranslation();
+  
   return (
-    <section className={`py-20 bg-primary-deep relative overflow-hidden ${className}`}>
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-          backgroundSize: '30px 30px'
-        }}></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <InverseSurface className={`py-20 ${className}`} withTopGlow withGrid>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -23,27 +19,27 @@ const CTABand = ({ title, description, primaryButton, secondaryButton, className
           className="text-center"
         >
           {/* Title */}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-inverse-fg mb-4">
             {title}
           </h2>
 
           {/* Description */}
           {description && (
-            <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-inverse-fg-muted mb-8 max-w-2xl mx-auto">
               {description}
             </p>
           )}
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className={`flex flex-col sm:flex-row gap-4 justify-center ${language === 'ar' ? 'sm:flex-row-reverse' : ''}`}>
             {primaryButton && (
               <a href={primaryButton.href} onClick={primaryButton.onClick}>
                 <Button 
                   size="lg" 
-                  className="bg-primary hover:bg-primary-dark text-white px-8 py-6 text-lg rounded-lg group"
+                  className="btn-inverse-primary px-8 py-6 text-lg rounded-lg group"
                 >
                   {primaryButton.label}
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className={`h-5 w-5 group-hover:translate-x-1 transition-transform ${language === 'ar' ? 'mr-2 rotate-180' : 'ml-2'}`} />
                 </Button>
               </a>
             )}
@@ -51,8 +47,7 @@ const CTABand = ({ title, description, primaryButton, secondaryButton, className
               <a href={secondaryButton.href} onClick={secondaryButton.onClick}>
                 <Button 
                   size="lg" 
-                  variant="outline" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-primary-deep px-8 py-6 text-lg rounded-lg"
+                  className="btn-inverse-secondary px-8 py-6 text-lg rounded-lg"
                 >
                   {secondaryButton.label}
                 </Button>
@@ -61,10 +56,8 @@ const CTABand = ({ title, description, primaryButton, secondaryButton, className
           </div>
         </motion.div>
       </div>
-    </section>
+    </InverseSurface>
   );
 };
 
 export default CTABand;
-
-

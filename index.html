@@ -2,8 +2,28 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<link rel="icon" type="image/jpeg" href="/sentivra-logo.jpg" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		<!-- FOUC Prevention: Load theme before render -->
+		<script>
+			(function() {
+				// Load saved theme or default to 'system'
+				const savedTheme = localStorage.getItem('sentivra-theme') || 'system';
+				let resolvedTheme = 'light';
+				
+				if (savedTheme === 'system') {
+					// Check system preference
+					resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				} else {
+					resolvedTheme = savedTheme;
+				}
+				
+				// Apply theme class immediately
+				document.documentElement.classList.add(resolvedTheme);
+				document.documentElement.setAttribute('data-theme', resolvedTheme);
+			})();
+		</script>
 		
 		<!-- SEO Meta Tags -->
 		<meta name="description" content="Sentivra - Full-service software company building modern digital solutions. Web apps, mobile apps, ERP systems, CRM, AI chatbots, and data analysis for businesses in Egypt, UAE, and Oman." />
@@ -17,7 +37,7 @@
 		<meta property="og:url" content="https://sentivra.com/" />
 		<meta property="og:title" content="Sentivra - Building Modern Digital Solutions That Drive Results" />
 		<meta property="og:description" content="Transform your business with custom web applications, mobile apps, ERP systems, and AI solutions. Trusted partner for businesses across Egypt, UAE, and Oman." />
-		<meta property="og:image" content="https://sentivra.com/sentivra-logo.jpg" />
+		<meta property="og:image" content="https://sentivra.com/sentivra-logo.svg" />
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
 		<meta property="og:site_name" content="Sentivra" />
@@ -28,14 +48,14 @@
 		<meta name="twitter:url" content="https://sentivra.com/" />
 		<meta name="twitter:title" content="Sentivra - Building Modern Digital Solutions That Drive Results" />
 		<meta name="twitter:description" content="Transform your business with custom web applications, mobile apps, ERP systems, and AI solutions. Trusted partner for businesses across Egypt, UAE, and Oman." />
-		<meta name="twitter:image" content="https://sentivra.com/sentivra-logo.jpg" />
+		<meta name="twitter:image" content="https://sentivra.com/sentivra-logo.svg" />
 		
 		<!-- Canonical URL -->
 		<link rel="canonical" href="https://sentivra.com/" />
 		
 		<!-- Preload Critical Assets -->
 		<!-- Logo will be used immediately in header, so preload is beneficial -->
-		<link rel="preload" href="/sentivra-logo.jpg" as="image" type="image/jpeg" fetchpriority="high" />
+		<link rel="preload" href="/sentivra-logo.svg" as="image" type="image/svg+xml" fetchpriority="high" />
 		
 		<!-- Preconnect to external domains for faster resource loading -->
 		<link rel="dns-prefetch" href="https://images.unsplash.com" />
@@ -44,14 +64,68 @@
 		<!-- Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<!-- Preload the main font files for faster text rendering -->
-		<link rel="preload" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" as="style" />
-		<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+		<!-- Handwriting fonts for Mockups hero annotation -->
+		<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Aref+Ruqaa:wght@400;700&display=swap" rel="stylesheet">
 		
 		<title>Sentivra - Building Modern Digital Solutions That Drive Results</title>
 	</head>
 	<body>
-		<div id="root"></div>
+		<noscript>
+			<div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: system-ui, -apple-system, sans-serif; padding: 20px; text-align: center;">
+				<div>
+					<h1 style="color: #5C7E8F; margin-bottom: 16px;">JavaScript Required</h1>
+					<p style="color: #6b7280;">This application requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+				</div>
+			</div>
+		</noscript>
+		<div id="root">
+			<!-- Loading skeleton that React will replace -->
+			<div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #ffffff;">
+				<div style="text-align: center;">
+					<div style="width: 64px; height: 64px; border: 4px solid #5C7E8F; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+					<p style="color: #5C7E8F; font-family: system-ui, -apple-system, sans-serif; font-size: 18px; font-weight: 500;">Loading Sentivra...</p>
+				</div>
+			</div>
+			<style>
+				@keyframes spin { to { transform: rotate(360deg); } }
+				.dark #root > div { background: #0B1419; }
+				.dark #root > div p { color: #8FB3C4; }
+			</style>
+		</div>
 		<script type="module" src="/src/main.jsx"></script>
+		
+		<!-- Global safety net: Replace stuck loader after 10 seconds -->
+		<script>
+			(function() {
+				// Flag that main.jsx will set when React successfully mounts
+				window.__APP_MOUNTED__ = false;
+				
+				setTimeout(function() {
+					// If React mounted successfully, don't show safety net
+					if (window.__APP_MOUNTED__) {
+						return;
+					}
+					
+					var root = document.getElementById('root');
+					
+					// Check if still showing the initial loader
+					// (root has only one child and it's the skeleton loader)
+					if (root && root.children.length === 1 && root.textContent.indexOf('Loading Sentivra') !== -1) {
+						console.error('[Safety Net] App stuck on initial loader after 10 seconds');
+						console.error('[Safety Net] Possible causes: Supabase paused/unreachable, auth hanging, build error');
+						
+						root.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; font-family: system-ui, -apple-system, sans-serif; text-align: center;">' +
+							'<div style="max-width: 500px;">' +
+							'<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="margin: 0 auto 16px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>' +
+							'<h1 style="color: #1f2937; font-size: 24px; font-weight: 600; margin: 0 0 8px;">App Failed to Load</h1>' +
+							'<p style="color: #6b7280; margin: 0 0 16px; line-height: 1.6;">The application is stuck loading. This usually means the backend (Supabase) is paused, unreachable, or auth is hanging.</p>' +
+							'<p style="color: #6b7280; margin: 0 0 16px; line-height: 1.6; font-size: 14px;"><strong>Developers:</strong> Open the browser console (F12) for detailed errors.</p>' +
+							'<button onclick="location.reload()" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer; margin-right: 8px;">Retry</button>' +
+							'<button onclick="localStorage.clear(); location.reload();" style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 500; cursor: pointer;">Clear Cache & Retry</button>' +
+							'</div></div>';
+					}
+				}, 10000);
+			})();
+		</script>
 	</body>
 </html>

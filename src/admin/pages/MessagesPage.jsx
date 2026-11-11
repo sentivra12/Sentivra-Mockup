@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, X, Eye, Trash2, CheckCircle, Clock, Archive } from 'lucide-react';
+import { Mail, X, Eye, Trash2, CheckCircle, Clock, Archive, ExternalLink, TrendingUp } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
 import DataTable from '@/admin/components/DataTable';
 import { useMessages, useUpdateMessageStatus, useDeleteMessage } from '@/hooks/useContent';
@@ -16,11 +16,20 @@ const MessagesPage = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterType, setFilterType] = useState('all');
+  const [filterSource, setFilterSource] = useState('all');
+
+  // Get unique attribution sources
+  const attributionSources = [...new Set(
+    messages
+      .filter(m => m.utm_source)
+      .map(m => m.utm_source)
+  )].sort();
 
   // Filter messages
   const filteredMessages = messages.filter((msg) => {
     if (filterStatus !== 'all' && msg.status !== filterStatus) return false;
     if (filterType !== 'all' && msg.type !== filterType) return false;
+    if (filterSource !== 'all' && msg.utm_source !== filterSource) return false;
     return true;
   });
 
@@ -95,13 +104,23 @@ const MessagesPage = () => {
 
   const columns = [
     {
-      key: 'name',
+      key: 'full_name',
       label: 'From',
       sortable: true,
       render: (value, row) => (
-        <div>
-          <div className="font-medium">{value}</div>
-          <div className="text-xs text-muted-foreground">{row.email}</div>
+        <div className="flex items-center gap-3">
+          {/* Mockup Thumbnail if design request */}
+          {row.mockup_id && row.mockups && (row.mockups.cover_image_url || row.mockups.desktop_screenshot_url) && (
+            <img
+              src={row.mockups.cover_image_url || row.mockups.desktop_screenshot_url}
+              alt="Design"
+              className="w-12 h-10 object-cover rounded"
+            />
+          )}
+          <div>
+            <div className="font-medium">{value || row.name}</div>
+            <div className="text-xs text-muted-foreground">{row.email}</div>
+          </div>
         </div>
       ),
     },
@@ -109,10 +128,25 @@ const MessagesPage = () => {
       key: 'type',
       label: 'Type',
       sortable: true,
-      render: (value) => (
-        <span className={`px-2.5 py-1 text-xs rounded-full font-medium ${typeBadge(value)}`}>
-          {value.replace('_', ' ')}
-        </span>
+      render: (value, row) => (
+        <div>
+          <span className={`px-2.5 py-1 text-xs rounded-full font-medium ${typeBadge(value || 'contact')}`}>
+            {(value || 'contact').replace('_', ' ')}
+          </span>
+          {/* Show mockup title if design request */}
+          {row.mockup_id && row.mockups && (
+            <div className="text-xs text-muted-foreground mt-1 truncate max-w-[120px]">
+              {row.mockups.title_en}
+            </div>
+          )}
+          {/* Show attribution source if available */}
+          {row.utm_source && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-blue-500">
+              <TrendingUp className="w-3 h-3" />
+              {row.utm_source}
+            </div>
+          )}
+        </div>
       ),
     },
     {
@@ -176,6 +210,17 @@ const MessagesPage = () => {
           <option value="contact">Contact</option>
           <option value="mockup_request">Mockup Request</option>
           <option value="quote_request">Quote Request</option>
+        </select>
+
+        <select
+          value={filterSource}
+          onChange={(e) => setFilterSource(e.target.value)}
+          className="px-4 py-2 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+        >
+          <option value="all">All Sources</option>
+          {attributionSources.map(source => (
+            <option key={source} value={source}>{source}</option>
+          ))}
         </select>
       </div>
 
@@ -267,9 +312,45 @@ const MessagesPage = () => {
                   <div>
                     <p className="text-sm font-semibold text-muted-foreground mb-2">Message</p>
                     <div className="p-4 bg-accent/30 rounded-xl whitespace-pre-wrap">
-                      {selectedMessage.message}
+                      {selectedMessage.message || selectedMessage.project_details}
                     </div>
                   </div>
+
+                  {/* Mockup Design Request */}
+                  {selectedMessage.mockup_id && selectedMessage.mockups && (
+                    <div>
+                      <p className="text-sm font-semibold text-muted-foreground mb-2">Requested Design</p>
+                      <a
+                        href={`/mockups/${selectedMessage.mockups.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-4 bg-pink-500/10 border border-pink-500/20 rounded-xl hover:bg-pink-500/20 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          {(selectedMessage.mockups.cover_image_url || selectedMessage.mockups.desktop_screenshot_url) && (
+                            <img
+                              src={selectedMessage.mockups.cover_image_url || selectedMessage.mockups.desktop_screenshot_url}
+                              alt={selectedMessage.mockups.title_en}
+                              className="w-20 h-16 object-cover rounded-lg"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <div className="font-bold text-primary-deep">
+                              {selectedMessage.mockups.title_en}
+                            </div>
+                            {selectedMessage.mockups.title_ar && (
+                              <div className="text-sm text-muted-foreground">
+                                {selectedMessage.mockups.title_ar}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-xs text-pink-500 font-semibold">
+                            View Design →
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  )}
 
                   {/* Additional Fields */}
                   {selectedMessage.company && (
@@ -282,6 +363,102 @@ const MessagesPage = () => {
                     <div>
                       <p className="text-sm font-semibold text-muted-foreground mb-1">Service Interest</p>
                       <p className="text-sm">{selectedMessage.service_interest}</p>
+                    </div>
+                  )}
+
+                  {/* Attribution Data */}
+                  {(selectedMessage.utm_source || selectedMessage.utm_campaign || selectedMessage.utm_medium || 
+                    selectedMessage.gclid || selectedMessage.fbclid || selectedMessage.ttclid || 
+                    selectedMessage.referrer || selectedMessage.landing_page) && (
+                    <div>
+                      <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4" />
+                        Attribution Data
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl">
+                        {selectedMessage.utm_source && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Source</p>
+                            <p className="text-sm font-medium">{selectedMessage.utm_source}</p>
+                          </div>
+                        )}
+                        {selectedMessage.utm_medium && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Medium</p>
+                            <p className="text-sm font-medium">{selectedMessage.utm_medium}</p>
+                          </div>
+                        )}
+                        {selectedMessage.utm_campaign && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Campaign</p>
+                            <p className="text-sm font-medium">{selectedMessage.utm_campaign}</p>
+                          </div>
+                        )}
+                        {selectedMessage.utm_content && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Content</p>
+                            <p className="text-sm font-medium">{selectedMessage.utm_content}</p>
+                          </div>
+                        )}
+                        {selectedMessage.utm_term && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Term</p>
+                            <p className="text-sm font-medium">{selectedMessage.utm_term}</p>
+                          </div>
+                        )}
+                        {selectedMessage.gclid && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Google Click ID</p>
+                            <p className="text-sm font-mono text-xs truncate">{selectedMessage.gclid}</p>
+                          </div>
+                        )}
+                        {selectedMessage.fbclid && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Facebook Click ID</p>
+                            <p className="text-sm font-mono text-xs truncate">{selectedMessage.fbclid}</p>
+                          </div>
+                        )}
+                        {selectedMessage.ttclid && (
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">TikTok Click ID</p>
+                            <p className="text-sm font-mono text-xs truncate">{selectedMessage.ttclid}</p>
+                          </div>
+                        )}
+                        {selectedMessage.referrer && (
+                          <div className="sm:col-span-2">
+                            <p className="text-xs text-muted-foreground mb-0.5">Referrer</p>
+                            <a 
+                              href={selectedMessage.referrer} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-500 hover:underline flex items-center gap-1 truncate"
+                            >
+                              {selectedMessage.referrer}
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                            </a>
+                          </div>
+                        )}
+                        {selectedMessage.landing_page && (
+                          <div className="sm:col-span-2">
+                            <p className="text-xs text-muted-foreground mb-0.5">Landing Page</p>
+                            <a 
+                              href={selectedMessage.landing_page} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-500 hover:underline flex items-center gap-1 truncate"
+                            >
+                              {selectedMessage.landing_page}
+                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                            </a>
+                          </div>
+                        )}
+                        {selectedMessage.attribution_timestamp && (
+                          <div className="sm:col-span-2">
+                            <p className="text-xs text-muted-foreground mb-0.5">First Visit</p>
+                            <p className="text-sm">{new Date(selectedMessage.attribution_timestamp).toLocaleString()}</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
