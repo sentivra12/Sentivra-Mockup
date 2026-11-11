@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Briefcase, X, Save, Upload, AlertCircle } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
+import SaveBar from '@/admin/components/SaveBar';
+import { useFormDirty } from '@/admin/hooks/useFormDirty';
 import DataTable from '@/admin/components/DataTable';
 import { useServices, useCreateService, useUpdateService, useDeleteService } from '@/hooks/useContent';
 import { useToast } from '@/components/ui/use-toast';
@@ -17,14 +19,19 @@ const ServicesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [formData, setFormData] = useState({
-    title: '',
+    title_en: '',
+    title_ar: '',
     slug: '',
-    short_description: '',
-    long_description: '',
+    short_description_en: '',
+    short_description_ar: '',
+    long_description_en: '',
+    long_description_ar: '',
     icon: 'Code',
-    category: 'Web & Mobile',
+    category_id: null, // Will be set to first category's ID
     features: '',
+    technologies: '',
     is_active: true,
+    is_featured: false,
     display_order: 0,
   });
 
@@ -35,35 +42,52 @@ const ServicesPage = () => {
     'Server', 'Cloud', 'Cpu', 'Globe', 'Shield', 'Zap'
   ];
 
+  // Track dirty state
+  const { isDirty, markClean, resetToInitial } = useFormDirty(formData, editingService);
+
   const handleOpenModal = (service = null) => {
     if (service) {
       setEditingService(service);
       setFormData({
-        title: service.title,
+        title_en: service.title_en || '',
+        title_ar: service.title_ar || '',
         slug: service.slug,
-        short_description: service.short_description || '',
-        long_description: service.long_description || '',
+        short_description_en: service.short_description_en || '',
+        short_description_ar: service.short_description_ar || '',
+        long_description_en: service.long_description_en || '',
+        long_description_ar: service.long_description_ar || '',
         icon: service.icon || 'Code',
-        category: service.category,
+        category_id: service.category_id,
         features: Array.isArray(service.features) 
           ? service.features.join('\n') 
           : typeof service.features === 'string'
           ? service.features
           : '',
+        technologies: Array.isArray(service.technologies)
+          ? service.technologies.join('\n')
+          : typeof service.technologies === 'string'
+          ? service.technologies
+          : '',
         is_active: service.is_active,
+        is_featured: service.is_featured || false,
         display_order: service.display_order || 0,
       });
     } else {
       setEditingService(null);
       setFormData({
-        title: '',
+        title_en: '',
+        title_ar: '',
         slug: '',
-        short_description: '',
-        long_description: '',
+        short_description_en: '',
+        short_description_ar: '',
+        long_description_en: '',
+        long_description_ar: '',
         icon: 'Code',
-        category: 'Web & Mobile',
+        category_id: null,
         features: '',
+        technologies: '',
         is_active: true,
+        is_featured: false,
         display_order: services.length,
       });
     }
@@ -71,8 +95,13 @@ const ServicesPage = () => {
   };
 
   const handleCloseModal = () => {
+    if (isDirty) {
+      const shouldClose = window.confirm('You have unsaved changes. Are you sure you want to close?');
+      if (!shouldClose) return;
+    }
     setIsModalOpen(false);
     setEditingService(null);
+    resetToInitial();
   };
 
   const handleChange = (e) => {
@@ -82,8 +111,8 @@ const ServicesPage = () => {
       [name]: type === 'checkbox' ? checked : value,
     });
 
-    // Auto-generate slug from title
-    if (name === 'title' && !editingService) {
+    // Auto-generate slug from English title
+    if (name === 'title_en' && !editingService) {
       const slug = value
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
@@ -102,6 +131,10 @@ const ServicesPage = () => {
           .split('\n')
           .filter((f) => f.trim())
           .map((f) => f.trim()),
+        technologies: formData.technologies
+          .split('\n')
+          .filter((t) => t.trim())
+          .map((t) => t.trim()),
       };
 
       if (editingService) {
@@ -121,12 +154,24 @@ const ServicesPage = () => {
         });
       }
 
+      markClean();
       handleCloseModal();
     } catch (error) {
       toast({
         title: 'Error',
         description: error.message,
         variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDiscard = () => {
+    const shouldDiscard = window.confirm('Discard all unsaved changes?');
+    if (shouldDiscard) {
+      resetToInitial();
+      toast({
+        title: 'Changes discarded',
+        description: 'All unsaved changes have been discarded.',
       });
     }
   };
@@ -151,8 +196,8 @@ const ServicesPage = () => {
 
   const columns = [
     {
-      key: 'title',
-      label: 'Title',
+      key: 'title_en',
+      label: 'Title (EN)',
       sortable: true,
       render: (value, row) => (
         <div className="flex items-center gap-2">
@@ -160,6 +205,11 @@ const ServicesPage = () => {
           {!row.is_active && (
             <span className="px-2 py-0.5 bg-gray-500/10 text-gray-500 text-xs rounded-full">
               Hidden
+            </span>
+          )}
+          {row.is_featured && (
+            <span className="px-2 py-0.5 bg-yellow-500/10 text-yellow-600 text-xs rounded-full">
+              Featured
             </span>
           )}
         </div>
@@ -243,19 +293,36 @@ const ServicesPage = () => {
 
                 {/* Modal Body */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                  {/* Title */}
+                  {/* English Title */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Service Title *
+                      Service Title (English) *
                     </label>
                     <input
                       type="text"
-                      name="title"
-                      value={formData.title}
+                      name="title_en"
+                      value={formData.title_en}
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
                       placeholder="e.g., Web Application Development"
+                    />
+                  </div>
+
+                  {/* Arabic Title */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Service Title (Arabic) *
+                    </label>
+                    <input
+                      type="text"
+                      name="title_ar"
+                      value={formData.title_ar}
+                      onChange={handleChange}
+                      required
+                      dir="rtl"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      placeholder="مثال: تطوير تطبيقات الويب"
                     />
                   </div>
 
@@ -273,6 +340,9 @@ const ServicesPage = () => {
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono text-sm"
                       placeholder="web-application-development"
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Auto-generated from English title. Used in URL: /services/{formData.slug}
+                    </p>
                   </div>
 
                   {/* Category & Icon */}
@@ -282,18 +352,22 @@ const ServicesPage = () => {
                         Category *
                       </label>
                       <select
-                        name="category"
-                        value={formData.category}
+                        name="category_id"
+                        value={formData.category_id || ''}
                         onChange={handleChange}
                         required
                         className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
                       >
+                        <option value="">Select Category</option>
                         {categories.map((cat) => (
                           <option key={cat} value={cat}>
                             {cat}
                           </option>
                         ))}
                       </select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Link to service_categories table (manage via Service Categories page)
+                      </p>
                     </div>
 
                     <div>
@@ -315,14 +389,14 @@ const ServicesPage = () => {
                     </div>
                   </div>
 
-                  {/* Short Description */}
+                  {/* English Short Description */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Short Description *
+                      Short Description (English) *
                     </label>
                     <textarea
-                      name="short_description"
-                      value={formData.short_description}
+                      name="short_description_en"
+                      value={formData.short_description_en}
                       onChange={handleChange}
                       required
                       rows={2}
@@ -331,14 +405,31 @@ const ServicesPage = () => {
                     />
                   </div>
 
-                  {/* Long Description */}
+                  {/* Arabic Short Description */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Detailed Description
+                      Short Description (Arabic) *
                     </label>
                     <textarea
-                      name="long_description"
-                      value={formData.long_description}
+                      name="short_description_ar"
+                      value={formData.short_description_ar}
+                      onChange={handleChange}
+                      required
+                      dir="rtl"
+                      rows={2}
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                      placeholder="نظرة عامة مختصرة (جملة أو جملتان)"
+                    />
+                  </div>
+
+                  {/* English Long Description */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Detailed Description (English)
+                    </label>
+                    <textarea
+                      name="long_description_en"
+                      value={formData.long_description_en}
                       onChange={handleChange}
                       rows={4}
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
@@ -346,10 +437,26 @@ const ServicesPage = () => {
                     />
                   </div>
 
+                  {/* Arabic Long Description */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Detailed Description (Arabic)
+                    </label>
+                    <textarea
+                      name="long_description_ar"
+                      value={formData.long_description_ar}
+                      onChange={handleChange}
+                      dir="rtl"
+                      rows={4}
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                      placeholder="وصف الخدمة الكامل..."
+                    />
+                  </div>
+
                   {/* Features */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Features (one per line)
+                      Features (one per line, bilingual)
                     </label>
                     <textarea
                       name="features"
@@ -359,10 +466,31 @@ const ServicesPage = () => {
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none font-mono text-sm"
                       placeholder="Custom API Development&#10;Progressive Web Apps&#10;Cloud-based Deployment"
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Stored as JSON array. Use English for now (Arabic features can be added later).
+                    </p>
                   </div>
 
-                  {/* Display Order & Active */}
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* Technologies */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Technologies (one per line)
+                    </label>
+                    <textarea
+                      name="technologies"
+                      value={formData.technologies}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none font-mono text-sm"
+                      placeholder="React&#10;Node.js&#10;PostgreSQL"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Stored as JSON array. Will display with tech icons if available.
+                    </p>
+                  </div>
+
+                  {/* Display Order, Active, Featured */}
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium mb-2">
                         Display Order
@@ -386,7 +514,20 @@ const ServicesPage = () => {
                           onChange={handleChange}
                           className="w-5 h-5 rounded border-border"
                         />
-                        <span className="text-sm font-medium">Active (Visible)</span>
+                        <span className="text-sm font-medium">Active</span>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center pt-8">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name="is_featured"
+                          checked={formData.is_featured}
+                          onChange={handleChange}
+                          className="w-5 h-5 rounded border-border"
+                        />
+                        <span className="text-sm font-medium">Featured</span>
                       </label>
                     </div>
                   </div>
@@ -415,6 +556,14 @@ const ServicesPage = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* SaveBar */}
+      <SaveBar
+        isDirty={isDirty}
+        onSave={handleSubmit}
+        onDiscard={handleDiscard}
+        isSaving={createService.isPending || updateService.isPending}
+      />
     </div>
   );
 };

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Save } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
+import SaveBar from '@/admin/components/SaveBar';
+import { useFormDirty } from '@/admin/hooks/useFormDirty';
 import MediaUploadField from '@/components/MediaUploadField';
 import { useHero, useUpdateHero } from '@/hooks/useContent';
 import { useToast } from '@/components/ui/use-toast';
@@ -42,6 +44,9 @@ const HeroSectionPage = () => {
     }
   }, [hero]);
 
+  // Track dirty state
+  const { isDirty, markClean, resetToInitial } = useFormDirty(formData, hero);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -59,11 +64,23 @@ const HeroSectionPage = () => {
         title: 'Hero section updated!',
         description: 'The homepage hero section has been updated successfully.',
       });
+      markClean();
     } catch (error) {
       toast({
         title: 'Error',
         description: error.message,
         variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDiscard = () => {
+    const shouldDiscard = window.confirm('Discard all unsaved changes?');
+    if (shouldDiscard) {
+      resetToInitial();
+      toast({
+        title: 'Changes discarded',
+        description: 'All unsaved changes have been discarded.',
       });
     }
   };
@@ -273,6 +290,14 @@ const HeroSectionPage = () => {
           </div>
         </form>
       </motion.div>
+
+      {/* SaveBar */}
+      <SaveBar
+        isDirty={isDirty}
+        onSave={handleSubmit}
+        onDiscard={handleDiscard}
+        isSaving={updateHero.isPending}
+      />
     </div>
   );
 };

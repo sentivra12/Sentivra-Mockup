@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, X, Save } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
+import SaveBar from '@/admin/components/SaveBar';
+import { useFormDirty } from '@/admin/hooks/useFormDirty';
 import DataTable from '@/admin/components/DataTable';
 import MediaUploadField from '@/components/MediaUploadField';
 import { useTestimonials, useCreateTestimonial, useUpdateTestimonial, useDeleteTestimonial } from '@/hooks/useContent';
@@ -22,12 +24,17 @@ const TestimonialsPage = () => {
     client_role: '',
     client_company: '',
     testimonial_text: '',
+    testimonial_text_ar: '',
     rating: 5,
     client_photo_url: '',
+    company_logo_url: '',
     is_featured: false,
     is_active: true,
     display_order: 0,
   });
+
+  // Track dirty state
+  const { isDirty, markClean, resetToInitial } = useFormDirty(formData, editingTestimonial);
 
   const handleOpenModal = (testimonial = null) => {
     if (testimonial) {
@@ -37,8 +44,10 @@ const TestimonialsPage = () => {
         client_role: testimonial.client_role || '',
         client_company: testimonial.client_company || '',
         testimonial_text: testimonial.testimonial_text,
+        testimonial_text_ar: testimonial.testimonial_text_ar || '',
         rating: testimonial.rating || 5,
         client_photo_url: testimonial.client_photo_url || '',
+        company_logo_url: testimonial.company_logo_url || '',
         is_featured: testimonial.is_featured,
         is_active: testimonial.is_active,
         display_order: testimonial.display_order || 0,
@@ -50,8 +59,10 @@ const TestimonialsPage = () => {
         client_role: '',
         client_company: '',
         testimonial_text: '',
+        testimonial_text_ar: '',
         rating: 5,
         client_photo_url: '',
+        company_logo_url: '',
         is_featured: false,
         is_active: true,
         display_order: testimonials.length,
@@ -61,8 +72,13 @@ const TestimonialsPage = () => {
   };
 
   const handleCloseModal = () => {
+    if (isDirty) {
+      const shouldClose = window.confirm('You have unsaved changes. Are you sure you want to close?');
+      if (!shouldClose) return;
+    }
     setIsModalOpen(false);
     setEditingTestimonial(null);
+    resetToInitial();
   };
 
   const handleChange = (e) => {
@@ -99,12 +115,24 @@ const TestimonialsPage = () => {
         });
       }
 
+      markClean();
       handleCloseModal();
     } catch (error) {
       toast({
         title: 'Error',
         description: error.message,
         variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDiscard = () => {
+    const shouldDiscard = window.confirm('Discard all unsaved changes?');
+    if (shouldDiscard) {
+      resetToInitial();
+      toast({
+        title: 'Changes discarded',
+        description: 'All unsaved changes have been discarded.',
       });
     }
   };
@@ -297,7 +325,7 @@ const TestimonialsPage = () => {
                   {/* Testimonial Text */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Testimonial Text *
+                      Testimonial Text (English) *
                     </label>
                     <textarea
                       name="testimonial_text"
@@ -308,6 +336,25 @@ const TestimonialsPage = () => {
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                       placeholder="Write the testimonial here..."
                     />
+                  </div>
+
+                  {/* Testimonial Text AR */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Testimonial Text (Arabic)
+                    </label>
+                    <textarea
+                      name="testimonial_text_ar"
+                      value={formData.testimonial_text_ar}
+                      onChange={handleChange}
+                      rows={5}
+                      dir="rtl"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none text-end"
+                      placeholder="اكتب الشهادة هنا..."
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Optional: Arabic version of the testimonial
+                    </p>
                   </div>
 
                   {/* Rating */}
@@ -349,6 +396,17 @@ const TestimonialsPage = () => {
                     fileType="image"
                     showAltText={false}
                     helperText="Photo of the client giving the testimonial"
+                  />
+
+                  {/* Company Logo */}
+                  <MediaUploadField
+                    label="Company Logo (Optional)"
+                    value={formData.company_logo_url}
+                    onChange={(url) => setFormData({ ...formData, company_logo_url: url })}
+                    accept="image/*"
+                    fileType="image"
+                    showAltText={false}
+                    helperText="Logo of the client's company"
                   />
 
                   {/* Display Order, Featured, Active */}
@@ -414,6 +472,14 @@ const TestimonialsPage = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* SaveBar */}
+      <SaveBar
+        isDirty={isDirty}
+        onSave={handleSubmit}
+        onDiscard={handleDiscard}
+        isSaving={createTestimonial.isPending || updateTestimonial.isPending}
+      />
     </div>
   );
 };

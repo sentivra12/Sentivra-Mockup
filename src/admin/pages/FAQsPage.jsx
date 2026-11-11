@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, X, Save, ChevronDown, ChevronRight } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
+import SaveBar from '@/admin/components/SaveBar';
+import { useFormDirty } from '@/admin/hooks/useFormDirty';
 import { useFAQs, useCreateFAQ, useUpdateFAQ, useDeleteFAQ } from '@/hooks/useContent';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -20,10 +22,15 @@ const FAQsPage = () => {
   const [formData, setFormData] = useState({
     page_key: 'contact',
     question: '',
+    question_ar: '',
     answer: '',
+    answer_ar: '',
     is_active: true,
     display_order: 0,
   });
+
+  // Track dirty state
+  const { isDirty, markClean, resetToInitial } = useFormDirty(formData, editingFAQ);
 
   const pageOptions = [
     { value: 'contact', label: 'Contact Page' },
@@ -48,7 +55,9 @@ const FAQsPage = () => {
       setFormData({
         page_key: faq.page_key,
         question: faq.question,
+        question_ar: faq.question_ar || '',
         answer: faq.answer,
+        answer_ar: faq.answer_ar || '',
         is_active: faq.is_active,
         display_order: faq.display_order || 0,
       });
@@ -57,7 +66,9 @@ const FAQsPage = () => {
       setFormData({
         page_key: selectedPage,
         question: '',
+        question_ar: '',
         answer: '',
+        answer_ar: '',
         is_active: true,
         display_order: faqs.length,
       });
@@ -66,8 +77,13 @@ const FAQsPage = () => {
   };
 
   const handleCloseModal = () => {
+    if (isDirty) {
+      const shouldClose = window.confirm('You have unsaved changes. Are you sure you want to close?');
+      if (!shouldClose) return;
+    }
     setIsModalOpen(false);
     setEditingFAQ(null);
+    resetToInitial();
   };
 
   const handleChange = (e) => {
@@ -99,12 +115,24 @@ const FAQsPage = () => {
         });
       }
 
+      markClean();
       handleCloseModal();
     } catch (error) {
       toast({
         title: 'Error',
         description: error.message,
         variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDiscard = () => {
+    const shouldDiscard = window.confirm('Discard all unsaved changes?');
+    if (shouldDiscard) {
+      resetToInitial();
+      toast({
+        title: 'Changes discarded',
+        description: 'All unsaved changes have been discarded.',
       });
     }
   };
@@ -306,10 +334,10 @@ const FAQsPage = () => {
                     </select>
                   </div>
 
-                  {/* Question */}
+                  {/* Question (English) */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Question *
+                      Question (English) *
                     </label>
                     <input
                       type="text"
@@ -322,10 +350,26 @@ const FAQsPage = () => {
                     />
                   </div>
 
-                  {/* Answer */}
+                  {/* Question (Arabic) */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Answer *
+                      Question (Arabic)
+                    </label>
+                    <input
+                      type="text"
+                      name="question_ar"
+                      value={formData.question_ar}
+                      onChange={handleChange}
+                      dir="rtl"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      placeholder="ما هي الخدمات التي تقدمونها؟"
+                    />
+                  </div>
+
+                  {/* Answer (English) */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Answer (English) *
                     </label>
                     <textarea
                       name="answer"
@@ -335,6 +379,22 @@ const FAQsPage = () => {
                       rows={6}
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                       placeholder="We specialize in custom web and mobile application development..."
+                    />
+                  </div>
+
+                  {/* Answer (Arabic) */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Answer (Arabic)
+                    </label>
+                    <textarea
+                      name="answer_ar"
+                      value={formData.answer_ar}
+                      onChange={handleChange}
+                      rows={6}
+                      dir="rtl"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                      placeholder="نحن متخصصون في تطوير تطبيقات الويب والجوال المخصصة..."
                     />
                   </div>
 
@@ -388,6 +448,14 @@ const FAQsPage = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* SaveBar */}
+      <SaveBar
+        isDirty={isDirty}
+        onSave={handleSubmit}
+        onDiscard={handleDiscard}
+        isSaving={createFAQ.isPending || updateFAQ.isPending}
+      />
     </div>
   );
 };

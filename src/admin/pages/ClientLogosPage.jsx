@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, X, Save } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
+import SaveBar from '@/admin/components/SaveBar';
+import { useFormDirty } from '@/admin/hooks/useFormDirty';
 import DataTable from '@/admin/components/DataTable';
 import MediaUploadField from '@/components/MediaUploadField';
 import { useClientLogos, useCreateClientLogo, useUpdateClientLogo, useDeleteClientLogo } from '@/hooks/useContent';
@@ -24,6 +26,9 @@ const ClientLogosPage = () => {
     is_active: true,
     display_order: 0,
   });
+
+  // Track dirty state
+  const { isDirty, markClean, resetToInitial } = useFormDirty(formData, editingLogo);
 
   const handleOpenModal = (logo = null) => {
     if (logo) {
@@ -49,8 +54,13 @@ const ClientLogosPage = () => {
   };
 
   const handleCloseModal = () => {
+    if (isDirty) {
+      const shouldClose = window.confirm('You have unsaved changes. Are you sure you want to close?');
+      if (!shouldClose) return;
+    }
     setIsModalOpen(false);
     setEditingLogo(null);
+    resetToInitial();
   };
 
   const handleChange = (e) => {
@@ -82,12 +92,24 @@ const ClientLogosPage = () => {
         });
       }
 
+      markClean();
       handleCloseModal();
     } catch (error) {
       toast({
         title: 'Error',
         description: error.message,
         variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDiscard = () => {
+    const shouldDiscard = window.confirm('Discard all unsaved changes?');
+    if (shouldDiscard) {
+      resetToInitial();
+      toast({
+        title: 'Changes discarded',
+        description: 'All unsaved changes have been discarded.',
       });
     }
   };
@@ -313,6 +335,14 @@ const ClientLogosPage = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* SaveBar */}
+      <SaveBar
+        isDirty={isDirty}
+        onSave={handleSubmit}
+        onDiscard={handleDiscard}
+        isSaving={createClientLogo.isPending || updateClientLogo.isPending}
+      />
     </div>
   );
 };
