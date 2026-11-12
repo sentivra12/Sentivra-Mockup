@@ -185,14 +185,12 @@ CREATE POLICY "seo_settings_manage"
 CREATE TABLE IF NOT EXISTS services (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   slug TEXT UNIQUE NOT NULL,
-  title_en TEXT NOT NULL,
-  title_ar TEXT NOT NULL,
-  short_description_en TEXT,
-  short_description_ar TEXT,
-  long_description_en TEXT,
-  long_description_ar TEXT,
+  title TEXT NOT NULL,
+  short_description TEXT,
+  long_description TEXT,
   icon TEXT,
   image_url TEXT,
+  category TEXT,
   category_id UUID,
   is_featured BOOLEAN DEFAULT FALSE,
   is_active BOOLEAN DEFAULT TRUE,
@@ -200,6 +198,41 @@ CREATE TABLE IF NOT EXISTS services (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add bilingual columns if they don't exist (for existing tables)
+DO $$ 
+BEGIN
+  -- If old single-language columns exist, rename them first
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='title' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='title_en')) THEN
+    ALTER TABLE services RENAME COLUMN title TO title_en;
+  END IF;
+  
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='short_description' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='short_description_en')) THEN
+    ALTER TABLE services RENAME COLUMN short_description TO short_description_en;
+  END IF;
+  
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='long_description' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='long_description_en')) THEN
+    ALTER TABLE services RENAME COLUMN long_description TO long_description_en;
+  END IF;
+  
+  -- Add Arabic columns if missing
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='title_ar') THEN
+    ALTER TABLE services ADD COLUMN title_ar TEXT;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='short_description_ar') THEN
+    ALTER TABLE services ADD COLUMN short_description_ar TEXT;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='long_description_ar') THEN
+    ALTER TABLE services ADD COLUMN long_description_ar TEXT;
+  END IF;
+  
+  -- Add category_id if missing
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='services' AND column_name='category_id') THEN
+    ALTER TABLE services ADD COLUMN category_id UUID;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_services_slug ON services(slug);
 CREATE INDEX IF NOT EXISTS idx_services_category_id ON services(category_id);
@@ -255,12 +288,10 @@ CREATE POLICY "service_categories_manage"
 CREATE TABLE IF NOT EXISTS projects (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   slug TEXT UNIQUE NOT NULL,
-  title_en TEXT NOT NULL,
-  title_ar TEXT NOT NULL,
-  short_description_en TEXT,
-  short_description_ar TEXT,
-  long_description_en TEXT,
-  long_description_ar TEXT,
+  title TEXT NOT NULL,
+  short_description TEXT,
+  long_description TEXT,
+  category TEXT,
   category_id UUID,
   client_name TEXT,
   industry TEXT,
@@ -278,6 +309,33 @@ CREATE TABLE IF NOT EXISTS projects (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add bilingual columns
+DO $$ 
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='title' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='title_en')) THEN
+    ALTER TABLE projects RENAME COLUMN title TO title_en;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='short_description' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='short_description_en')) THEN
+    ALTER TABLE projects RENAME COLUMN short_description TO short_description_en;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='long_description' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='long_description_en')) THEN
+    ALTER TABLE projects RENAME COLUMN long_description TO long_description_en;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='title_ar') THEN
+    ALTER TABLE projects ADD COLUMN title_ar TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='short_description_ar') THEN
+    ALTER TABLE projects ADD COLUMN short_description_ar TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='long_description_ar') THEN
+    ALTER TABLE projects ADD COLUMN long_description_ar TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='projects' AND column_name='category_id') THEN
+    ALTER TABLE projects ADD COLUMN category_id UUID;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_projects_slug ON projects(slug);
 CREATE INDEX IF NOT EXISTS idx_projects_category_id ON projects(category_id);
@@ -333,13 +391,11 @@ CREATE POLICY "project_categories_manage"
 CREATE TABLE IF NOT EXISTS mockups (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   slug TEXT UNIQUE NOT NULL,
-  title_en TEXT NOT NULL,
-  title_ar TEXT NOT NULL,
-  short_description_en TEXT,
-  short_description_ar TEXT,
-  long_description_en TEXT,
-  long_description_ar TEXT,
+  title TEXT NOT NULL,
+  description TEXT,
+  category TEXT,
   category_id UUID,
+  image_url TEXT,
   desktop_screenshot_url TEXT,
   desktop_screenshot_alt_en TEXT,
   desktop_screenshot_alt_ar TEXT,
@@ -347,7 +403,9 @@ CREATE TABLE IF NOT EXISTS mockups (
   tablet_screenshot_url TEXT,
   mobile_screenshot_url TEXT,
   cover_image_url TEXT,
+  thumbnail_url TEXT,
   demo_url TEXT,
+  download_url TEXT,
   live_url TEXT,
   client_name TEXT,
   industry TEXT,
@@ -368,6 +426,42 @@ CREATE TABLE IF NOT EXISTS mockups (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add bilingual columns
+DO $$ 
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='title' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='title_en')) THEN
+    ALTER TABLE mockups RENAME COLUMN title TO title_en;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='description' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='short_description_en')) THEN
+    ALTER TABLE mockups RENAME COLUMN description TO short_description_en;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='title_ar') THEN
+    ALTER TABLE mockups ADD COLUMN title_ar TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='short_description_ar') THEN
+    ALTER TABLE mockups ADD COLUMN short_description_ar TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='long_description_en') THEN
+    ALTER TABLE mockups ADD COLUMN long_description_en TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='long_description_ar') THEN
+    ALTER TABLE mockups ADD COLUMN long_description_ar TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='category_id') THEN
+    ALTER TABLE mockups ADD COLUMN category_id UUID;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='desktop_screenshot_url') THEN
+    ALTER TABLE mockups ADD COLUMN desktop_screenshot_url TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='live_url') THEN
+    ALTER TABLE mockups ADD COLUMN live_url TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='mockups' AND column_name='open_in_new_tab') THEN
+    ALTER TABLE mockups ADD COLUMN open_in_new_tab BOOLEAN DEFAULT TRUE;
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_mockups_slug ON mockups(slug);
 CREATE INDEX IF NOT EXISTS idx_mockups_category_id ON mockups(category_id);
@@ -442,21 +536,41 @@ ON CONFLICT (slug) DO UPDATE SET
 CREATE TABLE IF NOT EXISTS testimonials (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_name TEXT NOT NULL,
-  client_name_ar TEXT,
+  client_role TEXT,
   client_position TEXT,
-  client_position_ar TEXT,
   client_company TEXT,
-  client_company_ar TEXT,
-  testimonial_en TEXT NOT NULL,
-  testimonial_ar TEXT,
+  client_photo_url TEXT,
   client_photo TEXT,
   rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+  testimonial_text TEXT,
   is_featured BOOLEAN DEFAULT FALSE,
   is_active BOOLEAN DEFAULT TRUE,
   display_order INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add bilingual columns
+DO $$ 
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='testimonials' AND column_name='client_name_ar') THEN
+    ALTER TABLE testimonials ADD COLUMN client_name_ar TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='testimonials' AND column_name='client_position_ar') THEN
+    ALTER TABLE testimonials ADD COLUMN client_position_ar TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='testimonials' AND column_name='client_company_ar') THEN
+    ALTER TABLE testimonials ADD COLUMN client_company_ar TEXT;
+  END IF;
+  
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='testimonials' AND column_name='testimonial_text' AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='testimonials' AND column_name='testimonial_en')) THEN
+    ALTER TABLE testimonials RENAME COLUMN testimonial_text TO testimonial_en;
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='testimonials' AND column_name='testimonial_ar') THEN
+    ALTER TABLE testimonials ADD COLUMN testimonial_ar TEXT;
+  END IF;
+END $$;
 
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
 
