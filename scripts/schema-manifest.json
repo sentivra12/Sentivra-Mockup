@@ -1,0 +1,100 @@
+{
+  "tables": {
+    "site_settings": {
+      "columns": ["id", "site_name", "site_tagline", "contact_email", "contact_phone", "contact_address", "social_facebook", "social_twitter", "social_linkedin", "social_instagram", "social_github", "whatsapp_number", "enable_cookie_banner", "ga4_measurement_id", "meta_pixel_id", "google_ads_id", "google_ads_conversion_label", "tiktok_pixel_id", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "seo_settings": {
+      "columns": ["id", "page_key", "title", "description", "keywords", "og_image", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "hero": {
+      "columns": ["id", "headline", "subheadline", "cta_primary_text", "cta_primary_link", "cta_secondary_text", "cta_secondary_link", "video_url", "video_webm_url", "video_poster_url", "is_active", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "page_content": {
+      "columns": ["id", "page_key", "section_key", "label_en", "label_ar", "title_en", "title_ar", "title_accent_en", "title_accent_ar", "subtitle_en", "subtitle_ar", "description_en", "description_ar", "primary_button_label_en", "primary_button_label_ar", "primary_button_link", "secondary_button_label_en", "secondary_button_label_ar", "secondary_button_link", "hero_eyebrow", "hero_eyebrow_ar", "hero_handwritten_note", "hero_handwritten_note_ar", "hero_industry_lead", "hero_industry_lead_ar", "hero_primary_cta", "hero_primary_cta_ar", "hero_secondary_cta", "hero_secondary_cta_ar", "sticky_bar_text", "sticky_bar_text_ar", "sticky_bar_cta", "sticky_bar_cta_ar", "show_hero_stats", "show_industry_line", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "services": {
+      "columns": ["id", "slug", "title_en", "title_ar", "short_description_en", "short_description_ar", "long_description_en", "long_description_ar", "icon", "image_url", "category_id", "is_featured", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "service_categories": {
+      "columns": ["id", "slug", "name_en", "name_ar", "description_en", "description_ar", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "projects": {
+      "columns": ["id", "slug", "title_en", "title_ar", "short_description_en", "short_description_ar", "long_description_en", "long_description_ar", "category_id", "client_name", "industry", "project_year", "image_url", "thumbnail_url", "gallery_images", "technologies", "features", "demo_url", "github_url", "is_featured", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "project_categories": {
+      "columns": ["id", "slug", "name_en", "name_ar", "description_en", "description_ar", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "mockups": {
+      "columns": ["id", "slug", "title_en", "title_ar", "short_description_en", "short_description_ar", "long_description_en", "long_description_ar", "category_id", "desktop_screenshot_url", "desktop_screenshot_alt_en", "desktop_screenshot_alt_ar", "full_page_screenshot_url", "tablet_screenshot_url", "mobile_screenshot_url", "cover_image_url", "demo_url", "live_url", "client_name", "industry", "project_year", "whats_included", "features", "technologies", "tags", "gallery_images", "open_in_new_tab", "is_new", "is_popular", "is_featured", "is_premium", "price", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "mockup_categories": {
+      "columns": ["id", "slug", "name_en", "name_ar", "description_en", "description_ar", "icon", "color", "display_order", "is_active", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "testimonials": {
+      "columns": ["id", "client_name", "client_name_ar", "client_position", "client_position_ar", "client_company", "client_company_ar", "testimonial_en", "testimonial_ar", "client_photo", "rating", "is_featured", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "faqs": {
+      "columns": ["id", "page_key", "question_en", "question_ar", "answer_en", "answer_ar", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "client_logos": {
+      "columns": ["id", "name", "logo_url", "website_url", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "trust_badges": {
+      "columns": ["id", "title", "description", "icon", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "process_steps": {
+      "columns": ["id", "title_en", "title_ar", "description_en", "description_ar", "icon", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "why_choose_us": {
+      "columns": ["id", "title_en", "title_ar", "description_en", "description_ar", "icon", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "countries": {
+      "columns": ["id", "name_en", "name_ar", "flag_emoji", "code", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "timeline_milestones": {
+      "columns": ["id", "year", "title_en", "title_ar", "description_en", "description_ar", "icon", "is_active", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "values": {
+      "columns": ["id", "title_en", "title_ar", "description_en", "description_ar", "icon", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "stats": {
+      "columns": ["id", "label_en", "label_ar", "value", "suffix", "icon", "is_active", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "blog_posts": {
+      "columns": ["id", "slug", "title", "excerpt", "content", "author", "featured_image", "tags", "status", "published_at", "created_at", "updated_at"],
+      "adminOnly": false
+    },
+    "messages": {
+      "columns": ["id", "name", "email", "phone", "company", "message", "source", "mockup_id", "status", "notes", "created_at", "updated_at"],
+      "adminOnly": true
+    },
+    "media": {
+      "columns": ["id", "file_name", "file_path", "file_type", "file_size", "mime_type", "alt_text", "caption", "created_at", "updated_at"],
+      "adminOnly": true
+    },
+    "marquee_items": {
+      "columns": ["id", "text_en", "text_ar", "row_number", "is_published", "display_order", "created_at", "updated_at"],
+      "adminOnly": false
+    }
+  }
+}
