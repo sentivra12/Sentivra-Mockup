@@ -10,6 +10,18 @@ DROP POLICY IF EXISTS "site_settings_select_policy" ON site_settings;
 DROP POLICY IF EXISTS "site_settings_update_policy" ON site_settings;
 DROP POLICY IF EXISTS "site_settings_admin_all" ON site_settings;
 
+-- Add missing columns to site_settings
+DO $$ 
+BEGIN
+  -- Add enable_cookie_banner if missing
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'site_settings' AND column_name = 'enable_cookie_banner'
+  ) THEN
+    ALTER TABLE site_settings ADD COLUMN enable_cookie_banner BOOLEAN DEFAULT false;
+  END IF;
+END $$;
+
 -- Simple policies that don't check roles (since it's single-row config)
 CREATE POLICY "site_settings_select_policy" 
 ON site_settings FOR SELECT 
@@ -152,6 +164,7 @@ END $$;
 DO $$ 
 BEGIN 
   RAISE NOTICE '✅ RLS policies fixed - infinite recursion resolved';
+  RAISE NOTICE '✅ Site Settings table updated with missing columns';
   RAISE NOTICE '✅ FAQs table schema updated with bilingual columns';
   RAISE NOTICE '✅ Mockups table schema updated with bilingual columns';
 END $$;
