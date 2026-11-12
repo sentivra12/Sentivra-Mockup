@@ -813,6 +813,10 @@ export const useMockupCategories = () => {
   return useQuery({
     queryKey: ['mockupCategories'],
     queryFn: api.getMockupCategories,
+    staleTime: 0, // Always fetch fresh
+    cacheTime: 0, // Don't cache
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 };
 

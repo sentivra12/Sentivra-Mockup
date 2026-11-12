@@ -19,17 +19,39 @@ const MockupsPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMockup, setEditingMockup] = useState(null);
-  const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useMockupCategories();
+  const { 
+    data: categories = [], 
+    isLoading: categoriesLoading, 
+    error: categoriesError,
+    refetch: refetchCategories 
+  } = useMockupCategories();
   
-  // Debug: Log categories data
+  // Debug: Log categories data with more details
   React.useEffect(() => {
     console.log('🔍 Mockup Categories Debug:', {
       categories,
+      categoriesRaw: JSON.stringify(categories),
       count: categories?.length || 0,
+      isArray: Array.isArray(categories),
       isLoading: categoriesLoading,
-      error: categoriesError
+      error: categoriesError,
+      errorMessage: categoriesError?.message,
+      errorCode: categoriesError?.code
     });
+    
+    // Log first category for inspection
+    if (categories && categories.length > 0) {
+      console.log('📋 First category sample:', categories[0]);
+    }
   }, [categories, categoriesLoading, categoriesError]);
+  
+  // Force refetch when modal opens
+  React.useEffect(() => {
+    if (isModalOpen && !editingMockup) {
+      console.log('🔄 Modal opened - forcing categories refetch...');
+      refetchCategories();
+    }
+  }, [isModalOpen, editingMockup, refetchCategories]);
   
   const [formData, setFormData] = useState({
     slug: '',
