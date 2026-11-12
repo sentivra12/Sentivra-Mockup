@@ -868,7 +868,6 @@ export const fetchMockupCategories = async () => {
   const { data, error } = await supabase
     .from('mockup_categories')
     .select('*')
-    .eq('is_active', true)
     .order('display_order');
 
   if (error) throw error;
