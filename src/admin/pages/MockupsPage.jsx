@@ -19,7 +19,17 @@ const MockupsPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMockup, setEditingMockup] = useState(null);
-  const { data: categories = [] } = useMockupCategories();
+  const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useMockupCategories();
+  
+  // Debug: Log categories data
+  React.useEffect(() => {
+    console.log('🔍 Mockup Categories Debug:', {
+      categories,
+      count: categories?.length || 0,
+      isLoading: categoriesLoading,
+      error: categoriesError
+    });
+  }, [categories, categoriesLoading, categoriesError]);
   
   const [formData, setFormData] = useState({
     slug: '',
@@ -427,12 +437,26 @@ const MockupsPage = () => {
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
                       <option value="">Select a category...</option>
+                      {categoriesLoading && <option disabled>Loading categories...</option>}
+                      {!categoriesLoading && categories.length === 0 && (
+                        <option disabled>No categories found - try refreshing (Ctrl+Shift+R)</option>
+                      )}
                       {Array.isArray(categories) && categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                           {cat.name_en} / {cat.name_ar}
                         </option>
                       ))}
                     </select>
+                    {!categoriesLoading && categories.length === 0 && (
+                      <p className="text-xs text-amber-500 mt-1">
+                        ⚠️ Categories not loading? Try a hard refresh (Ctrl+Shift+R) to clear cache.
+                      </p>
+                    )}
+                    {categoriesError && (
+                      <p className="text-xs text-red-500 mt-1">
+                        ❌ Error loading categories: {categoriesError.message}
+                      </p>
+                    )}
                     <p className="text-xs text-muted-foreground mt-1">
                       Manage categories in the Mockup Categories page
                     </p>
