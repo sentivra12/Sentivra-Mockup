@@ -37,6 +37,51 @@ WITH CHECK (
 );
 
 -- =============================================
+-- FIX: Ensure FAQs table has bilingual columns
+-- =============================================
+
+DO $$ 
+BEGIN
+  -- Check and add question_ar
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'faqs' AND column_name = 'question_ar'
+  ) THEN
+    ALTER TABLE faqs ADD COLUMN question_ar TEXT;
+  END IF;
+
+  -- Check and add answer_ar
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'faqs' AND column_name = 'answer_ar'
+  ) THEN
+    ALTER TABLE faqs ADD COLUMN answer_ar TEXT;
+  END IF;
+
+  -- Rename question to question_en if needed
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'faqs' AND column_name = 'question'
+  ) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'faqs' AND column_name = 'question_en'
+  ) THEN
+    ALTER TABLE faqs RENAME COLUMN question TO question_en;
+  END IF;
+
+  -- Rename answer to answer_en if needed
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'faqs' AND column_name = 'answer'
+  ) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'faqs' AND column_name = 'answer_en'
+  ) THEN
+    ALTER TABLE faqs RENAME COLUMN answer TO answer_en;
+  END IF;
+END $$;
+
+-- =============================================
 -- FIX: Ensure mockups table has all required columns
 -- =============================================
 
@@ -107,5 +152,6 @@ END $$;
 DO $$ 
 BEGIN 
   RAISE NOTICE '✅ RLS policies fixed - infinite recursion resolved';
+  RAISE NOTICE '✅ FAQs table schema updated with bilingual columns';
   RAISE NOTICE '✅ Mockups table schema updated with bilingual columns';
 END $$;
