@@ -19,29 +19,38 @@ const MockupsPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMockup, setEditingMockup] = useState(null);
-  const { 
-    data: categories = [], 
-    isLoading: categoriesLoading, 
-    error: categoriesError,
-    refetch: refetchCategories 
-  } = useMockupCategories();
+  
+  // Fetch categories with explicit handling
+  const categoriesQuery = useMockupCategories();
+  const categories = categoriesQuery.data || [];
+  const categoriesLoading = categoriesQuery.isLoading;
+  const categoriesError = categoriesQuery.error;
+  const refetchCategories = categoriesQuery.refetch;
   
   // Debug: Log categories data with more details
   React.useEffect(() => {
     console.log('🔍 Mockup Categories Debug:', {
       categories,
+      categoriesType: typeof categories,
       categoriesRaw: JSON.stringify(categories),
       count: categories?.length || 0,
       isArray: Array.isArray(categories),
       isLoading: categoriesLoading,
       error: categoriesError,
       errorMessage: categoriesError?.message,
-      errorCode: categoriesError?.code
+      errorCode: categoriesError?.code,
+      errorDetails: categoriesError
     });
     
+    // Try to log categories as is
+    console.log('📦 Raw categories variable:', categories);
+    
     // Log first category for inspection
-    if (categories && categories.length > 0) {
+    if (categories && Array.isArray(categories) && categories.length > 0) {
       console.log('📋 First category sample:', categories[0]);
+    } else if (categories) {
+      console.log('⚠️ Categories is NOT an array. Type:', typeof categories);
+      console.log('⚠️ Categories value:', categories);
     }
   }, [categories, categoriesLoading, categoriesError]);
   
