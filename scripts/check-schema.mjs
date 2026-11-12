@@ -71,27 +71,42 @@ for (const [tableName, tableDef] of Object.entries(manifest.tables)) {
       .limit(0);
     
     if (error) {
-      // Parse PostgREST errors
+      // Parse PostgREST errors properly
       let message = error.message;
-      if (error.code === 'PGRST204') {
+      let isFatal = true;
+      
+      if (error.code === '42P01' || error.code === 'PGRST205' || error.message.includes('does not exist')) {
+        // Table not found
+        message = 'Table does not exist';
+      } else if (error.code === '42703' || error.code === 'PGRST204') {
         // Column not found
         const match = error.message.match(/Could not find the '(\w+)' column/);
         if (match) {
           message = `Missing column: ${match[1]}`;
+        } else {
+          message = 'Column does not exist';
         }
-      } else if (error.code === '42P01' || error.message.includes('does not exist')) {
-        message = 'Table does not exist';
-      } else if (error.code === '42703') {
-        message = 'Column does not exist';
+      } else if (error.code === '42501' || error.code === 'PGRST301' || error.code === '401' || error.code === '403') {
+        // Permission denied (RLS)
+        message = `Permission denied (RLS): ${error.message}`;
+      } else if (error.code === 'PGRST116') {
+        // No rows returned - this is OK, table exists but empty
+        isFatal = false;
+        message = 'Table exists (empty)';
       }
       
-      results.failed.push({
-        table: tableName,
-        type: checkType,
-        error: message,
-        code: error.code
-      });
-      console.log(`❌ ${tableName} [${checkType}]: ${message}`);
+      if (isFatal) {
+        results.failed.push({
+          table: tableName,
+          type: checkType,
+          error: message,
+          code: error.code
+        });
+        console.log(`❌ ${tableName} [${checkType}]: ${message} (${error.code || 'no code'})`);
+      } else {
+        results.passed.push({ table: tableName, type: checkType });
+        console.log(`✅ ${tableName} [${checkType}]: ${message}`);
+      }
     } else {
       results.passed.push({ table: tableName, type: checkType });
       console.log(`✅ ${tableName} [${checkType}]`);
