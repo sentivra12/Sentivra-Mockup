@@ -674,7 +674,9 @@ const MockupsPage = () => {
                       />
                       {formData.live_url && (
                         <a
-                          href={formData.live_url}
+                          href={formData.live_url.startsWith('http://') || formData.live_url.startsWith('https://') 
+                            ? formData.live_url 
+                            : `https://${formData.live_url}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors flex items-center gap-2"
