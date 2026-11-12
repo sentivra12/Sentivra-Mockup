@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { useMockups, useFAQs } from '@/hooks/useContent';
+import { useMockups, useFAQs, useMockupCategories } from '@/hooks/useContent';
 import { useTranslation } from '@/i18n/useTranslation';
 import { SEO, useSEO } from '@/components/SEO';
 import MockupsHero from '@/components/mockups/MockupsHeroPremium';
@@ -16,10 +16,7 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { 
-  Globe, ShoppingCart, Utensils, Briefcase, Heart, 
-  GraduationCap, Dumbbell, Home, Layers 
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 
@@ -36,28 +33,31 @@ const MockupsPage = () => {
   // Fetch data from Supabase
   const { data: mockups = [], isLoading: mockupsLoading } = useMockups();
   const { data: faqs = [], isLoading: faqsLoading } = useFAQs('mockups');
+  const { data: categoriesData = [], isLoading: categoriesLoading } = useMockupCategories();
 
-  // Build mockup categories
+  // Build mockup categories from database
   const mockupCategories = [
-    { id: 'all', label: 'All Mockups', icon: Layers },
-    { id: 'Business & Corporate', label: 'Business', icon: Briefcase },
-    { id: 'E-Commerce', label: 'E-Commerce', icon: ShoppingCart },
-    { id: 'Restaurant & Food', label: 'Restaurant', icon: Utensils },
-    { id: 'Healthcare', label: 'Healthcare', icon: Heart },
-    { id: 'Education', label: 'Education', icon: GraduationCap },
-    { id: 'Fitness & Wellness', label: 'Fitness', icon: Dumbbell },
-    { id: 'Real Estate', label: 'Real Estate', icon: Home },
-    { id: 'Portfolio & Personal', label: 'Portfolio', icon: Globe },
-    { id: 'Other', label: 'Other', icon: Layers }
+    { 
+      id: 'all', 
+      label: language === 'ar' ? 'جميع التصاميم' : 'All Mockups', 
+      icon: LucideIcons.Layers 
+    },
+    ...categoriesData.map(cat => ({
+      id: cat.id,
+      label: language === 'ar' ? cat.name_ar : cat.name_en,
+      icon: LucideIcons[cat.icon] || LucideIcons.Layers
+    }))
   ];
 
   // Filter mockups based on category and search
   const filteredMockups = mockups.filter((mockup) => {
-    const matchesCategory = activeCategory === 'all' || mockup.category === activeCategory;
+    const matchesCategory = activeCategory === 'all' || mockup.category_id === activeCategory;
     const matchesSearch = searchQuery === '' || 
-      mockup.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      mockup.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      mockup.category.toLowerCase().includes(searchQuery.toLowerCase());
+      (mockup.title_en && mockup.title_en.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (mockup.title_ar && mockup.title_ar.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (mockup.title && mockup.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (mockup.short_description_en && mockup.short_description_en.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (mockup.description && mockup.description.toLowerCase().includes(searchQuery.toLowerCase()));
     
     return matchesCategory && matchesSearch;
   });
