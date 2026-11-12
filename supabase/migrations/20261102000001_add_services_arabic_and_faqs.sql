@@ -36,7 +36,7 @@ COMMENT ON COLUMN services.long_description_ar IS 'Arabic long description';
 
 -- Insert service FAQs (only if they don't exist)
 -- Check if services FAQs exist, if not, insert them
-INSERT INTO faqs (page_key, question, question_ar, answer, answer_ar, display_order, is_active)
+INSERT INTO faqs (page_key, question_en, question_ar, answer_en, answer_ar, display_order, is_active)
 SELECT * FROM (VALUES
   (
     'services',

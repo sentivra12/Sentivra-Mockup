@@ -66,7 +66,7 @@ WHERE page_key = 'mockups'
 -- Insert new FAQs matching the real business (ready-made website customization service)
 -- Questions where real answers are needed are marked with neutral "contact us" responses
 
-INSERT INTO faqs (page_key, question, question_ar, answer, answer_ar, display_order, is_active)
+INSERT INTO faqs (page_key, question_en, question_ar, answer_en, answer_ar, display_order, is_active)
 VALUES
   (
     'mockups',

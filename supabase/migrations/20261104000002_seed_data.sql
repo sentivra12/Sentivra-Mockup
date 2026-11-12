@@ -298,7 +298,7 @@ VALUES
 -- =============================================
 -- 10. FAQs - CONTACT PAGE
 -- =============================================
-INSERT INTO faqs (page_key, question, answer, display_order, is_active)
+INSERT INTO faqs (page_key, question_en, answer_en, display_order, is_active)
 VALUES
   ('contact', 'What services do you offer?', 'We specialize in custom web and mobile application development, ERP and CRM systems, AI solutions, data analytics, and business intelligence. Our team can handle projects of any size and complexity.', 1, true),
   ('contact', 'How long does a typical project take?', 'Project timelines vary based on complexity and requirements. A simple mobile app might take 2-3 months, while a comprehensive ERP system could take 6-12 months. We provide detailed timelines during the consultation phase.', 2, true),
@@ -312,7 +312,7 @@ VALUES
 -- =============================================
 -- 11. FAQs - MOCKUPS PAGE
 -- =============================================
-INSERT INTO faqs (page_key, question, answer, display_order, is_active)
+INSERT INTO faqs (page_key, question_en, answer_en, display_order, is_active)
 VALUES
   ('mockups', 'What formats are the mockups available in?', 'Our mockups are available in industry-standard formats including Figma, Sketch, Adobe XD, and PSD. Some mockups also include HTML/CSS code for direct implementation.', 1, true),
   ('mockups', 'Can I customize the mockups?', 'Yes! All our mockups are fully editable and customizable. You can change colors, fonts, layouts, and content to match your brand identity.', 2, true),
@@ -326,7 +326,7 @@ VALUES
 -- =============================================
 -- 12. FAQs - SERVICES PAGE
 -- =============================================
-INSERT INTO faqs (page_key, question, answer, display_order, is_active)
+INSERT INTO faqs (page_key, question_en, answer_en, display_order, is_active)
 VALUES
   ('services', 'Do you offer fixed-price or hourly billing?', 'We offer both models. Fixed-price works well for clearly defined projects, while hourly/retainer arrangements suit ongoing development or projects with evolving requirements.', 1, true),
   ('services', 'What industries do you serve?', 'We work across multiple industries including healthcare, finance, e-commerce, manufacturing, education, real estate, and more. Our adaptable approach ensures success in any sector.', 2, true),
