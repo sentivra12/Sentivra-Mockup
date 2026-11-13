@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Image, X, Save, AlertCircle, CheckCircle, Upload, Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Image, Save, AlertCircle, CheckCircle, Upload, Trash2, X } from 'lucide-react';
 import PageHeader from '@/admin/components/PageHeader';
+import { Modal, ModalForm } from '@/admin/components/Modal';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -396,77 +397,55 @@ export default function AdminMockupsPage() {
       </div>
 
       {/* Add/Edit Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={handleCloseModal}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-card border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="sticky top-0 bg-card border-b border-border p-6 flex items-center justify-between">
-                <h2 className="text-xl font-semibold">
-                  {editingMockup ? 'Edit Mockup' : 'Add New Mockup'}
-                </h2>
-                <button
-                  onClick={handleCloseModal}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                {/* Category */}
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Category <span className="text-red-500">*</span>
-                  </label>
-                  {categoriesQuery.isLoading ? (
-                    <div className="text-sm text-muted-foreground">Loading categories...</div>
-                  ) : categoriesQuery.isError ? (
-                    <div>
-                      <div className="text-sm text-red-600 mb-2">
-                        Error: {categoriesQuery.error.message}
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => categoriesQuery.refetch()}
-                      >
-                        Retry
-                      </Button>
-                    </div>
-                  ) : categories.length === 0 ? (
-                    <div className="text-sm text-muted-foreground">
-                      No categories found. <a href="/admin/mockup-categories" className="text-primary underline">Add categories first</a>
-                    </div>
-                  ) : (
-                    <select
-                      name="category_id"
-                      value={formData.category_id}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    >
-                      <option value="">Select a category...</option>
-                      {categories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.name_en}{cat.name_ar ? ` / ${cat.name_ar}` : ''}
-                        </option>
-                      ))}
-                    </select>
-                  )}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={editingMockup ? 'Edit Mockup' : 'Add New Mockup'}
+        size="default"
+      >
+        <ModalForm onSubmit={handleSubmit}>
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Category <span className="text-red-500">*</span>
+            </label>
+            {categoriesQuery.isLoading ? (
+              <div className="text-sm text-muted-foreground">Loading categories...</div>
+            ) : categoriesQuery.isError ? (
+              <div>
+                <div className="text-sm text-red-600 mb-2">
+                  Error: {categoriesQuery.error.message}
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => categoriesQuery.refetch()}
+                >
+                  Retry
+                </Button>
+              </div>
+            ) : categories.length === 0 ? (
+              <div className="text-sm text-muted-foreground">
+                No categories found. <a href="/admin/mockup-categories" className="text-primary underline">Add categories first</a>
+              </div>
+            ) : (
+              <select
+                name="category_id"
+                value={formData.category_id}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+              >
+                <option value="">Select a category...</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name_en}{cat.name_ar ? ` / ${cat.name_ar}` : ''}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
 
                 {/* English Title */}
                 <div>
@@ -614,24 +593,21 @@ export default function AdminMockupsPage() {
                   </label>
                 </div>
 
-                {/* Actions */}
-                <div className="flex gap-3 justify-end pt-4 border-t border-border">
-                  <Button type="button" variant="outline" onClick={handleCloseModal}>
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={createMockup.isPending || updateMockup.isPending}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {editingMockup ? 'Update' : 'Create'}
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {/* Actions */}
+          <div className="flex gap-3 justify-end pt-4 border-t border-border">
+            <Button type="button" variant="outline" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={createMockup.isPending || updateMockup.isPending}
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {editingMockup ? 'Update' : 'Create'}
+            </Button>
+          </div>
+        </ModalForm>
+      </Modal>
     </div>
   );
 }
