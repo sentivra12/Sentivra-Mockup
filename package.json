@@ -5,11 +5,14 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/validate-translations.cjs && npx vite build",
+    "build": "node scripts/validate-translations.cjs && node tools/generate-llms.js && npx vite build",
     "preview": "vite preview",
     "validate-translations": "node scripts/validate-translations.cjs",
     "check:schema": "node scripts/check-schema.mjs",
-    "test:rls": "node scripts/rls-test.mjs"
+    "test:rls": "node scripts/rls-test.mjs",
+    "test:diagnose": "playwright test tests/diagnose-empty-dropdown.spec.mjs --headed",
+    "test:mockups": "playwright test tests/mockups.e2e.spec.mjs",
+    "test:mockups:headed": "playwright test tests/mockups.e2e.spec.mjs --headed"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.0.5",

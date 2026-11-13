@@ -30,7 +30,7 @@ const TestimonialsPage = lazy(() => import('@/admin/pages/TestimonialsPage'));
 const ClientLogosPage = lazy(() => import('@/admin/pages/ClientLogosPage'));
 const MarqueeItemsPage = lazy(() => import('@/admin/pages/MarqueeItemsPage'));
 const StatsPage = lazy(() => import('@/admin/pages/StatsPage'));
-const AdminMockupsPage = lazy(() => import('@/admin/pages/MockupsPage'));
+const AdminMockupsPage = lazy(() => import('@/features/mockups/AdminMockupsPage'));
 const MockupCategoriesPage = lazy(() => import('@/admin/pages/MockupCategoriesPage'));
 const HeroSectionPage = lazy(() => import('@/admin/pages/HeroSectionPage'));
 const FAQsPage = lazy(() => import('@/admin/pages/FAQsPage'));

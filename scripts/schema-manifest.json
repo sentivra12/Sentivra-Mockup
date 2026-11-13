@@ -1,88 +1,124 @@
 {
+  "description": "Schema manifest derived from code - what the application NEEDS, not what the database currently has",
+  "version": "1.0.0",
   "tables": {
     "site_settings": {
-      "columns": ["id", "site_name", "logo_url", "tagline", "primary_email", "primary_phone", "whatsapp_number", "address", "facebook_url", "twitter_url", "linkedin_url", "instagram_url", "github_url", "enable_cookie_banner", "ga4_measurement_id", "meta_pixel_id", "google_ads_id", "google_ads_conversion_label", "tiktok_pixel_id", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "site_name", "site_name_ar", "tagline", "tagline_ar", "description", "description_ar", "email", "phone", "address", "address_ar", "facebook_url", "twitter_url", "instagram_url", "linkedin_url", "whatsapp_number", "enable_cookie_banner", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchSiteSettings", "src/admin/pages/SiteSettingsPage.jsx"]
     },
     "seo_settings": {
-      "columns": ["id", "page_key", "meta_title", "meta_description", "meta_keywords", "og_image_url", "canonical_url", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "page_key", "meta_title", "meta_title_ar", "meta_description", "meta_description_ar", "og_image_url", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchSEOSettings"]
     },
     "hero": {
-      "columns": ["id", "headline", "subheadline", "cta_primary_text", "cta_primary_link", "cta_secondary_text", "cta_secondary_link", "video_url", "video_webm_url", "video_poster_url", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
-    },
-    "page_content": {
-      "columns": ["id", "page_key", "section_key", "label_en", "label_ar", "title_en", "title_ar", "title_accent_en", "title_accent_ar", "subtitle_en", "subtitle_ar", "description_en", "description_ar", "primary_button_label_en", "primary_button_label_ar", "primary_button_link", "secondary_button_label_en", "secondary_button_label_ar", "secondary_button_link", "hero_eyebrow", "hero_eyebrow_ar", "hero_handwritten_note", "hero_handwritten_note_ar", "hero_industry_lead", "hero_industry_lead_ar", "hero_primary_cta", "hero_primary_cta_ar", "hero_secondary_cta", "hero_secondary_cta_ar", "sticky_bar_text", "sticky_bar_text_ar", "sticky_bar_cta", "sticky_bar_cta_ar", "show_hero_stats", "show_industry_line", "is_active", "display_order", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "title_en", "title_ar", "subtitle_en", "subtitle_ar", "cta_text_en", "cta_text_ar", "cta_url", "background_image_url", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchHero", "src/admin/pages/HeroSectionPage.jsx"]
     },
     "services": {
-      "columns": ["id", "slug", "title", "short_description", "long_description", "icon", "image_url", "category", "display_order", "is_featured", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "slug", "title", "title_ar", "description", "description_ar", "icon", "icon_ar", "features", "is_featured", "is_active", "display_order", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchServices", "src/admin/pages/ServicesPage.jsx"]
+    },
+    "service_categories": {
+      "columns": ["id", "slug", "name_en", "name_ar", "description_en", "description_ar", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchServiceCategories", "src/admin/pages/ServiceCategoriesPage.jsx"]
     },
     "projects": {
-      "columns": ["id", "slug", "title", "short_description", "long_description", "category", "client_name", "image_url", "thumbnail_url", "display_order", "is_featured", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "slug", "title", "title_ar", "description", "description_ar", "client_name", "image_url", "demo_url", "technologies", "category", "is_featured", "is_active", "display_order", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchProjects", "src/admin/pages/ProjectsPage.jsx"]
+    },
+    "project_categories": {
+      "columns": ["id", "slug", "name_en", "name_ar", "description_en", "description_ar", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchProjectCategories", "src/admin/pages/ProjectCategoriesPage.jsx"]
     },
     "mockups": {
-      "columns": ["id", "slug", "title", "description", "category", "image_url", "title_en", "title_ar", "short_description_en", "short_description_ar", "cover_image_url", "desktop_screenshot_url", "is_premium", "price", "is_active", "display_order", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "slug", "title_en", "title_ar", "short_description_en", "short_description_ar", "long_description_en", "long_description_ar", "category_id", "desktop_screenshot_url", "desktop_screenshot_alt_en", "desktop_screenshot_alt_ar", "full_page_screenshot_url", "tablet_screenshot_url", "mobile_screenshot_url", "cover_image_url", "demo_url", "live_url", "client_name", "industry", "project_year", "whats_included", "features", "technologies", "tags", "gallery_images", "open_in_new_tab", "is_new", "is_popular", "is_featured", "is_premium", "price", "is_active", "display_order", "created_at", "updated_at"],
+      "foreign_keys": [
+        {"column": "category_id", "references": "mockup_categories(id)"}
+      ],
+      "required_by": ["src/lib/api.js:fetchMockups", "src/admin/pages/MockupsPage.jsx"]
     },
     "mockup_categories": {
       "columns": ["id", "slug", "name_en", "name_ar", "description_en", "description_ar", "icon", "color", "display_order", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "required_by": ["src/lib/api.js:fetchMockupCategories", "src/admin/pages/MockupCategoriesPage.jsx", "src/admin/pages/MockupsPage.jsx"]
     },
     "testimonials": {
-      "columns": ["id", "client_name", "client_role", "client_company", "testimonial_text", "rating", "client_photo_url", "display_order", "is_featured", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "client_name", "client_name_ar", "position", "position_ar", "company", "company_ar", "content", "content_ar", "avatar_url", "rating", "is_featured", "is_active", "display_order", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchTestimonials", "src/admin/pages/TestimonialsPage.jsx"]
     },
     "faqs": {
-      "columns": ["id", "page_key", "question_en", "question_ar", "answer_en", "answer_ar", "is_active", "display_order", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "page_key", "question_en", "question_ar", "answer_en", "answer_ar", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchFAQs", "src/admin/pages/FAQsPage.jsx"]
     },
     "client_logos": {
-      "columns": ["id", "client_name", "logo_url", "website_url", "is_active", "display_order", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "client_name", "logo_url", "website_url", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchClientLogos", "src/admin/pages/ClientLogosPage.jsx"]
     },
     "trust_badges": {
-      "columns": ["id", "title", "description", "icon", "is_active", "display_order", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "title_en", "title_ar", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchTrustBadges"]
     },
     "process_steps": {
-      "columns": ["id", "step_number", "title", "description", "icon", "display_order", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "step_number", "title", "title_ar", "description", "description_ar", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchProcessSteps"]
     },
     "why_choose_us": {
-      "columns": ["id", "icon", "title", "description", "display_order", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "title", "title_ar", "description", "description_ar", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchWhyChooseUs"]
     },
     "countries": {
-      "columns": ["id", "name", "country_code", "flag_emoji", "description", "client_count", "display_order", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "name_en", "name_ar", "flag_url", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchCountries", "src/admin/pages/AboutPage.jsx"]
     },
     "timeline_milestones": {
-      "columns": ["id", "year", "title", "description", "display_order", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "year", "title", "title_ar", "description", "description_ar", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchTimeline", "src/admin/pages/AboutPage.jsx"]
     },
     "values": {
-      "columns": ["id", "icon", "title", "description", "display_order", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "title", "title_ar", "description", "description_ar", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchValues", "src/admin/pages/AboutPage.jsx"]
     },
     "stats": {
-      "columns": ["id", "label", "value", "suffix", "icon", "display_order", "is_active", "created_at", "updated_at"],
-      "adminOnly": false
+      "columns": ["id", "label_en", "label_ar", "value", "suffix", "icon", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchStats"]
     },
     "blog_posts": {
-      "columns": ["id"],
-      "adminOnly": false
+      "columns": ["id", "slug", "title", "title_ar", "excerpt", "excerpt_ar", "content", "content_ar", "cover_image_url", "author", "status", "published_at", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchBlogPosts"]
     },
     "messages": {
-      "columns": ["id"],
-      "adminOnly": true
+      "columns": ["id", "name", "email", "phone", "company", "subject", "message", "source", "status", "admin_notes", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:createMessage", "src/lib/api.js:fetchMessages", "src/admin/pages/MessagesPage.jsx"]
     },
     "media": {
-      "columns": ["id"],
-      "adminOnly": true
+      "columns": ["id", "file_name", "file_path", "file_type", "file_size", "alt_text", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchMedia", "src/admin/pages/MediaLibraryPage.jsx"]
+    },
+    "marquee_items": {
+      "columns": ["id", "text_en", "text_ar", "icon", "row_number", "display_order", "is_active", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchMarqueeItems", "src/admin/pages/MarqueeItemsPage.jsx"]
+    },
+    "page_content": {
+      "columns": ["id", "page_key", "section_key", "content_en", "content_ar", "created_at", "updated_at"],
+      "required_by": ["src/lib/api.js:fetchPageContent", "src/admin/pages/PageContentPage.jsx"]
+    },
+    "user_roles": {
+      "columns": ["id", "user_id", "role", "is_active", "created_at", "updated_at"],
+      "foreign_keys": [
+        {"column": "user_id", "references": "auth.users(id)"}
+      ],
+      "required_by": ["RLS policies", "public.is_admin() function"]
     }
+  },
+  "functions": {
+    "is_admin": {
+      "return_type": "boolean",
+      "security": "SECURITY DEFINER",
+      "stable": true,
+      "required_by": ["RLS policies"]
+    }
+  },
+  "storage": {
+    "buckets": ["media"],
+    "required_by": ["MediaUploadField component", "admin upload forms"]
   }
 }
