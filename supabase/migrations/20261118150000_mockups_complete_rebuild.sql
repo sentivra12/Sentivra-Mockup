@@ -44,6 +44,17 @@ CREATE TABLE IF NOT EXISTS user_roles (
   UNIQUE(user_id, role)
 );
 
+-- Add is_active column if it doesn't exist
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'user_roles' AND column_name = 'is_active'
+  ) THEN
+    ALTER TABLE user_roles ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT TRUE;
+  END IF;
+END $$;
+
 ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "user_roles_select_own" ON user_roles;
