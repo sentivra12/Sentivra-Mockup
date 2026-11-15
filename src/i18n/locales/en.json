@@ -49,6 +49,15 @@
     "dark": "Dark",
     "system": "System"
   },
+  "motion": {
+    "title": "Motion Settings",
+    "auto": "Auto",
+    "autoDesc": "Follow system preference",
+    "full": "Full Motion",
+    "fullDesc": "All animations enabled",
+    "reduced": "Reduced Motion",
+    "reducedDesc": "Gentle animations only"
+  },
   "language": {
     "title": "Language"
   },
@@ -322,7 +331,10 @@
     },
     "team": {
       "title": "Meet Our Team",
-      "subtitle": "The talented people behind Sentivra"
+      "subtitle": "The talented people behind Sentivra",
+      "label": "OUR TEAM",
+      "description": "We are designers, developers, strategists, and problem solvers. A large team working together to build exceptional digital products.",
+      "button": "Join Our Team"
     },
     "timeline": {
       "title": "Our Journey",
@@ -334,6 +346,22 @@
     "countries": {
       "title": "Where We Operate",
       "subtitle": "Serving clients across multiple regions"
+    },
+    "presence": {
+      "label": "OUR PRESENCE",
+      "title": "Building Solutions Across the Region",
+      "description": "We proudly work with clients in {countries}, delivering high-quality digital solutions that help businesses across different industries.",
+      "descriptionGeneric": "We proudly work with clients across the region, delivering high-quality digital solutions that help businesses across different industries.",
+      "button": "Our Work",
+      "globalReach": "Global Reach",
+      "regionsGeneric": "the region"
+    },
+    "story": {
+      "label": "OUR STORY",
+      "title": "From an Idea to a Growing Team",
+      "description": "Sentivra started with a simple idea: to help businesses use technology to grow. Today, we are a team of designers, developers, and strategists working with clients across {countries}, delivering digital solutions that solve real problems.",
+      "descriptionGeneric": "Sentivra started with a simple idea: to help businesses use technology to grow. Today, we are a team of designers, developers, and strategists delivering digital solutions that solve real problems.",
+      "button": "Our Journey"
     }
   },
   "contact": {

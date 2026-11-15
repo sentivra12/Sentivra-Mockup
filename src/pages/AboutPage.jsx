@@ -28,7 +28,7 @@ import { SEO, useSEO } from '@/components/SEO';
 
 const AboutPage = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { getMetadata } = useSEO();
   const seoData = getMetadata('about');
 
@@ -63,6 +63,42 @@ const AboutPage = () => {
         </div>
       </div>
     );
+  }
+
+  // Build country list text from actual data
+  // Filter out countries without valid names
+  const validCountries = countries.filter(c => {
+    const name = language === 'ar' ? (c.name_ar || c.name) : (c.name_en || c.name);
+    return name && name.trim() !== '';
+  });
+
+  const buildCountryList = () => {
+    if (validCountries.length === 0) return null;
+    
+    const countryNames = validCountries.map(c => {
+      const name = language === 'ar' ? (c.name_ar || c.name) : (c.name_en || c.name);
+      return name;
+    }).filter(Boolean); // Remove any undefined/null
+    
+    if (countryNames.length === 0) return null;
+    if (countryNames.length === 1) return countryNames[0];
+    if (countryNames.length === 2) {
+      return language === 'ar' ? `${countryNames[0]} و ${countryNames[1]}` : `${countryNames[0]} and ${countryNames[1]}`;
+    }
+    
+    // 3+ countries: use proper list formatting
+    const formatter = new Intl.ListFormat(language === 'ar' ? 'ar' : 'en', { 
+      style: 'long', 
+      type: 'conjunction' 
+    });
+    return formatter.format(countryNames);
+  };
+
+  const countryListText = buildCountryList();
+
+  // Dev-time guard: warn if interpolation receives undefined
+  if (process.env.NODE_ENV === 'development' && countryListText === null) {
+    console.warn('[AboutPage] No valid countries for interpolation - using fallback text');
   }
 
   return (
@@ -113,54 +149,77 @@ const AboutPage = () => {
       <BrandBand withArrows={true} />
 
       {/* Our Presence Section */}
-      <Section spacing="xl" className="bg-frost-soft">
-        <Container>
-          {/* Desktop: 3-column layout | Mobile: stacked */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-            
-            {/* Left Column - Label, Title, Description, Button */}
-            <div className="lg:col-span-3 space-y-6">
-              <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider">
-                OUR PRESENCE
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-primary-deep leading-tight">
-                Building Solutions Across the Region
-              </h2>
-              <p className="text-base text-text-muted leading-relaxed">
-                We proudly work with clients in Egypt, UAE, and Oman, delivering high-quality digital solutions that help businesses across different industries.
-              </p>
-              <a href="/our-work">
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-3 rounded-lg group"
-                >
-                  Our Work
-                  <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </a>
-            </div>
+      {validCountries.length > 0 && (
+        <Section spacing="xl" className="bg-frost-soft">
+          <Container>
+            {/* Desktop: 3-column layout | Mobile: stacked */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+              
+              {/* Left Column - Label, Title, Description, Button */}
+              <div className="lg:col-span-3 space-y-6">
+                <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider">
+                  {t('about.presence.label') || 'OUR PRESENCE'}
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold text-primary-deep dark:text-primary-light leading-tight">
+                  {t('about.presence.title') || 'Building Solutions Across the Region'}
+                </h2>
+                {countryListText && (
+                  <p className="text-base text-text-muted leading-relaxed" dir="auto">
+                    {t('about.presence.description', { countries: countryListText })}
+                  </p>
+                )}
+                {!countryListText && (
+                  <p className="text-base text-text-muted leading-relaxed">
+                    {t('about.presence.descriptionGeneric') || 'We proudly work with clients across the region, delivering high-quality digital solutions that help businesses across different industries.'}
+                  </p>
+                )}
+                <a href="/mockups">
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-primary text-primary hover:bg-primary hover:text-white dark:border-brand-accent dark:text-brand-accent dark:hover:bg-brand-accent px-6 py-3 rounded-lg group"
+                  >
+                    {t('about.presence.button') || 'Our Work'}
+                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </a>
+              </div>
 
-            {/* Middle Column - 3 Country Cards */}
-            <div className="lg:col-span-6">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {countries.map((country, index) => (
-                  <CountryCard 
-                    key={country.id} 
-                    country={country} 
-                    delay={index * 0.1}
-                  />
-                ))}
+              {/* Middle Column - Country Cards */}
+              <div className="lg:col-span-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {validCountries.slice(0, 3).map((country, index) => (
+                    <CountryCard 
+                      key={country.id} 
+                      country={country}
+                      language={language}
+                      delay={index * 0.1}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Column - Regional Map - only show if we have coordinates */}
+              <div className="lg:col-span-3 hidden lg:block">
+                {validCountries.some(c => c.latitude && c.longitude) ? (
+                  <RegionMap countries={validCountries} />
+                ) : (
+                  <div className="relative h-full min-h-[300px] rounded-2xl overflow-hidden bg-gradient-to-br from-brand-50 via-frost-soft to-brand-100 dark:from-brand-950 dark:via-gray-900 dark:to-brand-900 border border-frost">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center space-y-4">
+                        <div className="text-6xl">🌍</div>
+                        <p className="text-sm font-medium text-text-muted">
+                          {t('about.presence.globalReach') || 'Global Reach'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-
-            {/* Right Column - Regional Map */}
-            <div className="lg:col-span-3 hidden lg:block">
-              <RegionMap countries={countries} />
-            </div>
-          </div>
-        </Container>
-      </Section>
+          </Container>
+        </Section>
+      )}
 
       {/* Stats Strip */}
       <StatsStrip stats={stats} />
@@ -178,21 +237,24 @@ const AboutPage = () => {
               className="space-y-6"
             >
               <span className="inline-block text-sm font-semibold text-primary uppercase tracking-wider">
-                OUR STORY
+                {t('about.story.label') || 'OUR STORY'}
               </span>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-deep">
-                From an Idea to a Growing Team
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary-deep dark:text-primary-light">
+                {t('about.story.title') || 'From an Idea to a Growing Team'}
               </h2>
-              <p className="text-lg text-text-muted leading-relaxed">
-                Sentivra started with a simple idea: to help businesses use technology to grow. Today, we are a team of designers, developers, and strategists working with clients across Egypt, UAE, and Oman, delivering digital solutions that solve real problems.
+              <p className="text-lg text-text-muted leading-relaxed" dir="auto">
+                {countryListText 
+                  ? t('about.story.description', { countries: countryListText })
+                  : t('about.story.descriptionGeneric') || 'Sentivra started with a simple idea: to help businesses use technology to grow. Today, we are a team of designers, developers, and strategists delivering digital solutions that solve real problems.'
+                }
               </p>
               <Button
                 onClick={() => handleScrollToSection('our-team')}
                 size="lg"
                 variant="outline"
-                className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-lg group"
+                className="border-2 border-primary text-primary hover:bg-primary hover:text-white dark:border-brand-accent dark:text-brand-accent dark:hover:bg-brand-accent px-8 py-3 rounded-lg group"
               >
-                Our Journey
+                {t('about.story.button') || 'Our Journey'}
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </motion.div>
@@ -207,12 +269,13 @@ const AboutPage = () => {
 
       {/* Our Team Band */}
       <TeamBand
-        label="OUR TEAM"
-        title="A Diverse Team of Talented Professionals"
-        description="We are designers, developers, strategists, and problem solvers. A large team working together to build exceptional digital products."
-        buttonLabel="Join Our Team"
-        buttonHref="/#contact"
-        teamImage="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop"
+        inverse={false}
+        label={t('about.team.label') || 'OUR TEAM'}
+        title={t('about.team.title') || 'A Diverse Team of Talented Professionals'}
+        description={t('about.team.description') || 'We are designers, developers, strategists, and problem solvers. A large team working together to build exceptional digital products.'}
+        buttonLabel={t('about.team.button') || 'Join Our Team'}
+        buttonHref="/contact"
+        // No teamImage - will show brand illustration instead
       />
 
       {/* Our Values Section */}
