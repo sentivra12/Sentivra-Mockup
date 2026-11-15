@@ -1,0 +1,13 @@
+{
+  "errors": [],
+  "warnings": [],
+  "lightData": {
+    "h1Text": "We Build Software Solutions That Scale",
+    "hasHardcodedServices": false
+  },
+  "darkData": {
+    "navbarBg": "rgba(0, 0, 0, 0)",
+    "heroBg": "rgba(0, 0, 0, 0)",
+    "h1Color": "rgb(255, 255, 255)"
+  }
+}

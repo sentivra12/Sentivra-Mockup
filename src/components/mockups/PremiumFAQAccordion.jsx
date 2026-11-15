@@ -15,7 +15,8 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { Plus, Minus, MessageCircle, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -131,7 +132,7 @@ const PremiumFAQAccordion = ({
           </h2>
           <p 
             className={`text-base sm:text-lg max-w-3xl mx-auto ${
-              isDark ? 'text-slate-400' : 'text-slate-600'
+              isDark ? 'text-text-muted' : 'text-text-muted'
             }`}
           >
             {language === 'ar'
@@ -166,8 +167,8 @@ const PremiumFAQAccordion = ({
                   }}
                   className={`rounded-2xl border backdrop-blur-sm overflow-hidden transition-all duration-300 ${
                     isDark
-                      ? 'bg-slate-800/30 border-white/10 hover:border-cyan-400/30'
-                      : 'bg-white/80 border-slate-200 hover:border-[#5C7E8F]/30'
+                      ? 'bg-surface-elevated border-border-subtle hover:border-brand-accent/30'
+                      : 'bg-surface-elevated border-border hover:border-brand-accent/30'
                   }`}
                   style={{
                     boxShadow: isOpen
@@ -193,11 +194,11 @@ const PremiumFAQAccordion = ({
                       className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${
                         isOpen
                           ? isDark
-                            ? 'bg-cyan-400 text-slate-900'
-                            : 'bg-[#5C7E8F] text-white'
+                            ? 'bg-brand-accent text-primary-deep'
+                            : 'bg-brand-accent text-white'
                           : isDark
                             ? 'bg-white/5 text-slate-400'
-                            : 'bg-slate-100 text-slate-600'
+                            : 'bg-frost-soft text-text-muted'
                       }`}
                     >
                       {globalIndex + 1}
@@ -229,7 +230,7 @@ const PremiumFAQAccordion = ({
                       ) : (
                         <Plus 
                           className={`w-5 h-5 ${
-                            isDark ? 'text-slate-400' : 'text-slate-600'
+                            isDark ? 'text-text-muted' : 'text-text-muted'
                           }`}
                           aria-hidden="true"
                         />
@@ -251,7 +252,7 @@ const PremiumFAQAccordion = ({
                       <div className={`px-6 pb-6 ${language === 'ar' ? 'pr-18' : 'pl-18'}`}>
                         <p 
                           className={`text-base leading-relaxed ${
-                            isDark ? 'text-slate-300' : 'text-slate-700'
+                            isDark ? 'text-text-base' : 'text-primary-deep'
                           }`}
                         >
                           {answer}
@@ -288,8 +289,8 @@ const PremiumFAQAccordion = ({
                   }}
                   className={`rounded-2xl border backdrop-blur-sm overflow-hidden transition-all duration-300 ${
                     isDark
-                      ? 'bg-slate-800/30 border-white/10 hover:border-cyan-400/30'
-                      : 'bg-white/80 border-slate-200 hover:border-[#5C7E8F]/30'
+                      ? 'bg-surface-elevated border-border-subtle hover:border-brand-accent/30'
+                      : 'bg-surface-elevated border-border hover:border-brand-accent/30'
                   }`}
                   style={{
                     boxShadow: isOpen
@@ -313,11 +314,11 @@ const PremiumFAQAccordion = ({
                       className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors ${
                         isOpen
                           ? isDark
-                            ? 'bg-cyan-400 text-slate-900'
-                            : 'bg-[#5C7E8F] text-white'
+                            ? 'bg-brand-accent text-primary-deep'
+                            : 'bg-brand-accent text-white'
                           : isDark
                             ? 'bg-white/5 text-slate-400'
-                            : 'bg-slate-100 text-slate-600'
+                            : 'bg-frost-soft text-text-muted'
                       }`}
                     >
                       {globalIndex + 1}
@@ -347,7 +348,7 @@ const PremiumFAQAccordion = ({
                       ) : (
                         <Plus 
                           className={`w-5 h-5 ${
-                            isDark ? 'text-slate-400' : 'text-slate-600'
+                            isDark ? 'text-text-muted' : 'text-text-muted'
                           }`}
                           aria-hidden="true"
                         />
@@ -368,7 +369,7 @@ const PremiumFAQAccordion = ({
                       <div className={`px-6 pb-6 ${language === 'ar' ? 'pr-18' : 'pl-18'}`}>
                         <p 
                           className={`text-base leading-relaxed ${
-                            isDark ? 'text-slate-300' : 'text-slate-700'
+                            isDark ? 'text-text-base' : 'text-primary-deep'
                           }`}
                         >
                           {answer}
@@ -390,8 +391,8 @@ const PremiumFAQAccordion = ({
               }}
               className={`rounded-2xl border backdrop-blur-sm p-8 text-center ${
                 isDark
-                  ? 'bg-gradient-to-br from-slate-800/40 to-slate-900/40 border-white/10'
-                  : 'bg-gradient-to-br from-white/80 to-slate-50/80 border-slate-200'
+                  ? 'bg-gradient-to-br from-surface-elevated to-surface border-border-subtle'
+                  : 'bg-gradient-to-br from-surface-elevated to-frost-soft border-border'
               }`}
             >
               <MessageCircle 
@@ -408,7 +409,7 @@ const PremiumFAQAccordion = ({
               </h3>
               <p 
                 className={`text-sm mb-6 ${
-                  isDark ? 'text-slate-400' : 'text-slate-600'
+                  isDark ? 'text-text-muted' : 'text-text-muted'
                 }`}
               >
                 {language === 'ar'
@@ -419,8 +420,8 @@ const PremiumFAQAccordion = ({
                 onClick={() => window.location.href = '/contact'}
                 className={`w-full rounded-xl ${
                   isDark
-                    ? 'bg-cyan-400 text-slate-900 hover:bg-cyan-300'
-                    : 'bg-[#5C7E8F] text-white hover:bg-[#4A6B7C]'
+                    ? 'bg-brand-accent text-primary-deep hover:bg-brand-accent-hover'
+                    : 'bg-brand-accent text-white hover:bg-brand-accent-hover'
                 }`}
               >
                 {language === 'ar' ? 'تواصل معنا' : 'Contact Us'}

@@ -91,7 +91,7 @@ const PremiumStatCard = ({ stat, index }) => {
           </div>
 
           {/* Label */}
-          <div className="text-base font-semibold text-muted-foreground">
+          <div className="font-semibold text-muted-foreground" style={{ fontSize: '14px', lineHeight: '1.4' }}>
             {stat.label}
           </div>
 

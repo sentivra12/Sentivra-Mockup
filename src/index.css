@@ -2,601 +2,751 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Primary fonts with display swap for better performance */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* ─── Fonts ──────────────────────────────────────────────────────────────── */
+/* Plus Jakarta Sans — geometric bold, echoes the SP mark */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap');
+/* IBM Plex Sans Arabic — Arabic body & headings */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 
-/* Frosted Aura Color Palette - Unified with shadcn tokens */
+/* ─── Design tokens ───────────────────────────────────────────────────────── */
 @layer base {
   :root {
-    /* Frosted Aura Primary Colors */
-    --color-primary: #5C7E8F;
-    --color-primary-strong: #476574;
-    --color-primary-deep: #1F3440;
+    /* ── Header height ─────────────────────────────────────────────────────── */
+    --header-h-mobile:  4.25rem;  /* 68px */
+    --header-h-desktop: 4rem;     /* 64px = h-16 */
+    --header-height:    var(--header-h-mobile);
+
+    /* ── Brand scale ───────────────────────────────────────────────────────── */
+    /* 500 = main brand, 700/800 for buttons/text on light,
+       300/400 for glows/accents on dark */
+    --brand-50:  #E6F7F3;
+    --brand-100: #C0EBE0;
+    --brand-200: #8FDBCA;
+    --brand-300: #55C8B1;
+    --brand-400: #26B59A;   /* bright teal accent (glows, active, indicators) */
+    --brand-500: #0D9E82;   /* bright teal highlight (top-left of logo gradient) */
+    --brand-600: #06796A;   /* mid emerald — primary action colour */
+    --brand-700: #055A4F;   /* deep emerald — button bg, text on light */
+    --brand-800: #044D40;   /* deep — logo gradient end, inverse bg base */
+    --brand-900: #02231E;   /* near-black green — darkest surface */
+    --brand-950: #01120F;
+
+    /* Convenience aliases */
+    --brand-teal:     var(--brand-500);  /* bright teal — decorative only */
+    --brand-main:     var(--brand-600);  /* primary actions */
+    --brand-deep:     var(--brand-800);  /* inverse surfaces */
+    --brand-darkest:  var(--brand-900);
+
+    /* Sparkle glow — mint-white bloom */
+    --glow-sparkle: #B2F0E0;
+    --glow-sparkle-soft: rgba(178, 240, 224, 0.4);
+
+    /* ── Brand gradients ────────────────────────────────────────────────────── */
+    --brand-gradient:      linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 50%, var(--brand-800) 100%);
+    --brand-gradient-soft: linear-gradient(135deg, rgba(13,158,130,0.15) 0%, rgba(4,77,64,0.08) 100%);
+    --brand-gradient-text: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%);
+
+    /* ── Light theme semantic ───────────────────────────────────────────────── */
+    --color-background:    #FFFFFF;
+    --color-foreground:    #02231E;   /* near-black green — high contrast body text */
+    --color-surface:       #FFFFFF;
+    --color-surface-raised: #F0FAF7;  /* very light mint tint */
+
+    --color-primary:          var(--brand-700);   /* deep emerald */
+    --color-primary-strong:   var(--brand-800);
+    --color-primary-deep:     var(--brand-900);
     --color-primary-foreground: #FFFFFF;
-    
-    /* Frost System */
-    --color-frost: #D4DDE2;
-    --color-frost-soft: #EEF2F4;
-    
-    /* Hero-specific tokens (cinematic dark hero in both themes) */
-    --hero-deep: #0B171E;
-    --hero-grade: #0F1E26;
-    --hero-frost: #D4DDE2;
-    --hero-headline: #F4F8FA;
-    --hero-accent: #6FD3D8;
-    --hero-accent-light: #8FC3D1;
-    --hero-pill-bg: rgba(15, 30, 38, 0.6);
-    --hero-pill-border: rgba(212, 221, 226, 0.12);
-    --hero-chip-bg: rgba(15, 30, 38, 0.55);
-    --hero-chip-border: rgba(255, 255, 255, 0.12);
-    --hero-vignette: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, rgba(11, 23, 30, 0.6) 100%);
-    
-    /* Impact section tokens (dark band in both themes) */
-    --impact-start: #1F3440;
-    --impact-mid: #2A4756;
-    --impact-end: #1F3440;
-    --impact-accent: #6FD3D8;
-    --impact-muted: rgba(255, 255, 255, 0.7);
-    --impact-divider: rgba(255, 255, 255, 0.1);
-    --impact-icon-glow: rgba(111, 211, 216, 0.4);
-    
-    /* Marquee band tokens (deep slate band in both themes) */
-    --marquee-deep: #1F3440;
-    --marquee-text: rgba(255, 255, 255, 0.9);
-    --marquee-accent: #8FB3C4;
-    --marquee-glow: rgba(143, 179, 196, 0.3);
-    --marquee-chip: rgba(143, 179, 196, 0.1);
-    --marquee-chip-border: rgba(143, 179, 196, 0.2);
-    --marquee-chip-hover: rgba(143, 179, 196, 0.15);
-    
-    /* Testimonials tokens (dark surface in both themes) */
-    --testimonial-surface: #0F1E26;
-    --testimonial-card: #1A2930;
-    --testimonial-border: rgba(143, 179, 196, 0.15);
-    --testimonial-text: #E6EDF0;
-    --testimonial-name: #FFFFFF;
-    --testimonial-meta: rgba(255, 255, 255, 0.6);
-    --testimonial-accent: #8FB3C4;
-    --testimonial-glow: rgba(143, 179, 196, 0.1);
-    --testimonial-heading: #FFFFFF;
-    --testimonial-subtitle: rgba(255, 255, 255, 0.7);
-    --testimonial-avatar: rgba(143, 179, 196, 0.1);
-    --testimonial-ring: rgba(143, 179, 196, 0.3);
-    --testimonial-nav-bg: rgba(26, 41, 48, 0.8);
-    --testimonial-nav-border: rgba(143, 179, 196, 0.2);
-    --testimonial-nav-hover: rgba(143, 179, 196, 0.2);
-    --testimonial-nav-icon: #8FB3C4;
-    --testimonial-dot: rgba(255, 255, 255, 0.3);
-    --testimonial-dot-hover: rgba(255, 255, 255, 0.5);
-    --testimonial-progress-bg: rgba(143, 179, 196, 0.1);
-    
-    /* CTA tokens (deep slate surface in both themes) */
-    --cta-deep: #1F3440;
-    --cta-hairline: rgba(143, 179, 196, 0.3);
-    --cta-aurora-1: rgba(111, 211, 216, 0.15);
-    --cta-aurora-2: rgba(143, 179, 196, 0.15);
-    --cta-accent: #6FD3D8;
-    --cta-heading: #FFFFFF;
-    --cta-subtitle: rgba(255, 255, 255, 0.8);
-    --cta-card-bg: rgba(26, 41, 48, 0.6);
-    --cta-card-border: rgba(143, 179, 196, 0.2);
-    --cta-card-heading: #FFFFFF;
-    --cta-channel-bg: rgba(143, 179, 196, 0.05);
-    --cta-channel-border: rgba(143, 179, 196, 0.15);
-    --cta-channel-border-hover: rgba(143, 179, 196, 0.3);
-    --cta-label: rgba(255, 255, 255, 0.6);
-    --cta-value: #FFFFFF;
-    --cta-icon-bg: rgba(143, 179, 196, 0.1);
-    --cta-icon-hover: rgba(143, 179, 196, 0.15);
-    --cta-icon: #8FB3C4;
-    --cta-copy: rgba(255, 255, 255, 0.5);
-    --cta-copy-hover: rgba(143, 179, 196, 0.1);
-    --cta-glass-bg: rgba(143, 179, 196, 0.05);
-    --cta-glass-border: rgba(143, 179, 196, 0.3);
-    --cta-glass-hover: rgba(143, 179, 196, 0.1);
-    --cta-glass-text: #FFFFFF;
-    
-    /* ============================================= */
-    /* INVERSE SURFACE SYSTEM - ALWAYS DARK         */
-    /* For sections that stay dark in both themes   */
-    /* Used by: Footer, Why Choose Us, Team bands   */
-    /* ============================================= */
-    
-    /* Light theme: Deep slate with gradient to slightly lighter at top */
-    --inverse-bg: #12232C;
-    --inverse-bg-gradient-start: #1A3340;
-    --inverse-bg-gradient-end: #12232C;
-    --inverse-bg-raised: #1A3340;
-    
-    /* Typography - always light on dark */
-    --inverse-fg: #FFFFFF;
-    --inverse-fg-muted: #D4DDE2;
-    --inverse-fg-subtle: #9DB0BA;
-    
-    /* Borders and dividers */
-    --inverse-border: rgba(255, 255, 255, 0.12);
-    --inverse-border-subtle: rgba(255, 255, 255, 0.06);
-    --inverse-hairline: rgba(143, 179, 196, 0.3);
-    
-    /* Interactive elements */
-    --inverse-accent: #8FC3D1;
-    --inverse-accent-hover: #A5D4DF;
-    --inverse-accent-strong: #6FD3D8;
-    
-    /* Glass effects in inverse surface */
-    --inverse-glass-bg: rgba(143, 179, 196, 0.08);
-    --inverse-glass-border: rgba(255, 255, 255, 0.15);
-    --inverse-glass-hover: rgba(143, 179, 196, 0.12);
-    
-    /* Button variants in inverse surface */
-    --inverse-button-primary-bg: #FFFFFF;
-    --inverse-button-primary-fg: #1F3440;
-    --inverse-button-primary-hover: rgba(255, 255, 255, 0.9);
-    --inverse-button-secondary-bg: rgba(143, 179, 196, 0.12);
-    --inverse-button-secondary-border: rgba(143, 179, 196, 0.4);
-    --inverse-button-secondary-hover: rgba(143, 179, 196, 0.2);
-    
-    /* Focus rings */
-    --inverse-ring: rgba(143, 195, 209, 0.5);
-    
-    /* Input fields in inverse surface */
-    --inverse-input-bg: rgba(255, 255, 255, 0.05);
-    --inverse-input-border: rgba(255, 255, 255, 0.2);
-    --inverse-input-focus: rgba(143, 195, 209, 0.4);
-    
-    /* Grid and pattern overlays */
-    --inverse-grid: rgba(143, 179, 196, 0.03);
-    --inverse-glow: rgba(143, 179, 196, 0.15);
-    
-    /* Semantic Light Theme */
-    --color-background: #FFFFFF;
-    --color-foreground: #1F3440;
-    --color-surface: #FFFFFF;
-    --color-surface-raised: #F9FAFB;
-    
-    --color-border: rgba(212, 221, 226, 0.6);
-    --color-border-strong: #D4DDE2;
-    
-    --color-text: #1F3440;
-    --color-text-muted: #5E6A71;
-    --color-text-subtle: #9DB0BA;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(92, 126, 143, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(92, 126, 143, 0.1), 0 2px 4px -1px rgba(92, 126, 143, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(92, 126, 143, 0.1), 0 4px 6px -2px rgba(92, 126, 143, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(92, 126, 143, 0.1), 0 10px 10px -5px rgba(92, 126, 143, 0.04);
-    
-    /* Glass effect */
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.18);
-    
-    /* Overlay */
-    --overlay-bg: rgba(31, 52, 64, 0.4);
-    
-    /* Shadcn Semantic Tokens */
-    --background: 0 0% 100%;
-    --foreground: 200 35% 19%;
-    --card: 0 0% 100%;
-    --card-foreground: 200 35% 19%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 200 35% 19%;
-    --primary: 199 23% 46%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 200 26% 94%;
-    --secondary-foreground: 200 35% 19%;
-    --muted: 200 26% 94%;
-    --muted-foreground: 199 10% 39%;
-    --accent: 200 26% 94%;
-    --accent-foreground: 200 35% 19%;
-    --destructive: 0 84% 60%;
+
+    --color-border:       rgba(6,121,106,0.15);
+    --color-border-strong: rgba(6,121,106,0.35);
+
+    --color-text:         #02231E;
+    --color-text-muted:   #3D6B61;
+    --color-text-subtle:  #7AA89E;
+
+    /* Frost aliases kept so old code that still references them doesn't crash */
+    --color-frost:      var(--brand-100);
+    --color-frost-soft: var(--brand-50);
+
+    /* ── Shadows tinted with brand green ────────────────────────────────────── */
+    --shadow-sm: 0 1px 2px 0 rgba(6,121,106,0.06);
+    --shadow-md: 0 4px 6px -1px rgba(6,121,106,0.1), 0 2px 4px -1px rgba(6,121,106,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(6,121,106,0.12), 0 4px 6px -2px rgba(6,121,106,0.06);
+    --shadow-xl: 0 20px 25px -5px rgba(6,121,106,0.15), 0 10px 10px -5px rgba(6,121,106,0.06);
+
+    /* ── Glass ──────────────────────────────────────────────────────────────── */
+    --glass-bg:     rgba(255,255,255,0.80);
+    --glass-border: rgba(255,255,255,0.40);
+    --overlay-bg:   rgba(2,35,30,0.45);
+
+    /* ── Focus ring ─────────────────────────────────────────────────────────── */
+    --ring: var(--brand-500);
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       INVERSE SURFACE — always dark emerald, both themes
+       Used by: footer, CTA bands, MockupDetail hero, etc.
+       Re-based on the brand's deep emerald scale.
+    ═══════════════════════════════════════════════════════════════════════ */
+    --inverse-bg:                #02231E;  /* brand-900 */
+    --inverse-bg-gradient-start: #044D40;  /* brand-800 */
+    --inverse-bg-gradient-end:   #02231E;
+    --inverse-bg-raised:         #033830;
+
+    /* Typography — always light on dark */
+    --inverse-fg:       #FFFFFF;
+    --inverse-fg-muted: #A8D5C8;
+    --inverse-fg-subtle: #5D9C8E;
+
+    /* Borders */
+    --inverse-border:        rgba(255,255,255,0.10);
+    --inverse-border-subtle: rgba(255,255,255,0.05);
+    --inverse-hairline:      rgba(13,158,130,0.35);
+
+    /* Accent — the bright teal on dark */
+    --inverse-accent:       var(--brand-500);  /* #0D9E82 */
+    --inverse-accent-hover: var(--brand-400);  /* #26B59A */
+    --inverse-accent-strong: var(--brand-300); /* #55C8B1 */
+
+    /* Glass in inverse */
+    --inverse-glass-bg:     rgba(13,158,130,0.08);
+    --inverse-glass-border: rgba(255,255,255,0.12);
+    --inverse-glass-hover:  rgba(13,158,130,0.14);
+
+    /* Buttons inside inverse */
+    --inverse-button-primary-bg:        #FFFFFF;
+    --inverse-button-primary-fg:        #02231E;
+    --inverse-button-primary-hover:     rgba(255,255,255,0.90);
+    --inverse-button-secondary-bg:      rgba(13,158,130,0.12);
+    --inverse-button-secondary-border:  rgba(13,158,130,0.40);
+    --inverse-button-secondary-hover:   rgba(13,158,130,0.22);
+
+    /* Focus ring in inverse */
+    --inverse-ring: rgba(13,158,130,0.55);
+
+    /* Input in inverse */
+    --inverse-input-bg:     rgba(255,255,255,0.05);
+    --inverse-input-border: rgba(255,255,255,0.18);
+    --inverse-input-focus:  rgba(13,158,130,0.45);
+
+    /* Grid/glow overlays in inverse */
+    --inverse-grid: rgba(13,158,130,0.03);
+    --inverse-glow: rgba(13,158,130,0.18);
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       HERO tokens — cinematic dark hero (always dark)
+    ═══════════════════════════════════════════════════════════════════════ */
+    --hero-deep:         #01120F;   /* brand-950 */
+    --hero-grade:        #02231E;   /* brand-900 */
+    --hero-frost:        #E0F4EF;
+    --hero-headline:     #F0FAF7;
+    --hero-accent:       var(--brand-500);    /* #0D9E82 */
+    --hero-accent-light: var(--brand-400);    /* #26B59A */
+    --hero-pill-bg:      rgba(2,35,30,0.60);
+    --hero-pill-border:  rgba(13,158,130,0.18);
+    --hero-chip-bg:      rgba(2,35,30,0.55);
+    --hero-chip-border:  rgba(255,255,255,0.12);
+    --hero-vignette:     radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, rgba(1,18,15,0.65) 100%);
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       IMPACT section tokens (dark band, both themes)
+    ═══════════════════════════════════════════════════════════════════════ */
+    --impact-start:     #033830;
+    --impact-mid:       #044D40;
+    --impact-end:       #02231E;
+    --impact-accent:    var(--brand-500);
+    --impact-muted:     rgba(255,255,255,0.72);
+    --impact-divider:   rgba(255,255,255,0.10);
+    --impact-icon-glow: rgba(13,158,130,0.45);
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       MARQUEE band tokens (deep emerald band, both themes)
+    ═══════════════════════════════════════════════════════════════════════ */
+    --marquee-deep:        #02231E;
+    --marquee-text:        rgba(255,255,255,0.90);
+    --marquee-accent:      var(--brand-400);    /* #26B59A */
+    --marquee-glow:        rgba(13,158,130,0.30);
+    --marquee-chip:        rgba(13,158,130,0.10);
+    --marquee-chip-border: rgba(13,158,130,0.22);
+    --marquee-chip-hover:  rgba(13,158,130,0.18);
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       TESTIMONIALS tokens (dark surface, both themes)
+    ═══════════════════════════════════════════════════════════════════════ */
+    --testimonial-surface:      #01120F;
+    --testimonial-card:         #02231E;
+    --testimonial-border:       rgba(13,158,130,0.18);
+    --testimonial-text:         #E0F4EF;
+    --testimonial-name:         #FFFFFF;
+    --testimonial-meta:         rgba(255,255,255,0.60);
+    --testimonial-accent:       var(--brand-400);
+    --testimonial-glow:         rgba(13,158,130,0.10);
+    --testimonial-heading:      #FFFFFF;
+    --testimonial-subtitle:     rgba(255,255,255,0.72);
+    --testimonial-avatar:       rgba(13,158,130,0.12);
+    --testimonial-ring:         rgba(13,158,130,0.35);
+    --testimonial-nav-bg:       rgba(2,35,30,0.80);
+    --testimonial-nav-border:   rgba(13,158,130,0.22);
+    --testimonial-nav-hover:    rgba(13,158,130,0.22);
+    --testimonial-nav-icon:     var(--brand-400);
+    --testimonial-dot:          rgba(255,255,255,0.28);
+    --testimonial-dot-hover:    rgba(255,255,255,0.50);
+    --testimonial-progress-bg:  rgba(13,158,130,0.12);
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       CTA section tokens (deep emerald surface, both themes)
+    ═══════════════════════════════════════════════════════════════════════ */
+    --cta-deep:                 #02231E;
+    --cta-hairline:             rgba(13,158,130,0.35);
+    --cta-aurora-1:             rgba(13,158,130,0.18);
+    --cta-aurora-2:             rgba(4,77,64,0.18);
+    --cta-accent:               var(--brand-400);
+    --cta-heading:              #FFFFFF;
+    --cta-subtitle:             rgba(255,255,255,0.80);
+    --cta-card-bg:              rgba(3,56,48,0.60);
+    --cta-card-border:          rgba(13,158,130,0.22);
+    --cta-card-heading:         #FFFFFF;
+    --cta-channel-bg:           rgba(13,158,130,0.06);
+    --cta-channel-border:       rgba(13,158,130,0.16);
+    --cta-channel-border-hover: rgba(13,158,130,0.35);
+    --cta-label:                rgba(255,255,255,0.60);
+    --cta-value:                #FFFFFF;
+    --cta-icon-bg:              rgba(13,158,130,0.12);
+    --cta-icon-hover:           rgba(13,158,130,0.20);
+    --cta-icon:                 var(--brand-400);
+    --cta-copy:                 rgba(255,255,255,0.45);
+    --cta-copy-hover:           rgba(13,158,130,0.12);
+    --cta-glass-bg:             rgba(13,158,130,0.06);
+    --cta-glass-border:         rgba(13,158,130,0.30);
+    --cta-glass-hover:          rgba(13,158,130,0.12);
+    --cta-glass-text:           #FFFFFF;
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       shadcn/ui semantic (HSL) — mapped to brand scale
+       brand-600 = hsl(171 90% 25%)  brand-500 = hsl(168 85% 33%)
+    ═══════════════════════════════════════════════════════════════════════ */
+    --background:          0 0% 100%;
+    --foreground:          172 90% 7%;    /* brand-900 */
+    --card:                0 0% 100%;
+    --card-foreground:     172 90% 7%;
+    --popover:             0 0% 100%;
+    --popover-foreground:  172 90% 7%;
+    --primary:             171 90% 25%;   /* brand-600 #06796A */
+    --primary-foreground:  0 0% 100%;
+    --secondary:           162 60% 95%;   /* brand-50 tint */
+    --secondary-foreground: 171 90% 25%;
+    --muted:               162 40% 95%;
+    --muted-foreground:    168 25% 38%;
+    --accent:              162 60% 95%;
+    --accent-foreground:   171 90% 25%;
+    --destructive:         0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 83%;
-    --input: 0 0% 83%;
-    --ring: 199 23% 46%;
-    --radius: 0.5rem;
+    --border:              168 50% 83%;
+    --input:               168 50% 83%;
+    --ring:                168 85% 33%;   /* brand-500 */
+    --radius:              0.5rem;
   }
 
-  /* Dark mode color overrides */
+  /* ── Desktop header ──────────────────────────────────────────────────────── */
+  @media (min-width: 768px) {
+    :root {
+      --header-height: var(--header-h-desktop);
+    }
+  }
+
+  /* ── Dark theme ──────────────────────────────────────────────────────────── */
   .dark {
-    /* Frosted Aura Dark Mode - Deep blue-slate palette */
-    --color-primary: #8FB3C4;
-    --color-primary-strong: #A5C4D3;
-    --color-primary-deep: #B8D4E0;
-    --color-primary-foreground: #0B1419;
-    
-    /* Dark Frost */
-    --color-frost: rgba(255, 255, 255, 0.1);
-    --color-frost-soft: rgba(255, 255, 255, 0.05);
-    
-    /* Marquee, Testimonials, CTA tokens remain the same in dark mode (already dark) */
-    /* These sections are designed to be dark in both themes for consistency */
-    
-    /* ============================================= */
-    /* INVERSE SURFACE - DARK MODE ADJUSTMENTS      */
-    /* Slightly darker but still clearly dark       */
-    /* ============================================= */
-    --inverse-bg: #070E12;
-    --inverse-bg-gradient-start: #0F1A20;
-    --inverse-bg-gradient-end: #070E12;
-    --inverse-bg-raised: #0F1A20;
-    
-    /* Typography stays the same (already light) */
-    /* Borders slightly more subtle in dark mode */
-    --inverse-border: rgba(255, 255, 255, 0.08);
-    --inverse-border-subtle: rgba(255, 255, 255, 0.04);
-    --inverse-hairline: rgba(143, 179, 196, 0.2);
-    
-    /* Top hairline glow more visible in dark mode */
-    --inverse-glow: rgba(143, 179, 196, 0.2);
-    
-    /* Semantic Dark Theme */
-    --color-background: #0B1419;
-    --color-foreground: #E6EDF0;
-    --color-surface: #101C23;
-    --color-surface-raised: #1A2930;
-    
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-border-strong: rgba(255, 255, 255, 0.14);
-    
-    --color-text: #E6EDF0;
-    --color-text-muted: #9DB0BA;
-    --color-text-subtle: #6B7F8C;
-    
-    /* Dark Shadows become glows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
-    
-    /* Dark Glass effect */
-    --glass-bg: rgba(16, 28, 35, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    
-    /* Dark Overlay */
-    --overlay-bg: rgba(11, 20, 25, 0.6);
-    
-    /* Shadcn Dark Mode */
-    --background: 205 30% 8%;
-    --foreground: 200 10% 92%;
-    --card: 205 25% 10%;
-    --card-foreground: 200 10% 92%;
-    --popover: 205 25% 10%;
-    --popover-foreground: 200 10% 92%;
-    --primary: 199 23% 65%;
-    --primary-foreground: 205 30% 8%;
-    --secondary: 205 20% 15%;
-    --secondary-foreground: 200 10% 92%;
-    --muted: 205 20% 15%;
-    --muted-foreground: 199 10% 65%;
-    --accent: 205 20% 15%;
-    --accent-foreground: 200 10% 92%;
-    --destructive: 0 84% 60%;
+    --color-background:    #01120F;   /* brand-950 */
+    --color-foreground:    #E0F4EF;
+    --color-surface:       #02231E;   /* brand-900 */
+    --color-surface-raised: #033830;
+
+    --color-primary:          var(--brand-400);   /* bright teal on dark */
+    --color-primary-strong:   var(--brand-500);
+    --color-primary-deep:     var(--brand-300);
+    --color-primary-foreground: #01120F;
+
+    --color-border:       rgba(13,158,130,0.18);
+    --color-border-strong: rgba(13,158,130,0.35);
+
+    --color-text:         #E0F4EF;
+    --color-text-muted:   #7ABFB0;
+    --color-text-subtle:  #3D7A6E;
+
+    --color-frost:      rgba(255,255,255,0.08);
+    --color-frost-soft: rgba(255,255,255,0.04);
+
+    --shadow-sm:  0 1px 2px 0 rgba(0,0,0,0.35);
+    --shadow-md:  0 4px 6px -1px rgba(0,0,0,0.45), 0 2px 4px -1px rgba(0,0,0,0.30);
+    --shadow-lg:  0 10px 15px -3px rgba(0,0,0,0.55), 0 4px 6px -2px rgba(0,0,0,0.40);
+    --shadow-xl:  0 20px 25px -5px rgba(0,0,0,0.65), 0 10px 10px -5px rgba(0,0,0,0.50);
+
+    --glass-bg:     rgba(2,35,30,0.70);
+    --glass-border: rgba(255,255,255,0.08);
+    --overlay-bg:   rgba(1,18,15,0.70);
+
+    /* Inverse in dark mode: slightly deeper */
+    --inverse-bg:                #01120F;
+    --inverse-bg-gradient-start: #02231E;
+    --inverse-bg-gradient-end:   #01120F;
+    --inverse-bg-raised:         #02231E;
+    --inverse-border:            rgba(255,255,255,0.07);
+    --inverse-border-subtle:     rgba(255,255,255,0.04);
+    --inverse-glow:              rgba(13,158,130,0.22);
+
+    /* Hero in dark is same (already cinematic dark) */
+
+    /* shadcn dark */
+    --background:          172 90% 4%;
+    --foreground:          162 60% 93%;
+    --card:                172 90% 7%;
+    --card-foreground:     162 60% 93%;
+    --popover:             172 90% 7%;
+    --popover-foreground:  162 60% 93%;
+    --primary:             168 85% 43%;   /* brand-400 #26B59A */
+    --primary-foreground:  172 90% 4%;
+    --secondary:           172 50% 12%;
+    --secondary-foreground: 162 60% 93%;
+    --muted:               172 50% 12%;
+    --muted-foreground:    168 25% 60%;
+    --accent:              172 50% 12%;
+    --accent-foreground:   162 60% 93%;
+    --destructive:         0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 205 15% 20%;
-    --input: 205 15% 20%;
-    --ring: 199 23% 65%;
+    --border:              172 40% 18%;
+    --input:               172 40% 18%;
+    --ring:                168 85% 43%;
   }
 
-  /* Use focus-visible only (removes the stuck black outline bug) */
+  /* ── Focus visible ───────────────────────────────────────────────────────── */
   *:focus-visible {
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--brand-500);
     outline-offset: 2px;
     border-radius: 2px;
   }
 
-  /* Better focus for buttons and links */
-  button:focus-visible,
-  a:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-  }
-  
-  /* ============================================= */
-  /* INVERSE SURFACE SEMANTIC REMAPPING           */
-  /* Remap semantic tokens inside inverse surface */
-  /* so nested components use inverse colors      */
-  /* ============================================= */
-  /* 
-   * IMPORTANT DEVELOPMENT RULE:
-   * 
-   * Dark sections (footer, CTA bands, team sections, etc.) 
-   * should ALWAYS use the InverseSurface component wrapper:
-   * 
-   *   <InverseSurface>
-   *     <YourContent />
-   *   </InverseSurface>
-   * 
-   * DO NOT use bg-primary-deep or other semantic tokens 
-   * for always-dark sections. They flip with theme changes!
-   * 
-   * See DEVELOPMENT.md for complete guidelines.
-   */
+  /* ── Inverse surface CSS remapping ─────────────────────────────────────────
+     Sections wrapped in <InverseSurface> get these remapped tokens so nested
+     shadcn components automatically use inverse colours.
+  ─────────────────────────────────────────────────────────────────────────── */
   .inverse-surface {
-    /* Remap text colors for nested elements */
-    --color-foreground: var(--inverse-fg);
-    --color-text: var(--inverse-fg);
-    --color-text-muted: var(--inverse-fg-muted);
-    --color-text-subtle: var(--inverse-fg-subtle);
-    
-    /* Remap borders */
-    --color-border: var(--inverse-border);
+    --color-foreground:    var(--inverse-fg);
+    --color-text:          var(--inverse-fg);
+    --color-text-muted:    var(--inverse-fg-muted);
+    --color-text-subtle:   var(--inverse-fg-subtle);
+    --color-border:        var(--inverse-border);
     --color-border-strong: var(--inverse-border);
-    
-    /* Remap surfaces for nested cards/elements */
-    --color-surface: var(--inverse-bg-raised);
+    --color-surface:       var(--inverse-bg-raised);
     --color-surface-raised: var(--inverse-bg-raised);
-    
-    /* Remap primary color to inverse accent */
-    --color-primary: var(--inverse-accent);
+    --color-primary:       var(--inverse-accent);
     --color-primary-strong: var(--inverse-accent-hover);
-    
-    /* Links and interactive elements */
     color: var(--inverse-fg);
   }
-  
-  /* Links inside inverse surface */
-  .inverse-surface a {
-    color: var(--inverse-fg-muted);
-    transition: color 0.2s ease;
-  }
-  
-  .inverse-surface a:hover {
-    color: var(--inverse-accent);
-  }
-  
-  /* Headings inside inverse surface */
-  .inverse-surface h1,
-  .inverse-surface h2,
-  .inverse-surface h3,
-  .inverse-surface h4,
-  .inverse-surface h5,
-  .inverse-surface h6 {
-    color: var(--inverse-fg);
-  }
-  
-  /* Buttons inside inverse surface - primary style */
-  .inverse-surface button.btn-inverse-primary,
-  .inverse-surface .btn-inverse-primary {
-    background-color: var(--inverse-button-primary-bg);
-    color: var(--inverse-button-primary-fg);
-    border: none;
-  }
-  
-  .inverse-surface button.btn-inverse-primary:hover,
-  .inverse-surface .btn-inverse-primary:hover {
-    background-color: var(--inverse-button-primary-hover);
-  }
-  
-  /* Buttons inside inverse surface - secondary/glass style */
-  .inverse-surface button.btn-inverse-secondary,
-  .inverse-surface .btn-inverse-secondary {
-    background-color: var(--inverse-button-secondary-bg);
-    border: 1px solid var(--inverse-button-secondary-border);
-    color: var(--inverse-fg);
-  }
-  
-  .inverse-surface button.btn-inverse-secondary:hover,
-  .inverse-surface .btn-inverse-secondary:hover {
-    background-color: var(--inverse-button-secondary-hover);
-  }
-  
-  /* Focus rings inside inverse surface */
-  .inverse-surface *:focus-visible {
-    outline-color: var(--inverse-accent);
-    box-shadow: 0 0 0 3px var(--inverse-ring);
-  }
-  
-  /* Dividers/borders inside inverse surface */
+
+  .inverse-surface a                    { color: var(--inverse-fg-muted); transition: color 0.2s; }
+  .inverse-surface a:hover              { color: var(--inverse-accent); }
+  .inverse-surface h1, .inverse-surface h2,
+  .inverse-surface h3, .inverse-surface h4,
+  .inverse-surface h5, .inverse-surface h6 { color: var(--inverse-fg); }
   .inverse-surface hr,
   .inverse-surface .border-t,
-  .inverse-surface .border-b,
-  .inverse-surface .border-l,
-  .inverse-surface .border-r,
-  .inverse-surface .border {
-    border-color: var(--inverse-border);
-  }
+  .inverse-surface .border-b           { border-color: var(--inverse-border); }
+  .inverse-surface *:focus-visible      { outline-color: var(--inverse-accent); box-shadow: 0 0 0 3px var(--inverse-ring); }
 }
 
+/* ─── Base styles ─────────────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
   color-scheme: light;
 }
+html.dark { color-scheme: dark; }
 
-html.dark {
-  color-scheme: dark;
+/* Motion system: Use data-motion attribute (controlled by our hook, overrides OS) */
+html[data-motion="calm"] {
+  scroll-behavior: auto;
 }
 
-/* Respect user's motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-  
-  html {
-    scroll-behavior: auto;
-  }
+/* Calm mode: keep animations but reduce intensity */
+html[data-motion="calm"] *, 
+html[data-motion="calm"] *::before, 
+html[data-motion="calm"] *::after {
+  animation-duration: calc(var(--animation-duration, 1s) * 0.7) !important;
+}
+
+/* Disable specific heavy animation types in calm mode */
+html[data-motion="calm"] [data-motion-type="parallax"],
+html[data-motion="calm"] [data-motion-type="tilt"],
+html[data-motion="calm"] [data-motion-type="shake"],
+html[data-motion="calm"] [data-motion-type="bounce"],
+html[data-motion="calm"] [data-motion-type="loop"] {
+  animation: none !important;
+  transform: none !important;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
   color: var(--color-foreground);
   background-color: var(--color-background);
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Arabic font support */
+/* Arabic — IBM Plex Sans Arabic, no letter-spacing */
 html[lang="ar"] body {
-  font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
-  line-height: 1.8; /* Larger line-height for Arabic */
-  letter-spacing: normal; /* Remove letter-spacing for Arabic */
-}
-
-/* Remove letter-spacing from Arabic text */
-html[lang="ar"] * {
+  font-family: 'IBM Plex Sans Arabic', 'Plus Jakarta Sans', system-ui, sans-serif;
+  line-height: 1.8;
   letter-spacing: normal;
 }
+html[lang="ar"] * { letter-spacing: normal; }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-surface-raised); }
+::-webkit-scrollbar-thumb { background: var(--brand-600); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand-700); }
 
-::-webkit-scrollbar-track {
-  background: var(--color-surface-raised);
-}
+/* ─── Selection ───────────────────────────────────────────────────────────── */
+::selection { background-color: var(--brand-500); color: #fff; }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-strong);
-}
-
-/* Custom selection */
-::selection {
-  background-color: var(--color-primary);
-  color: var(--color-primary-foreground);
-}
-
-/* Horizontal scrollbar for filter tabs on mobile */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary) transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  height: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: 2px;
-}
-
-/* For 3D card flip effect */
-.perspective-container {
-  perspective: 1000px;
-}
-
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
-}
-
-.group:hover .card-inner {
-  transform: rotateY(180deg);
-}
-
-.card-front,
-.card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
-  backface-visibility: hidden;
-  border-radius: 1rem; /* 16px */
-}
-
-.card-back {
-  transform: rotateY(180deg);
-}
-
-/* Brand Band Animation */
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-scroll {
-  animation: scroll 30s linear infinite;
-  display: flex;
-}
-
-/* Shimmer Animation for Image Loading */
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* Hide scrollbar for BrandBand carousel */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* SVG logos now handle dark mode internally - no filter needed */
-
-/* Alternative logo solution - add backdrop for contrast */
-.dark .logo-with-backdrop {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-}
-
-/* Hero grain texture */
-.hero-grain {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
-
-/* Custom utilities for hero animations */
+/* ─── Utilities ───────────────────────────────────────────────────────────── */
 @layer utilities {
-  .bg-gradient-radial {
-    background-image: radial-gradient(var(--tw-gradient-stops));
+  .bg-gradient-radial { background-image: radial-gradient(var(--tw-gradient-stops)); }
+
+  /* Grain texture — cheap SVG-based noise */
+  .brand-grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  
-  .hero-grain {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  /* legacy alias */
+  .hero-grain { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  /* Scroll-margin for sections below sticky header */
+  .scroll-mt-header { scroll-margin-top: var(--header-height); }
+
+  /* Brand gradient text fill */
+  .text-brand-gradient {
+    background: var(--brand-gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
+  /* Solid fallback for reduced-data / forced-colors */
+  @media (forced-colors: active) {
+    .text-brand-gradient { -webkit-text-fill-color: unset; color: ButtonText; }
+  }
+
+  /* Page bottom padding so scroll-to-top never covers last card */
+  .page-with-scroll-top { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
 }
 
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
+/* ─── Scrollbar hide ──────────────────────────────────────────────────────── */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+.scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--brand-600) transparent; }
+.scrollbar-thin::-webkit-scrollbar { height: 4px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: var(--brand-600); border-radius: 2px; }
+
+/* ─── Keyframes ──────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50%       { opacity: 0.75; transform: scale(1.15) rotate(10deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes float-delayed {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33%       { transform: translateY(-6px) translateX(3px); }
+  66%       { transform: translateY(4px) translateX(-2px); }
+}
+
+@keyframes scroll-ltr {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Hero-specific ────────────────────────────────────────────────────────── */
+
+/* Typewriter blinking caret */
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Orbit ring rotation */
+@keyframes orbit-cw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes orbit-ccw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+/* Counter-rotation so orbit children stay upright */
+@keyframes counter-cw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+@keyframes counter-ccw {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Pulse ring expand-and-fade */
+@keyframes pulse-ring {
+  0%   { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* Light beam sweep across hero */
+@keyframes beam-sweep {
+  0%   { transform: translateX(-100%) skewX(-20deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateX(200%) skewX(-20deg); opacity: 0; }
+}
+
+/* SVG path draw-on (used for underline) */
+@keyframes draw-path {
+  from { stroke-dashoffset: 300; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes cursor-move {
+  0%   { transform: translate(40px,  30px); opacity: 0; }
+  10%  { opacity: 1; }
+  30%  { transform: translate(80px,  60px); }
+  55%  { transform: translate(60px,  80px); }
+  70%  { transform: translate(60px,  80px) scale(0.85); }
+  80%  { transform: translate(60px,  80px) scale(1.0); }
+  95%  { transform: translate(100px, 50px); opacity: 0.8; }
+  100% { opacity: 0; }
+}
+@keyframes live-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.4); opacity: 0.6; }
+}
+
+/* Typing dots bounce */
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30%           { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Chart bar grow from bottom */
+@keyframes bar-grow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* Scroll/marquee for mini app screen */
+@keyframes scroll-up-slow {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+/* Light pulse travelling along dashed SVG line */
+@keyframes pulse-travel {
+  0%   { stroke-dashoffset: 100; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+/* Entrance: slide-up with overshoot — CSS-only fallback */
+@keyframes slide-up-enter {
+  0%   { opacity: 0; transform: translateY(32px); }
+  70%  { transform: translateY(-4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Fallback: force final state after 1.5s */
+@keyframes force-visible {
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* Visual panel slide-in from right */
+@keyframes slide-in-right {
+  0%   { opacity: 0; transform: translateX(48px) scale(0.97); }
+  70%  { transform: translateX(-4px) scale(1.005); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* ── Utility classes for hero animations ──────────────────────────────────── */
+.hero-enter {
+  animation: slide-up-enter 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hero-enter-visual {
+  animation: slide-in-right 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* Fallback: if JS doesn't run, force visible after 1.5s */
+.hero-enter-fallback {
+  animation:
+    slide-up-enter 0.65s cubic-bezier(0.16, 1, 0.3, 1) both,
+    force-visible  0s   linear 1.5s both;
+}
+
+/* Gradient text fill — brand teal → emerald */
+.text-gradient-brand {
+  background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-400) 40%, var(--brand-600) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* solid color fallback for forced-colors / print */
+  color: var(--brand-600);
+  animation: shimmer 4s linear infinite;
+}
+@media (forced-colors: active) {
+  .text-gradient-brand { -webkit-text-fill-color: unset; color: ButtonText; }
+}
+html[data-motion="calm"] .text-gradient-brand {
+  animation: none;
+}
+
+/* Underline draw-on animation */
+.underline-draw {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: draw-path 1s cubic-bezier(0.4, 0, 0.2, 1) 0.7s forwards;
+}
+html[data-motion="calm"] .underline-draw {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+
+/* ─── 3D card flip ────────────────────────────────────────────────────────── */
+.perspective-container { perspective: 1000px; }
+.card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; }
+.group:hover .card-inner { transform: rotateY(180deg); }
+.card-front, .card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 1rem; }
+.card-back { transform: rotateY(180deg); }
+
+/* ─── Motion Settings Toggle ──────────────────────────────────────────────── */
+.motion-settings-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.motion-settings-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.motion-settings-button:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.motion-settings-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.motion-icon {
+  flex-shrink: 0;
+}
+
+.motion-label {
+  font-weight: 500;
+}
+
+.motion-settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.motion-settings-panel {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 16rem;
+  padding: 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+[dir="rtl"] .motion-settings-panel {
+  right: auto;
+  left: 0;
+}
+
+.motion-settings-title {
+  margin: 0 0 0.75rem;
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.motion-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+[dir="rtl"] .motion-option {
+  text-align: right;
+}
+
+.motion-option:hover {
+  background: var(--color-surface-hover);
+}
+
+.motion-option.active {
+  background: var(--color-primary-subtle);
+}
+
+.motion-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.motion-option-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.motion-option-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.motion-option-check {
+  flex-shrink: 0;
+  color: var(--color-primary);
 }

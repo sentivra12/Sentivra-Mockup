@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '@/i18n/useLanguage';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { 
   Shield,
   Zap,

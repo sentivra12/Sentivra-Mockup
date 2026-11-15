@@ -1,0 +1,5 @@
+{
+  "errors": [
+    "Warning: Using UNSAFE_componentWillMount in strict mode is not recommended and may indicate bugs in your code. See https://reactjs.org/link/unsafe-component-lifecycles for details.\n\n* Move code with side effects to componentDidMount, and set initial state in the constructor.\n\nPlease update the following components: %s SideEffect(NullComponent2)"
+  ]
+}

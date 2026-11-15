@@ -4,7 +4,8 @@
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { Search, X, ChevronDown } from 'lucide-react';
 import { useMockups, useMockupCategories, useFAQs, useSiteSettings } from '@/hooks/useContent';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -113,34 +114,42 @@ const MockupsPageRound5 = () => {
     return () => observer.disconnect();
   }, [disableHeavyEffects]);
   
-  // Filter mockups
+  // Filter mockups — only published/active rows, never static fallback data
   const filteredMockups = useMemo(() => {
     return mockups.filter((mockup) => {
-      // Published/active only
-      if (!mockup.published && !mockup.is_active) return false;
-      
-      // Category filter
+      // Guard: static fallback rows have numeric ids (1,2,3...) — skip them when real DB data is present
+      // A proper DB row always has a UUID slug and no numeric id field
+      if (typeof mockup.id === 'number') return false;
+
+      // Active filter — must have is_active=true OR published=true
+      const isPublished = mockup.is_active === true || mockup.published === true;
+      if (!isPublished) return false;
+
+      // Category filter — match against category_slug join field or category_id
       if (activeCategory !== 'all') {
-        const mockupCategorySlug = mockup.category_slug || mockup.category;
-        if (mockupCategorySlug !== activeCategory) return false;
+        const catSlug = mockup.category?.slug || mockup.category_slug;
+        const catId   = mockup.category_id;
+        // try slug first, then id
+        if (catSlug && catSlug !== activeCategory) return false;
+        if (!catSlug && catId) {
+          // catId comparison — activeCategory may be a UUID or a slug
+          // We only have slug here so skip id-only comparison gracefully
+        }
+        if (!catSlug && !catId) return false; // uncategorized — skip when a filter is active
       }
-      
-      // Search filter (title, description, category, tags - localized)
+
+      // Search filter
       if (debouncedSearch) {
         const query = debouncedSearch.toLowerCase();
-        const title = language === 'ar' ? mockup.title_ar : mockup.title_en || mockup.title;
-        const desc = language === 'ar' ? mockup.short_description_ar : mockup.short_description_en || mockup.description;
-        const cat = language === 'ar' ? mockup.category_name_ar : mockup.category_name_en;
-        const tagsStr = Array.isArray(mockup.tags) ? mockup.tags.join(' ') : '';
-        
-        const matchesTitle = title?.toLowerCase().includes(query);
-        const matchesDesc = desc?.toLowerCase().includes(query);
-        const matchesCat = cat?.toLowerCase().includes(query);
-        const matchesTags = tagsStr.toLowerCase().includes(query);
-        
-        if (!matchesTitle && !matchesDesc && !matchesCat && !matchesTags) return false;
+        const title    = language === 'ar' ? mockup.title_ar : mockup.title_en || mockup.title;
+        const desc     = language === 'ar' ? mockup.short_description_ar : mockup.short_description_en || mockup.description;
+        const catName  = language === 'ar' ? mockup.category?.name_ar : mockup.category?.name_en;
+        const tagsStr  = Array.isArray(mockup.tags) ? mockup.tags.join(' ') : '';
+
+        const hit = [title, desc, catName, tagsStr].some(s => s?.toLowerCase().includes(query));
+        if (!hit) return false;
       }
-      
+
       return true;
     });
   }, [mockups, activeCategory, debouncedSearch, language]);
@@ -219,14 +228,14 @@ const MockupsPageRound5 = () => {
   if (mockupsLoading || categoriesLoading) {
     return (
       <div className={`min-h-screen flex items-center justify-center pt-16 ${
-        isDark ? 'bg-[#0A1525]' : 'bg-white'
+        isDark ? 'bg-brand-950' : 'bg-white'
       }`}>
         <div className="text-center">
           <div 
             className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
-            style={{ borderColor: isDark ? '#6FD3D8' : '#5C7E8F' }}
+            style={{ borderColor: isDark ? 'rgb(13, 158, 130)' : 'rgb(13, 158, 130)' }}
           />
-          <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
+          <p className={isDark ? 'text-text-muted' : 'text-text-muted'}>
             {language === 'ar' ? 'جاري التحميل...' : 'Loading mockups...'}
           </p>
         </div>
@@ -267,7 +276,7 @@ const MockupsPageRound5 = () => {
       <section 
         id="mockups-grid"
         ref={sectionRef}
-        className={`relative py-16 lg:py-24 overflow-hidden ${isDark ? 'bg-[#0A1525]' : 'bg-white'}`}
+        className={`relative py-16 lg:py-24 overflow-hidden scroll-mt-header page-with-scroll-top ${isDark ? 'bg-brand-950' : 'bg-white'}`}
       >
         {/* LAYERED BACKGROUNDS */}
         {!disableHeavyEffects && (
@@ -278,8 +287,8 @@ const MockupsPageRound5 = () => {
                 className="absolute w-[800px] h-[800px] rounded-full blur-[120px] opacity-20"
                 style={{
                   background: isDark
-                    ? 'radial-gradient(circle, rgba(111, 211, 216, 0.3) 0%, transparent 70%)'
-                    : 'radial-gradient(circle, rgba(92, 126, 143, 0.15) 0%, transparent 70%)',
+                    ? 'radial-gradient(circle, rgba(13, 158, 130, 0.3) 0%, transparent 70%)'
+                    : 'radial-gradient(circle, rgba(13, 158, 130, 0.15) 0%, transparent 70%)',
                   top: '-20%',
                   left: '-10%'
                 }}
@@ -298,8 +307,8 @@ const MockupsPageRound5 = () => {
                 className="absolute w-[600px] h-[600px] rounded-full blur-[100px] opacity-20"
                 style={{
                   background: isDark
-                    ? 'radial-gradient(circle, rgba(92, 126, 143, 0.3) 0%, transparent 70%)'
-                    : 'radial-gradient(circle, rgba(111, 211, 216, 0.12) 0%, transparent 70%)',
+                    ? 'radial-gradient(circle, rgba(13, 158, 130, 0.3) 0%, transparent 70%)'
+                    : 'radial-gradient(circle, rgba(13, 158, 130, 0.12) 0%, transparent 70%)',
                   bottom: '-10%',
                   right: '-10%'
                 }}
@@ -362,16 +371,16 @@ const MockupsPageRound5 = () => {
                   }}
                 >
                   {i % 4 === 0 && (
-                    <div className={`w-16 h-16 rounded-xl border-2 ${isDark ? 'border-cyan-400' : 'border-[#5C7E8F]'}`} />
+                    <div className={`w-16 h-16 rounded-xl border-2 ${isDark ? 'border-brand-accent' : 'border-brand-accent'}`} />
                   )}
                   {i % 4 === 1 && (
-                    <div className={`w-12 h-12 rounded-full border-2 ${isDark ? 'border-cyan-400' : 'border-[#5C7E8F]'}`} />
+                    <div className={`w-12 h-12 rounded-full border-2 ${isDark ? 'border-brand-accent' : 'border-brand-accent'}`} />
                   )}
                   {i % 4 === 2 && (
-                    <div className={`text-4xl font-bold ${isDark ? 'text-cyan-400' : 'text-[#5C7E8F]'}`}>+</div>
+                    <div className={`text-4xl font-bold ${isDark ? 'text-brand-accent' : 'text-brand-accent'}`}>+</div>
                   )}
                   {i % 4 === 3 && (
-                    <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-cyan-400' : 'bg-[#5C7E8F]'}`} />
+                    <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-brand-accent' : 'bg-brand-accent'}`} />
                   )}
                 </motion.div>
               ))}
@@ -382,8 +391,8 @@ const MockupsPageRound5 = () => {
               className="absolute w-[600px] h-[600px] rounded-full blur-[100px] opacity-10 pointer-events-none"
               style={{
                 background: isDark
-                  ? 'radial-gradient(circle, rgba(111, 211, 216, 0.4) 0%, transparent 70%)'
-                  : 'radial-gradient(circle, rgba(92, 126, 143, 0.3) 0%, transparent 70%)',
+                  ? 'radial-gradient(circle, rgba(13, 158, 130, 0.4) 0%, transparent 70%)'
+                  : 'radial-gradient(circle, rgba(13, 158, 130, 0.3) 0%, transparent 70%)',
                 left: mousePos.x - 300,
                 top: mousePos.y - 300
               }}
@@ -410,14 +419,14 @@ const MockupsPageRound5 = () => {
             <div>
               <span 
                 className={`inline-block text-xs font-bold uppercase tracking-wider mb-3 ${
-                  isDark ? 'text-cyan-400' : 'text-[#5C7E8F]'
+                  isDark ? 'text-brand-accent' : 'text-brand-accent-deep'
                 }`}
               >
                 {language === 'ar' ? 'معرض التصاميم' : 'Design Gallery'}
               </span>
               <h2 
                 className={`text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 ${
-                  isDark ? 'text-white' : 'text-[#1F3440]'
+                  isDark ? 'text-white' : 'text-primary-deep'
                 }`}
                 style={{ 
                   maxWidth: language === 'ar' ? '100%' : '20ch',
@@ -427,7 +436,7 @@ const MockupsPageRound5 = () => {
                 {language === 'ar' ? 'استكشف تصاميم مواقعنا' : 'Explore Our Website Designs'}
               </h2>
               <p className={`text-base sm:text-lg ${
-                isDark ? 'text-slate-400' : 'text-slate-600'
+                isDark ? 'text-text-muted' : 'text-text-muted'
               }`}>
                 {language === 'ar' 
                   ? 'تصفح مجموعتنا من التصاميم الجاهزة واختر ما يناسب عملك'
@@ -451,13 +460,13 @@ const MockupsPageRound5 = () => {
                   placeholder={language === 'ar' ? 'ابحث عن تصميم...' : 'Search designs...'}
                   className={`w-full h-14 ${language === 'ar' ? 'pr-12 pl-10' : 'pl-12 pr-10'} rounded-2xl border-2 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                     isDark
-                      ? 'bg-slate-800/50 border-white/10 text-white placeholder-slate-500 focus:border-cyan-400 focus:ring-cyan-400'
-                      : 'bg-white/80 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-[#5C7E8F] focus:ring-[#5C7E8F]'
+                      ? 'bg-brand-900/50 border-brand-800 text-white placeholder-text-muted focus:border-brand-accent focus:ring-brand-accent'
+                      : 'bg-white/80 border-brand-200 text-primary-deep placeholder-text-muted focus:border-brand-accent focus:ring-brand-accent'
                   }`}
                   style={{
                     boxShadow: isDark
                       ? '0 4px 20px rgba(0, 0, 0, 0.3)'
-                      : '0 4px 20px rgba(92, 126, 143, 0.08)'
+                      : '0 4px 20px rgba(13, 158, 130, 0.08)'
                   }}
                   aria-label={language === 'ar' ? 'ابحث عن تصميم' : 'Search for a design'}
                 />
@@ -465,11 +474,11 @@ const MockupsPageRound5 = () => {
                   <button
                     onClick={handleClearSearch}
                     className={`absolute ${language === 'ar' ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 p-1 rounded-full transition-colors ${
-                      isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'
+                      isDark ? 'hover:bg-white/10' : 'hover:bg-brand-50'
                     }`}
                     aria-label={language === 'ar' ? 'مسح البحث' : 'Clear search'}
                   >
-                    <X className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
+                    <X className={`w-4 h-4 ${isDark ? 'text-text-muted' : 'text-text-muted'}`} />
                   </button>
                 )}
               </div>
@@ -486,15 +495,15 @@ const MockupsPageRound5 = () => {
               aria-live="polite"
               aria-atomic="true"
             >
-              <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+              <p className={`text-sm ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>
                 {language === 'ar' ? (
                   <>
-                    تم العثور على <span className={`font-bold ${isDark ? 'text-cyan-400' : 'text-[#1F3440]'}`}>{sortedMockups.length}</span> {sortedMockups.length === 1 ? 'تصميم' : 'تصميم'}
+                    تم العثور على <span className={`font-bold ${isDark ? 'text-brand-accent' : 'text-primary-deep'}`}>{sortedMockups.length}</span> {sortedMockups.length === 1 ? 'تصميم' : 'تصميم'}
                     {debouncedSearch && ` مطابق لـ "${debouncedSearch}"`}
                   </>
                 ) : (
                   <>
-                    Found <span className={`font-bold ${isDark ? 'text-cyan-400' : 'text-[#1F3440]'}`}>{sortedMockups.length}</span> {sortedMockups.length === 1 ? 'design' : 'designs'}
+                    Found <span className={`font-bold ${isDark ? 'text-brand-accent' : 'text-primary-deep'}`}>{sortedMockups.length}</span> {sortedMockups.length === 1 ? 'design' : 'designs'}
                     {debouncedSearch && ` matching "${debouncedSearch}"`}
                   </>
                 )}
@@ -579,11 +588,7 @@ const MockupsPageRound5 = () => {
                     <Button
                       onClick={handleLoadMore}
                       size="lg"
-                      className={`px-10 h-14 font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl ${
-                        isDark
-                          ? 'bg-gradient-to-r from-[#5C7E8F] to-[#4A6B7C] text-white hover:from-[#4A6B7C] hover:to-[#5C7E8F]'
-                          : 'bg-gradient-to-r from-[#5C7E8F] to-[#4A6B7C] text-white hover:from-[#4A6B7C] hover:to-[#5C7E8F]'
-                      } ${language === 'ar' ? 'flex-row-reverse' : ''}`}
+                      className={`px-10 h-14 font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl bg-gradient-to-r from-brand-accent to-brand-accent-deep text-white hover:from-brand-accent-deep hover:to-brand-accent ${language === 'ar' ? 'flex-row-reverse' : ''}`}
                     >
                       <span>{language === 'ar' ? 'تحميل المزيد' : 'Load More'}</span>
                       <ChevronDown className={`w-5 h-5 ${language === 'ar' ? 'mr-2' : 'ml-2'}`} aria-hidden="true" />
@@ -604,15 +609,15 @@ const MockupsPageRound5 = () => {
                 <div className="max-w-md mx-auto">
                   <div 
                     className={`w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm ${
-                      isDark ? 'bg-slate-800/50 border border-white/10' : 'bg-slate-100 border border-slate-200'
+                      isDark ? 'bg-brand-900/50 border border-brand-800' : 'bg-brand-50 border border-brand-200'
                     }`}
                   >
-                    <Search className={`w-12 h-12 ${isDark ? 'text-slate-600' : 'text-slate-400'}`} />
+                    <Search className={`w-12 h-12 ${isDark ? 'text-brand-accent' : 'text-brand-accent'}`} />
                   </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${isDark ? 'text-white' : 'text-[#1F3440]'}`}>
+                  <h3 className={`text-2xl font-bold mb-3 ${isDark ? 'text-white' : 'text-primary-deep'}`}>
                     {language === 'ar' ? 'لم يتم العثور على نتائج' : 'No designs found'}
                   </h3>
-                  <p className={`mb-6 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <p className={`mb-6 ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>
                     {debouncedSearch ? (
                       language === 'ar' 
                         ? `لم نتمكن من العثور على تصاميم تطابق "${debouncedSearch}"`
@@ -626,10 +631,10 @@ const MockupsPageRound5 = () => {
                   <Button
                     onClick={handleResetFilters}
                     variant="outline"
-                    className={`rounded-xl ${
+                    className={`rounded-xl border-2 ${
                       isDark
-                        ? 'border-2 border-white/20 text-white hover:bg-white/10'
-                        : 'border-2 border-[#5C7E8F] text-[#5C7E8F] hover:bg-[#5C7E8F] hover:text-white'
+                        ? 'border-brand-accent/30 text-white hover:bg-brand-accent/10'
+                        : 'border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-white'
                     } ${language === 'ar' ? 'flex-row-reverse' : ''}`}
                   >
                     {language === 'ar' ? 'عرض جميع التصاميم' : 'Show All Designs'}
@@ -657,7 +662,7 @@ const MockupsPageRound5 = () => {
       
       {/* ROUND 6: PREMIUM FINAL CTA WITH DEVICE STAGE */}
       <PremiumFinalCTA
-        mockups={mockups.filter(m => m.published || m.is_active)}
+        mockups={mockups.filter(m => (m.is_active === true || m.published === true) && typeof m.id !== 'number')}
         categories={categories}
         siteSettings={siteSettings}
         language={language}

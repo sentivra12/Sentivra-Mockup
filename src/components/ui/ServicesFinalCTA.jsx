@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/i18n/useLanguage';
-import { motion, useReducedMotion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { 
   ArrowRight,
   Code,

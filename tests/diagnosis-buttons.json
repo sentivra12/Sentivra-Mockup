@@ -1,0 +1,24 @@
+[
+  {
+    "index": 0,
+    "text": "Start Your Project",
+    "color": "rgb(2, 35, 30)",
+    "backgroundColor": "rgba(0, 0, 0, 0)",
+    "border": "0px solid rgb(229, 231, 235)",
+    "opacity": "1",
+    "width": 228.65625,
+    "height": 48,
+    "classes": "group relative px-8 h-12 rounded-xl font-bold overflow-hidden transition-all hover:shadow-xl"
+  },
+  {
+    "index": 1,
+    "text": "Explore Services",
+    "color": "rgb(2, 35, 30)",
+    "backgroundColor": "rgba(0, 0, 0, 0)",
+    "border": "1px solid rgb(229, 231, 235)",
+    "opacity": "1",
+    "width": 194.046875,
+    "height": 48,
+    "classes": "px-8 h-12 rounded-xl font-semibold transition-all border hover:shadow-lg relative"
+  }
+]

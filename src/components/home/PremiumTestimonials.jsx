@@ -1,39 +1,39 @@
 /**
- * Premium Testimonials Section - Redesigned
- * Features:
- * - Dark surface with oversized decorative quote mark
- * - Large display type for quote text (clamp 22px-34px)
- * - Avatar with gradient ring, initials fallback
- * - Company logo if provided
- * - Custom progress bar autoplay indicator (no "Paused" text)
- * - Stars only when rating exists, using primary color
- * - Arrows INSIDE container
- * - Swipe on touch, keyboard arrows
- * - Autoplay pauses on hover/focus with icon button
- * - Hides section when empty (production)
- * - Shows DEMO preview in development
- * - Different layouts: 1 item = static featured, 2-3 = slider, 4+ = masonry
+ * PremiumTestimonials — Round 2: 4-state pattern, no DEMO flash
+ *
+ * REQUIREMENTS
+ * ────────────────────────────────────────────────────────────────────────────
+ * 1. Explicit 4-state handling: loading, error, empty, loaded-with-data
+ * 2. Loading: stable skeleton with SAME height as final section (CLS ~0)
+ * 3. Error or 404: hide section entirely, one console warning, no retries
+ * 4. Empty: hide section entirely (no demo, no banner)
+ * 5. Loaded-with-data: render real published testimonials only
+ * 6. Demo content + banner: NEVER in production (import.meta.env.PROD)
+ * 7. Demo content in DEV: only AFTER loading finished AND table is empty
+ * 8. React Query cache: use staleTime + keepPreviousData to avoid flash on repeat visits
+ * 9. AA contrast: subtitle 4.5:1 on dark surface
+ * 10. Quote mark: inside card padding, aria-hidden
+ * 11. Curved divider: fill matches next section bg exactly (no white strip/seam)
+ * 12. No layout jump after first paint
+ * ────────────────────────────────────────────────────────────────────────────
  */
 
 import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Star, Quote, Pause, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from '../../i18n/useTranslation';
-import { useTestimonials } from '../../hooks/useContent';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
+import { useTranslation } from '@/i18n/useTranslation';
+import { useTestimonials } from '@/hooks/useContent';
 
+/* ── Star rating ─────────────────────────────────────────────────────────── */
 const StarRating = ({ rating }) => {
   if (!rating) return null;
-  
   return (
-    <div className="flex gap-1" aria-label={`Rating: ${rating} out of 5 stars`}>
+    <div className="flex gap-1" aria-label={`Rating: ${rating} out of 5`}>
       {[...Array(5)].map((_, i) => (
         <Star
           key={i}
-          className={`w-5 h-5 ${
-            i < rating 
-              ? 'fill-primary text-primary' 
-              : 'text-muted-foreground/30'
-          }`}
+          className={`w-5 h-5 ${i < rating ? 'fill-brand-400 text-brand-400' : 'text-brand-800'}`}
           aria-hidden="true"
         />
       ))}
@@ -41,38 +41,42 @@ const StarRating = ({ rating }) => {
   );
 };
 
+/* ── Testimonial card ───────────────────────────────────────────────────── */
 const TestimonialCard = ({ testimonial, isRTL }) => {
-  const text = isRTL && testimonial.testimonial_text_ar 
-    ? testimonial.testimonial_text_ar 
+  const text = isRTL && testimonial.testimonial_text_ar
+    ? testimonial.testimonial_text_ar
     : testimonial.testimonial_text;
-  
+
   return (
     <div className="relative">
-      {/* Oversized decorative quote */}
-      <div className="absolute -top-4 start-0 opacity-10 pointer-events-none">
-        <Quote className="w-24 h-24 text-testimonial-accent" fill="currentColor" />
+      {/* Quote mark — INSIDE card padding, top-left, aria-hidden */}
+      <div className="absolute top-6 start-6 opacity-10 pointer-events-none" aria-hidden="true">
+        <Quote className="w-16 h-16 text-brand-400" fill="currentColor" />
       </div>
 
-      <div className="relative space-y-6 p-8 md:p-12">
-        {/* Rating */}
-        {testimonial.rating && (
-          <StarRating rating={testimonial.rating} />
-        )}
+      <div className="relative space-y-6 p-8 md:p-10">
+        {testimonial.rating && <StarRating rating={testimonial.rating} />}
 
-        {/* Quote text */}
-        <blockquote 
-          className="text-[clamp(1.375rem,2vw,2.125rem)] leading-[1.4] font-medium text-testimonial-text"
-          style={{ fontFamily: 'inherit' }}
+        <blockquote
+          className="text-[clamp(1.125rem,1.8vw,1.75rem)] leading-[1.5] font-semibold"
+          style={{ color: 'var(--color-text)' }}
+          dir="auto"
         >
           "{text}"
         </blockquote>
 
-        {/* Client info */}
-        <div className="flex items-center gap-4 pt-4">
-          {/* Avatar with gradient ring */}
+        <div className="flex items-center gap-4 pt-3">
+          {/* Avatar with brand gradient ring */}
           <div className="relative flex-shrink-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-testimonial-accent to-primary rounded-full blur-sm opacity-60" />
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-testimonial-ring bg-testimonial-avatar">
+            <div
+              className="absolute inset-0 rounded-full blur-sm opacity-70"
+              style={{ background: 'linear-gradient(135deg, rgba(13,158,130,0.60), rgba(4,77,64,0.80))' }}
+              aria-hidden="true"
+            />
+            <div
+              className="relative w-14 h-14 rounded-full overflow-hidden border-2 bg-color-surface"
+              style={{ borderColor: 'rgba(13,158,130,0.40)' }}
+            >
               {testimonial.client_photo_url ? (
                 <img
                   src={testimonial.client_photo_url}
@@ -81,29 +85,26 @@ const TestimonialCard = ({ testimonial, isRTL }) => {
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-xl">
-                  {testimonial.client_name.charAt(0)}
+                <div
+                  className="w-full h-full flex items-center justify-center text-brand-600 dark:text-brand-300 font-bold text-xl"
+                  style={{ background: 'rgba(13,158,130,0.15)' }}
+                >
+                  {testimonial.client_name?.charAt(0) || '?'}
                 </div>
               )}
             </div>
           </div>
 
-          {/* Name, role, company */}
           <div className="flex-grow">
-            <div className="font-bold text-testimonial-name">
-              {testimonial.client_name}
-            </div>
-            <div className="text-sm text-testimonial-meta">
+            <div className="font-bold text-color-text">{testimonial.client_name}</div>
+            <div className="text-sm text-color-text-muted">
               {testimonial.client_role}
-              {testimonial.client_company && (
-                <> at {testimonial.client_company}</>
-              )}
+              {testimonial.client_company && <> at {testimonial.client_company}</>}
             </div>
           </div>
 
-          {/* Company logo */}
           {testimonial.company_logo_url && (
-            <div className="flex-shrink-0 w-16 h-16 opacity-60">
+            <div className="flex-shrink-0 w-14 h-14 opacity-50">
               <img
                 src={testimonial.company_logo_url}
                 alt={`${testimonial.client_company} logo`}
@@ -118,243 +119,344 @@ const TestimonialCard = ({ testimonial, isRTL }) => {
   );
 };
 
+/* ── Skeleton (loading state) ───────────────────────────────────────────── */
+const TestimonialSkeleton = () => (
+  <div
+    className="rounded-2xl border overflow-hidden"
+    style={{
+      background: 'var(--color-surface)',
+      borderColor: 'var(--color-border)',
+      minHeight: 400, // reserve height to prevent CLS
+    }}
+  >
+    <div className="p-8 md:p-10 space-y-6 animate-pulse">
+      {/* Stars skeleton */}
+      <div className="flex gap-1">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="w-5 h-5 rounded bg-color-border" />
+        ))}
+      </div>
+
+      {/* Quote skeleton */}
+      <div className="space-y-3">
+        <div className="h-7 bg-color-border rounded w-full" />
+        <div className="h-7 bg-color-border rounded w-11/12" />
+        <div className="h-7 bg-color-border rounded w-10/12" />
+      </div>
+
+      {/* Avatar + name skeleton */}
+      <div className="flex items-center gap-4 pt-3">
+        <div className="w-14 h-14 rounded-full bg-color-border" />
+        <div className="flex-grow space-y-2">
+          <div className="h-5 bg-color-border rounded w-32" />
+          <div className="h-4 bg-color-border rounded w-40" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+/* ── Main component ─────────────────────────────────────────────────────── */
 const PremiumTestimonials = () => {
-  // ALL HOOKS MUST BE AT THE TOP - BEFORE ANY CONDITIONAL RETURNS
   const { t, language } = useTranslation();
   const isRTL = language === 'ar';
-  const { data: testimonials = [], isLoading } = useTestimonials();
-  
+  const shouldReduceMotion = useReducedMotion();
+
+  // React Query with staleTime to cache data for 5 minutes
+  const {
+    data: testimonials = [],
+    isLoading,
+    isError,
+    error,
+  } = useTestimonials();
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
-  const autoPlayRef = useRef(null);
-  const progressIntervalRef = useRef(null);
+  const autoRef = useRef(null);
+  const progressRef = useRef(null);
 
-  // Development mode: show demo testimonials if none exist
-  const isDev = import.meta.env.DEV;
-  const demoTestimonials = [
-    {
-      id: 'demo-1',
-      client_name: 'Demo Client',
-      client_role: 'Demo Role',
-      client_company: 'Demo Company',
-      testimonial_text: 'This is a demo testimonial. Add real testimonials in the admin dashboard.',
-      testimonial_text_ar: 'هذه شهادة تجريبية. أضف شهادات حقيقية في لوحة الإدارة.',
-      rating: 5,
-      client_photo_url: null,
-      company_logo_url: null,
-    }
-  ];
+  const isProd = import.meta.env.PROD;
 
-  const displayTestimonials = testimonials.length > 0 ? testimonials : (isDev ? demoTestimonials : []);
-  
-  // Auto-play and progress bar - MUST BE HERE (before any return)
+  // No demo/fallback data - if testimonials are empty, section will be hidden (state 3)
+
+  /* ── ALL EFFECTS BEFORE ANY CONDITIONAL RETURNS ─────────────────────────── */
+
+  // State 2: ERROR — log once
   useEffect(() => {
-    // Always clear intervals on cleanup
-    const cleanup = () => {
-      if (autoPlayRef.current) {
-        clearInterval(autoPlayRef.current);
-        autoPlayRef.current = null;
-      }
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-      }
-    };
+    if (isError) {
+      const is404 = error?.message?.includes('PGRST') || error?.message?.includes('404');
+      console.warn(
+        `[PremiumTestimonials] ${is404 ? 'Table not found (404)' : 'Error loading testimonials'}:`,
+        error?.message || error
+      );
+    }
+  }, [isError, error]);
 
-    // Don't start intervals if paused or single item
-    if (isPaused || displayTestimonials.length <= 1) {
+  // Auto-play effect
+  useEffect(() => {
+    const cleanup = () => {
+      if (autoRef.current) clearInterval(autoRef.current);
+      if (progressRef.current) clearInterval(progressRef.current);
+    };
+    if (isPaused || testimonials.length <= 1 || shouldReduceMotion || isLoading || isError) {
       cleanup();
       return cleanup;
     }
 
-    // Reset progress
     setProgress(0);
-
-    // Progress bar animation (60 steps over 5 seconds)
-    progressIntervalRef.current = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          return 0;
-        }
-        return prev + (100 / 60);
-      });
+    progressRef.current = setInterval(() => {
+      setProgress(p => (p >= 100 ? 0 : p + 100 / 60));
     }, 5000 / 60);
-
-    // Auto advance slide
-    autoPlayRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % displayTestimonials.length);
+    autoRef.current = setInterval(() => {
+      setCurrentIndex(i => (i + 1) % testimonials.length);
       setProgress(0);
     }, 5000);
-
     return cleanup;
-  }, [isPaused, displayTestimonials.length]);
+  }, [isPaused, testimonials.length, shouldReduceMotion, isLoading, isError]);
 
-  // NOW we can do conditional returns - AFTER all hooks
-  // Hide section completely in production if no testimonials
-  if (!isDev && testimonials.length === 0) {
+  /* ── CONDITIONAL RETURNS (AFTER ALL HOOKS) ─────────────────────────────── */
+
+  // State 2: ERROR
+  if (isError) {
     return null;
   }
 
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % displayTestimonials.length);
+  // State 1: LOADING — show skeleton
+  if (isLoading) {
+    return (
+      <section
+        className="py-20 md:py-28 relative overflow-hidden"
+        style={{ background: 'var(--color-surface-raised)' }}
+        aria-busy="true"
+        aria-label="Loading testimonials"
+      >
+        {/* Background glows */}
+        <div
+          className="absolute top-1/4 start-0 w-80 h-80 rounded-full blur-[120px] pointer-events-none opacity-20"
+          style={{ background: 'radial-gradient(circle, rgba(13,158,130,0.40) 0%, transparent 70%)' }}
+          aria-hidden="true"
+        />
+        <div
+          className="absolute bottom-1/4 end-0 w-80 h-80 rounded-full blur-[100px] pointer-events-none opacity-10"
+          style={{ background: 'radial-gradient(circle, rgba(13,158,130,0.30) 0%, transparent 70%)' }}
+          aria-hidden="true"
+        />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          {/* Section header skeleton */}
+          <div className="text-center mb-14 space-y-3 animate-pulse">
+            <div className="h-4 bg-color-border rounded w-24 mx-auto" />
+            <div className="h-10 bg-color-border rounded w-80 mx-auto" />
+            <div className="h-6 bg-color-border rounded w-96 mx-auto" />
+          </div>
+
+          {/* Testimonial skeleton */}
+          <TestimonialSkeleton />
+        </div>
+      </section>
+    );
+  }
+
+  // State 3: EMPTY
+  if (testimonials.length === 0) return null;
+
+  const count = testimonials.length;
+  const layout = count === 1 ? 'featured' : 'slider';
+
+  const goTo = (i) => {
+    setCurrentIndex(i);
     setProgress(0);
   };
-
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + displayTestimonials.length) % displayTestimonials.length);
-    setProgress(0);
-  };
-
-  const goToSlide = (index) => {
-    setCurrentIndex(index);
-    setProgress(0);
-  };
-
-  // Layout based on count
-  const layout = displayTestimonials.length === 1 ? 'featured' : displayTestimonials.length <= 3 ? 'slider' : 'masonry';
+  const goNext = () => goTo((currentIndex + 1) % testimonials.length);
+  const goPrev = () => goTo((currentIndex - 1 + testimonials.length) % testimonials.length);
 
   return (
-    <section 
-      className="py-20 md:py-32 bg-testimonial-surface relative overflow-hidden"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+    <section
+      className="py-20 md:py-28 relative overflow-hidden"
+      style={{ background: 'var(--color-surface-raised)' }}
+      onMouseEnter={() => !shouldReduceMotion && setIsPaused(true)}
+      onMouseLeave={() => !shouldReduceMotion && setIsPaused(false)}
+      aria-label="Testimonials"
     >
-      {/* Background effects */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-testimonial-glow/5 via-transparent to-transparent" />
-        <div className="absolute top-1/4 start-0 w-96 h-96 bg-testimonial-accent/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 end-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+      {/* Curved top divider — fill matches this section's bg exactly */}
+      <div
+        className="absolute top-0 left-0 right-0 h-16 pointer-events-none"
+        style={{ transform: 'translateY(-99%)' }}
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 1440 48"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+          className="w-full h-full"
+        >
+          <path
+            d="M0 48h1440V0C1440 0 1080 48 720 48S0 0 0 0v48z"
+            fill="var(--color-surface-raised)"
+          />
+        </svg>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Demo mode indicator - VISIBLE BADGE */}
-        {isDev && testimonials.length === 0 && (
-          <div className="mb-8 p-6 bg-yellow-500/20 border-2 border-yellow-500/50 rounded-xl text-center backdrop-blur-sm">
-            <div className="inline-block px-4 py-2 bg-yellow-500 text-white font-bold rounded-lg mb-3 text-lg">
-              ⚠️ DEMO
-            </div>
-            <p className="text-base font-semibold text-yellow-600 dark:text-yellow-300">
-              {t('common.demoMode')}
-            </p>
-            <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-2">
-              {t('common.demoModeDesc')}
-            </p>
-          </div>
-        )}
+      {/* Background glows */}
+      <div
+        className="absolute top-1/4 start-0 w-80 h-80 rounded-full blur-[120px] pointer-events-none opacity-20"
+        style={{ background: 'radial-gradient(circle, rgba(13,158,130,0.40) 0%, transparent 70%)' }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute bottom-1/4 end-0 w-80 h-80 rounded-full blur-[100px] pointer-events-none opacity-10"
+        style={{ background: 'radial-gradient(circle, rgba(13,158,130,0.30) 0%, transparent 70%)' }}
+        aria-hidden="true"
+      />
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Section header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-14">
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-sm font-medium text-testimonial-accent mb-2 uppercase tracking-wider"
+            transition={shouldReduceMotion ? {} : { duration: 0.5 }}
+            className="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400 mb-3"
           >
-            {t('home.testimonials.label') || 'Testimonials'}
+            {t('home.testimonials.label') || (language === 'ar' ? 'الشهادات' : 'Testimonials')}
           </motion.p>
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl md:text-4xl font-bold text-testimonial-heading mb-3"
+            transition={shouldReduceMotion ? {} : { delay: 0.08, duration: 0.5 }}
+            className="text-3xl md:text-4xl font-extrabold text-color-text mb-3"
           >
-            {t('home.testimonials.title') || 'What Our Clients Say'}
+            {t('home.testimonials.title') || (language === 'ar' ? 'ماذا يقول عملاؤنا' : 'What Our Clients Say')}
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={shouldReduceMotion ? {} : { opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-lg text-testimonial-subtitle max-w-2xl mx-auto"
+            transition={shouldReduceMotion ? {} : { delay: 0.16, duration: 0.5 }}
+            className="text-lg max-w-2xl mx-auto"
+            style={{ color: 'rgba(var(--color-text-muted-rgb), 0.85)' }} // AA contrast fix: 85% opacity
           >
-            {t('home.testimonials.subtitle') || 'Trusted by leading companies'}
+            {t('home.testimonials.subtitle') ||
+              (language === 'ar'
+                ? 'ملاحظات حقيقية من الشركات التي ساعدناها على النمو'
+                : 'Real feedback from businesses we\'ve helped grow')}
           </motion.p>
         </div>
 
-        {/* Testimonial content */}
+        {/* Content */}
         <div className="relative">
           {layout === 'slider' && (
             <>
-              {/* Main testimonial card */}
-              <div className="bg-testimonial-card rounded-2xl border border-testimonial-border shadow-2xl overflow-hidden">
+              <div
+                className="rounded-2xl border overflow-hidden"
+                style={{
+                  background: 'var(--color-background)',
+                  borderColor: 'var(--color-border)',
+                }}
+              >
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentIndex}
-                    initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
+                    initial={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? -18 : 18 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
-                    transition={{ duration: 0.3 }}
+                    exit={shouldReduceMotion ? {} : { opacity: 0, x: isRTL ? 18 : -18 }}
+                    transition={{ duration: 0.28 }}
                   >
-                    <TestimonialCard testimonial={displayTestimonials[currentIndex]} isRTL={isRTL} />
+                    <TestimonialCard testimonial={testimonials[currentIndex]} isRTL={isRTL} />
                   </motion.div>
                 </AnimatePresence>
 
                 {/* Progress bar */}
-                {displayTestimonials.length > 1 && (
-                  <div className="h-1 bg-testimonial-progress-bg">
+                {testimonials.length > 1 && !shouldReduceMotion && (
+                  <div className="h-0.5" style={{ background: 'var(--color-border)' }}>
                     <div
-                      className="h-full bg-testimonial-accent transition-all duration-100"
-                      style={{ width: `${isPaused ? progress : progress}%` }}
+                      className="h-full transition-all duration-100"
+                      style={{ width: `${progress}%`, background: 'rgba(13,158,130,0.80)' }}
                     />
                   </div>
                 )}
               </div>
 
-              {/* Navigation arrows INSIDE container */}
-              {displayTestimonials.length > 1 && (
+              {/* Prev / Next */}
+              {testimonials.length > 1 && (
                 <>
                   <button
-                    onClick={goToPrevious}
-                    className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? 'end-4' : 'start-4'} w-12 h-12 rounded-full bg-testimonial-nav-bg backdrop-blur-sm border border-testimonial-nav-border flex items-center justify-center hover:bg-testimonial-nav-hover transition-all duration-300 shadow-lg z-10 focus:outline-none focus:ring-2 focus:ring-testimonial-accent`}
-                    aria-label={t('common.previous') || 'Previous testimonial'}
+                    onClick={goPrev}
+                    className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? 'end-4' : 'start-4'} w-11 h-11 rounded-full backdrop-blur-sm flex items-center justify-center shadow-lg z-10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500`}
+                    style={{
+                      background: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                    }}
+                    aria-label={t('common.previous') || (language === 'ar' ? 'السابق' : 'Previous')}
                   >
-                    <ChevronLeft className={`w-6 h-6 text-testimonial-nav-icon ${isRTL ? 'rotate-180' : ''}`} />
+                    <ChevronLeft
+                      className={`w-5 h-5 text-color-text ${isRTL ? 'rotate-180' : ''}`}
+                    />
                   </button>
-
                   <button
-                    onClick={goToNext}
-                    className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? 'start-4' : 'end-4'} w-12 h-12 rounded-full bg-testimonial-nav-bg backdrop-blur-sm border border-testimonial-nav-border flex items-center justify-center hover:bg-testimonial-nav-hover transition-all duration-300 shadow-lg z-10 focus:outline-none focus:ring-2 focus:ring-testimonial-accent`}
-                    aria-label={t('common.next') || 'Next testimonial'}
+                    onClick={goNext}
+                    className={`absolute top-1/2 -translate-y-1/2 ${isRTL ? 'start-4' : 'end-4'} w-11 h-11 rounded-full backdrop-blur-sm flex items-center justify-center shadow-lg z-10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500`}
+                    style={{
+                      background: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                    }}
+                    aria-label={t('common.next') || (language === 'ar' ? 'التالي' : 'Next')}
                   >
-                    <ChevronRight className={`w-6 h-6 text-testimonial-nav-icon ${isRTL ? 'rotate-180' : ''}`} />
+                    <ChevronRight
+                      className={`w-5 h-5 text-color-text ${isRTL ? 'rotate-180' : ''}`}
+                    />
                   </button>
                 </>
               )}
 
-              {/* Dots navigation */}
-              {displayTestimonials.length > 1 && (
-                <div className="flex justify-center gap-2 mt-8">
-                  {displayTestimonials.map((_, index) => (
+              {/* Dots */}
+              {testimonials.length > 1 && (
+                <div className="flex justify-center gap-2 mt-7">
+                  {testimonials.map((_, i) => (
                     <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className={`h-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-testimonial-accent ${
-                        index === currentIndex
-                          ? 'w-8 bg-testimonial-accent'
-                          : 'w-2 bg-testimonial-dot hover:bg-testimonial-dot-hover'
+                      key={i}
+                      onClick={() => goTo(i)}
+                      className={`h-2 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                        i === currentIndex ? 'w-8' : 'w-2'
                       }`}
-                      aria-label={`Go to testimonial ${index + 1}`}
-                      aria-current={index === currentIndex}
+                      style={{
+                        background:
+                          i === currentIndex
+                            ? 'rgba(13,158,130,0.80)'
+                            : 'var(--color-border)',
+                      }}
+                      aria-label={`Go to testimonial ${i + 1}`}
+                      aria-current={i === currentIndex}
                     />
                   ))}
                 </div>
               )}
 
-              {/* Pause/Play button */}
-              {displayTestimonials.length > 1 && (
-                <div className="flex justify-center mt-6">
+              {/* Pause/Play */}
+              {testimonials.length > 1 && !shouldReduceMotion && (
+                <div className="flex justify-center mt-5">
                   <button
-                    onClick={() => setIsPaused(!isPaused)}
-                    className="p-2 rounded-full bg-testimonial-nav-bg border border-testimonial-nav-border hover:bg-testimonial-nav-hover transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-testimonial-accent"
-                    aria-label={isPaused ? t('common.play') || 'Play' : t('common.pause') || 'Pause'}
+                    onClick={() => setIsPaused(p => !p)}
+                    className="p-2 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    style={{
+                      background: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                    }}
+                    aria-label={
+                      isPaused
+                        ? t('common.play') || (language === 'ar' ? 'تشغيل' : 'Play')
+                        : t('common.pause') || (language === 'ar' ? 'إيقاف' : 'Pause')
+                    }
                     aria-pressed={isPaused}
                   >
                     {isPaused ? (
-                      <Play className="w-5 h-5 text-testimonial-accent" fill="currentColor" />
+                      <Play className="w-4 h-4 text-brand-600 dark:text-brand-400" fill="currentColor" />
                     ) : (
-                      <Pause className="w-5 h-5 text-testimonial-accent" fill="currentColor" />
+                      <Pause className="w-4 h-4 text-brand-600 dark:text-brand-400" fill="currentColor" />
                     )}
                   </button>
                 </div>
@@ -363,8 +465,14 @@ const PremiumTestimonials = () => {
           )}
 
           {layout === 'featured' && (
-            <div className="max-w-4xl mx-auto bg-testimonial-card rounded-2xl border border-testimonial-border shadow-2xl">
-              <TestimonialCard testimonial={displayTestimonials[0]} isRTL={isRTL} />
+            <div
+              className="max-w-4xl mx-auto rounded-2xl border"
+              style={{
+                background: 'var(--color-background)',
+                borderColor: 'var(--color-border)',
+              }}
+            >
+              <TestimonialCard testimonial={testimonials[0]} isRTL={isRTL} />
             </div>
           )}
         </div>

@@ -1,0 +1,15 @@
+{
+  "h1Width": 576,
+  "h1Text": "We Build Software Solutions That Scale",
+  "underlineSvg": {
+    "width": 576,
+    "height": 12,
+    "viewBox": "0 0 300 12",
+    "parent": "relative inline-block"
+  },
+  "solutionsWrapper": {
+    "width": 321.203125,
+    "text": "Software Solutions",
+    "classes": "bg-gradient-to-r from-slate-900 via-slate-700 to-cyan-600 dark:from-slate-100 dark:via-slate-300 dark:to-cyan-400 bg-clip-text text-transparent bg-[length:200%_100%]"
+  }
+}

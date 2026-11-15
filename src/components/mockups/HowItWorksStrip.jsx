@@ -11,7 +11,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { Search, Palette, Rocket } from 'lucide-react';
 
 const defaultSteps = {

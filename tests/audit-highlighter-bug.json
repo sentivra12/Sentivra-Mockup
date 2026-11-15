@@ -1,0 +1,314 @@
+[
+  {
+    "tag": "A",
+    "class": "\n        sr-only focus:not-sr-only\n        fixed top-4 left-4 z-[9999]\n        bg-primary text-white\n        px-4 py-2 rounded-md\n        font-medium text-sm\n        focus:outline-none focus:ring-2 focus:ring-primary-strong focus:ring-offset-2\n        transition-all duration-200\n      ",
+    "text": "Skip to main content",
+    "backgroundColor": "rgb(5, 90, 79)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75",
+    "text": "",
+    "backgroundColor": "rgb(34, 211, 238)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "relative inline-flex rounded-full h-2 w-2 bg-cyan-500",
+    "text": "",
+    "backgroundColor": "rgb(6, 182, 212)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "inline-block w-0.5 h-4 bg-cyan-500 ml-1 animate-pulse",
+    "text": "",
+    "backgroundColor": "rgb(6, 182, 212)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-500/10 dark:bg-brand-400/15 text-brand-700 dark:text-brand-300 border border-brand-500/20 dark:border-brand-400/25",
+    "text": "OUR SERVICES",
+    "backgroundColor": "rgba(13, 158, 130, 0.1)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Responsive Design",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "SEO Optimized",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Fast Performance",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Native Performance",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Cross-platform",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Push Notifications",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Process Automation",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Real-time Reporting",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Multi-module Integration",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Scalable Architecture",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Contact Management",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Sales Pipeline Tracking",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Marketing Automation",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Customer Analytics",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Business Intelligence Dashboards",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Predictive Analytics",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Big Data Processing",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Machine Learning Insights",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Natural Language Processing (NLP)",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Machine Learning Models",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "24/7 Automated Support",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400",
+    "text": "Personalized User Journeys",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-500/10 dark:bg-brand-400/15 text-brand-700 dark:text-brand-300 border border-brand-500/20 dark:border-brand-400/25",
+    "text": "OUR PROCESS",
+    "backgroundColor": "rgba(13, 158, 130, 0.1)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-500/10 dark:bg-brand-400/15 text-brand-700 dark:text-brand-300 border border-brand-500/20 dark:border-brand-400/25",
+    "text": "WHY US",
+    "backgroundColor": "rgba(13, 158, 130, 0.1)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors bg-[#5C7E8F] text-white",
+    "text": "1",
+    "backgroundColor": "rgb(92, 126, 143)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors bg-slate-100 text-slate-600",
+    "text": "2",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors bg-slate-100 text-slate-600",
+    "text": "3",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors bg-slate-100 text-slate-600",
+    "text": "4",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors bg-slate-100 text-slate-600",
+    "text": "5",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "SPAN",
+    "class": "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-colors bg-slate-100 text-slate-600",
+    "text": "6",
+    "backgroundColor": "rgb(241, 245, 249)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "A",
+    "class": "flex items-center justify-center w-10 h-10 rounded-xl bg-inverse-glass-bg border border-inverse-glass-border hover:bg-inverse-glass-hover hover:border-inverse-accent transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inverse-ring",
+    "text": "",
+    "backgroundColor": "rgba(13, 158, 130, 0.08)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "A",
+    "class": "flex items-center justify-center w-10 h-10 rounded-xl bg-inverse-glass-bg border border-inverse-glass-border hover:bg-inverse-glass-hover hover:border-inverse-accent transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inverse-ring",
+    "text": "",
+    "backgroundColor": "rgba(13, 158, 130, 0.08)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "A",
+    "class": "flex items-center justify-center w-10 h-10 rounded-xl bg-inverse-glass-bg border border-inverse-glass-border hover:bg-inverse-glass-hover hover:border-inverse-accent transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inverse-ring",
+    "text": "",
+    "backgroundColor": "rgba(13, 158, 130, 0.08)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  },
+  {
+    "tag": "A",
+    "class": "flex items-center justify-center w-10 h-10 rounded-xl bg-inverse-glass-bg border border-inverse-glass-border hover:bg-inverse-glass-hover hover:border-inverse-accent transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inverse-ring",
+    "text": "",
+    "backgroundColor": "rgba(13, 158, 130, 0.08)",
+    "backgroundImage": "none",
+    "backgroundClip": "border-box"
+  }
+]

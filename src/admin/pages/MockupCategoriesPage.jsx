@@ -26,7 +26,7 @@ const MockupCategoriesPage = () => {
     description_en: '',
     description_ar: '',
     icon: 'Layout',
-    color: '#3b82f6',
+    color: '#0D9E82',
     display_order: 0,
     is_active: true,
   });
@@ -54,7 +54,7 @@ const MockupCategoriesPage = () => {
         description_en: '',
         description_ar: '',
         icon: 'Layout',
-        color: '#3b82f6',
+        color: '#0D9E82',
         display_order: categories.length,
         is_active: true,
       });

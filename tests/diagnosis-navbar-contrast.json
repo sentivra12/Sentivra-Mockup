@@ -1,0 +1,77 @@
+{
+  "navbarBg": "rgba(0, 0, 0, 0)",
+  "navbarOpacity": "1",
+  "navbarRect": {
+    "top": 0,
+    "left": 0,
+    "right": 1440,
+    "height": 64
+  },
+  "navbarClasses": "fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent",
+  "items": [
+    {
+      "name": "Logo",
+      "error": "Not found"
+    },
+    {
+      "name": "Home link",
+      "textColor": "rgba(255, 255, 255, 0.9)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "x": 684.296875,
+      "y": 22,
+      "width": 40.875,
+      "height": 20,
+      "opacity": "1",
+      "visibility": "visible"
+    },
+    {
+      "name": "Mockups link",
+      "textColor": "rgba(255, 255, 255, 0.9)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "x": 831.25,
+      "y": 22,
+      "width": 62.5625,
+      "height": 20,
+      "opacity": "1",
+      "visibility": "visible"
+    },
+    {
+      "name": "About link",
+      "textColor": "rgba(255, 255, 255, 0.9)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "x": 917.8125,
+      "y": 22,
+      "width": 42.09375,
+      "height": 20,
+      "opacity": "1",
+      "visibility": "visible"
+    },
+    {
+      "name": "Language switch",
+      "textColor": "rgba(255, 255, 255, 0.5)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "x": 1144,
+      "y": 16,
+      "width": 36.265625,
+      "height": 32,
+      "opacity": "1",
+      "visibility": "visible"
+    },
+    {
+      "name": "Theme button",
+      "error": "Not found"
+    },
+    {
+      "name": "CTA button",
+      "textColor": "rgb(2, 35, 30)",
+      "bgColor": "rgba(0, 0, 0, 0)",
+      "x": 1207.265625,
+      "y": 14,
+      "width": 120.734375,
+      "height": 36,
+      "opacity": "1",
+      "visibility": "visible"
+    }
+  ],
+  "heroBackdrop": "rgba(0, 0, 0, 0)"
+}

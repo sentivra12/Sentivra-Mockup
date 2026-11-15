@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
+import { useMarqueeItems } from '@/hooks/useContent';
 
 const BrandBand = ({ withArrows = false }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollRef = React.useRef(null);
   const { t, language } = useTranslation();
+  const { data: marqueeItems = [], isLoading } = useMarqueeItems();
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
@@ -22,9 +24,39 @@ const BrandBand = ({ withArrows = false }) => {
     }
   };
 
+  // Hide section if no items
+  if (!isLoading && marqueeItems.length === 0) {
+    return null;
+  }
+
+  // Show loading skeleton
+  if (isLoading) {
+    return (
+      <div className="bg-gradient-to-r from-frost to-frost-soft py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-8 overflow-hidden">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-8 w-32 bg-frost rounded animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Get text based on language
+  const getItemText = (item) => {
+    return language === 'ar' ? (item.text_ar || item.text_en) : (item.text_en || item.text);
+  };
+
+  // Duplicate items for seamless scroll (need at least 12 for smooth animation)
+  const displayItems = marqueeItems.length > 0 
+    ? [...marqueeItems, ...marqueeItems, ...marqueeItems, ...marqueeItems]
+    : [];
+
   if (withArrows) {
     return (
-      <div className="bg-gradient-to-r from-frost to-frost-soft py-6 relative">
+      <div className="bg-gradient-to-r from-frost to-frost-soft dark:from-brand-950 dark:to-brand-900 py-6 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative">
             {/* Left Arrow */}
@@ -43,10 +75,10 @@ const BrandBand = ({ withArrows = false }) => {
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               <div className="flex whitespace-nowrap px-12">
-                {[...Array(12)].map((_, i) => (
-                  <div key={i} className="flex items-center mx-8">
-                    <span className="s-logo text-3xl font-bold text-primary">
-                      Sentivra
+                {displayItems.map((item, i) => (
+                  <div key={`${item.id}-${i}`} className="flex items-center mx-8">
+                    <span className="s-logo text-3xl font-bold text-primary dark:text-brand-accent" dir="auto">
+                      {getItemText(item)}
                     </span>
                   </div>
                 ))}
@@ -69,12 +101,12 @@ const BrandBand = ({ withArrows = false }) => {
 
   // Original auto-scrolling version
   return (
-    <div className="bg-gradient-to-r from-frost to-frost-soft py-6 overflow-hidden">
+    <div className="bg-gradient-to-r from-frost to-frost-soft dark:from-brand-950 dark:to-brand-900 py-6 overflow-hidden">
       <div className="flex animate-scroll whitespace-nowrap">
-        {[...Array(12)].map((_, i) => (
-          <div key={i} className="flex items-center mx-8">
-            <span className="s-logo text-3xl font-bold text-primary">
-              Sentivra
+        {displayItems.map((item, i) => (
+          <div key={`${item.id}-${i}`} className="flex items-center mx-8">
+            <span className="s-logo text-3xl font-bold text-primary dark:text-brand-accent" dir="auto">
+              {getItemText(item)}
             </span>
           </div>
         ))}

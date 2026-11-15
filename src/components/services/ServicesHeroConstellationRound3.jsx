@@ -22,7 +22,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { 
   ArrowRight, ChevronDown,
   Code, Smartphone, Layers, Database, BarChart3, Bot,
@@ -112,15 +113,26 @@ export default function ServicesHeroConstellationRound3({
   
   // Typewriter effect
   useEffect(() => {
-    if (shouldReduceMotion || services.length === 0) {
-      // Show first service name immediately in reduced motion
+    // Initialize with first service immediately on mount
+    if (services.length > 0 && typewriterText === '') {
       const firstService = services[0];
       if (firstService) {
         const serviceName = language === 'ar' && firstService.title_ar 
           ? firstService.title_ar 
           : firstService.title_en || firstService.title || '';
-        setTypewriterText(serviceName);
+        
+        if (shouldReduceMotion) {
+          // Show full name immediately in calm mode
+          setTypewriterText(serviceName);
+        } else {
+          // Start typing animation
+          setTypewriterText(serviceName.substring(0, 1));
+        }
       }
+      return;
+    }
+    
+    if (shouldReduceMotion || services.length === 0) {
       return;
     }
     
@@ -178,9 +190,9 @@ export default function ServicesHeroConstellationRound3({
   
   // Text content
   const eyebrowText = language === 'ar' ? 'خدمات برمجية احترافية' : 'PROFESSIONAL SOFTWARE SERVICES';
-  const headingStart = language === 'ar' ? 'نبني ' : 'We Build ';
-  const headingHighlight = language === 'ar' ? 'حلولاً برمجية' : 'Software Solutions';
-  const headingEnd = language === 'ar' ? ' متميزة' : ' That Scale';
+  const headingPart1 = language === 'ar' ? 'نبني حلولاً ' : 'We Build Software ';
+  const headingHighlight = language === 'ar' ? 'برمجية' : 'Solutions'; // Only the key word
+  const headingPart2 = language === 'ar' ? ' متميزة' : ' That Scale';
   const descriptionText = language === 'ar'
     ? 'من تطبيقات الويب المتقدمة إلى أنظمة الذكاء الاصطناعي، نصمم حلولاً تقنية مخصصة تدفع أعمالك للأمام'
     : 'From advanced web applications to AI systems, we craft custom technology solutions that drive your business forward';
@@ -195,7 +207,7 @@ export default function ServicesHeroConstellationRound3({
       {/* Atmosphere effects */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {/* Aurora blobs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 dark:bg-cyan-400/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-accent/10 dark:bg-brand-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 dark:bg-blue-400/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }} />
         
         {/* Perspective grid floor (light theme: subtle, dark theme: more visible) */}
@@ -214,7 +226,7 @@ export default function ServicesHeroConstellationRound3({
         {!shouldReduceMotion && (
           <div className="hidden lg:block">
             <motion.div
-              className="absolute top-0 left-1/4 w-px h-1/2 bg-gradient-to-b from-cyan-500/20 to-transparent"
+              className="absolute top-0 left-1/4 w-px h-1/2 bg-gradient-to-b from-brand-accent/20 to-transparent"
               animate={{ opacity: [0.2, 0.5, 0.2], scaleY: [0.8, 1, 0.8] }}
               transition={{ duration: 4, repeat: Infinity }}
             />
@@ -230,12 +242,12 @@ export default function ServicesHeroConstellationRound3({
         {!shouldReduceMotion && (
           <>
             <motion.div
-              className="absolute top-1/4 right-1/3 w-1 h-1 bg-cyan-400 rounded-full"
+              className="absolute top-1/4 right-1/3 w-1 h-1 bg-brand-accent rounded-full"
               animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
               transition={{ duration: 2, repeat: Infinity, delay: 0 }}
             />
             <motion.div
-              className="absolute top-1/3 left-1/4 w-1 h-1 bg-cyan-400 rounded-full"
+              className="absolute top-1/3 left-1/4 w-1 h-1 bg-brand-accent rounded-full"
               animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
               transition={{ duration: 2, repeat: Infinity, delay: 0.7 }}
             />
@@ -254,16 +266,16 @@ export default function ServicesHeroConstellationRound3({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-6"
+              className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-accent/20 dark:border-brand-accent/30 bg-brand-accent/5 dark:bg-brand-accent/10 mb-6"
             >
-              <InverseSurface token="border" as="div" className="absolute inset-0 rounded-full" />
+              <Sparkles className="w-3 h-3 text-brand-accent dark:text-brand-accent-muted flex-shrink-0" aria-hidden="true" />
               <span className="relative flex h-2 w-2" aria-hidden="true">
                 {!shouldReduceMotion && (
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-accent opacity-75" />
                 )}
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-accent" />
               </span>
-              <span className="relative font-mono text-xs uppercase tracking-wider text-cyan-600 dark:text-cyan-400 font-semibold">
+              <span className="relative text-xs uppercase tracking-wider text-brand-accent dark:text-brand-accent-muted font-semibold">
                 {eyebrowText}
               </span>
             </motion.div>
@@ -273,7 +285,7 @@ export default function ServicesHeroConstellationRound3({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="mb-6 text-slate-900 dark:text-white"
+              className="mb-6 text-primary-deep dark:text-white"
               style={{ 
                 fontSize: 'clamp(2.75rem, 5vw, 4.5rem)', // 44px to 72px
                 maxWidth: '650px',
@@ -284,19 +296,20 @@ export default function ServicesHeroConstellationRound3({
               }}
               dir={dir}
             >
-              {headingStart}
-              <span className="relative inline-block">
-                <span 
-                  className="bg-gradient-to-r from-slate-900 via-slate-700 to-cyan-600 dark:from-slate-100 dark:via-slate-300 dark:to-cyan-400 bg-clip-text text-transparent bg-[length:200%_100%]"
-                  style={{
-                    animation: !shouldReduceMotion ? 'shimmer 3s linear infinite' : 'none'
-                  }}
-                >
-                  {headingHighlight}
-                </span>
+              {headingPart1}
+              <span 
+                className="relative inline-block text-brand-accent dark:text-brand-accent-muted"
+                style={{
+                  background: 'linear-gradient(to right, rgb(13, 158, 130), rgb(4, 77, 64))',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
+              >
+                {headingHighlight}
                 {!shouldReduceMotion && (
                   <svg
-                    className="absolute -bottom-2 left-0 w-full h-3 text-cyan-500/40 dark:text-cyan-400/30 pointer-events-none"
+                    className="absolute -bottom-2 left-0 w-full h-3 pointer-events-none"
                     viewBox="0 0 300 12"
                     fill="none"
                     preserveAspectRatio="none"
@@ -304,7 +317,7 @@ export default function ServicesHeroConstellationRound3({
                   >
                     <motion.path
                       d="M2 6C50 3, 100 8, 150 5C200 2, 250 7, 298 5"
-                      stroke="currentColor"
+                      stroke="rgba(13, 158, 130, 0.4)"
                       strokeWidth="3"
                       strokeLinecap="round"
                       initial={{ pathLength: 0, opacity: 0 }}
@@ -314,7 +327,7 @@ export default function ServicesHeroConstellationRound3({
                   </svg>
                 )}
               </span>
-              {headingEnd}
+              {headingPart2}
             </motion.h1>
             
             {/* Description */}
@@ -322,7 +335,7 @@ export default function ServicesHeroConstellationRound3({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg sm:text-xl leading-relaxed mb-8 max-w-2xl text-slate-900 dark:text-slate-100 font-medium"
+              className="text-lg sm:text-xl leading-relaxed mb-8 max-w-2xl text-primary-deep dark:text-text-base font-medium"
               dir={dir}
             >
               {descriptionText}
@@ -340,9 +353,9 @@ export default function ServicesHeroConstellationRound3({
                   className="group relative px-8 h-12 rounded-xl font-bold overflow-hidden transition-all hover:shadow-xl"
                   style={{ height: '48px' }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-slate-100 dark:via-white dark:to-slate-100" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/20 via-blue-600/20 to-cyan-600/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="relative z-10 whitespace-nowrap text-white dark:text-slate-900 flex items-center gap-2 font-bold">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-deep via-primary to-primary-deep dark:from-text-base dark:via-white dark:to-text-base" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-brand-accent/20 via-brand-primary/20 to-brand-accent/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="relative z-10 whitespace-nowrap text-white dark:text-primary-deep flex items-center gap-2 font-bold">
                     {language === 'ar' ? 'ابدأ مشروعك' : 'Start Your Project'}
                     <ArrowRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${isRTL ? 'rotate-180' : ''}`} />
                   </span>
@@ -359,12 +372,14 @@ export default function ServicesHeroConstellationRound3({
                     block: 'start'
                   });
                 }}
-                className="px-8 h-12 rounded-xl font-semibold transition-all border hover:shadow-lg relative"
-                style={{ height: '48px' }}
+                className="px-8 h-12 rounded-xl font-semibold transition-all border-2 bg-brand-accent/5 dark:bg-brand-accent/10 hover:bg-brand-accent/10 dark:hover:bg-brand-accent/20 hover:shadow-lg"
+                style={{ 
+                  height: '48px',
+                  borderColor: 'rgba(13, 158, 130, 0.3)',
+                  color: 'rgb(13, 158, 130)'
+                }}
               >
-                <InverseSurface token="border" as="div" className="absolute inset-0 rounded-xl pointer-events-none" />
-                <InverseSurface token="glass" as="div" className="absolute inset-0 rounded-xl pointer-events-none" />
-                <span className="relative font-semibold text-slate-900 dark:text-white">
+                <span className="relative font-semibold">
                   {language === 'ar' ? 'استكشف الخدمات' : 'Explore Services'}
                 </span>
               </button>
@@ -379,10 +394,18 @@ export default function ServicesHeroConstellationRound3({
                 className="flex items-center gap-2 mb-4"
                 dir={dir}
               >
-                <span className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
+                <span 
+                  className="text-4xl sm:text-5xl font-bold text-brand-accent dark:text-brand-accent-muted"
+                  style={{
+                    background: 'linear-gradient(to right, rgb(13, 158, 130), rgb(4, 77, 64))',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}
+                >
                   {serviceCount}
                 </span>
-                <span className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                <span className="text-base font-semibold text-primary-deep dark:text-text-base">
                   {language === 'ar' ? 'خدمة متاحة' : 'Services Available'}
                 </span>
               </motion.div>
@@ -394,16 +417,16 @@ export default function ServicesHeroConstellationRound3({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
-                className="flex items-center gap-2 font-mono text-sm"
+                className="flex items-center gap-2 text-base sm:text-lg"
                 dir={dir}
                 role="status"
                 aria-live="polite"
                 aria-atomic="true"
               >
-                <span className="text-cyan-600 dark:text-cyan-400 font-bold">{isRTL ? '‹' : '›'}</span>
-                <span className="text-slate-900 dark:text-slate-100 font-medium">
+                <span className="text-brand-accent dark:text-brand-accent-muted font-bold">{isRTL ? '‹' : '›'}</span>
+                <span className="text-primary-deep dark:text-text-base font-medium">
                   {typewriterText}
-                  {!shouldReduceMotion && <span className="inline-block w-0.5 h-4 bg-cyan-500 ml-1 animate-pulse" />}
+                  {!shouldReduceMotion && <span className="inline-block w-0.5 h-4 bg-brand-accent ml-1 animate-pulse" />}
                 </span>
               </motion.div>
             )}
@@ -440,12 +463,12 @@ export default function ServicesHeroConstellationRound3({
           <motion.div
             animate={shouldReduceMotion ? {} : { y: [0, 12, 0], opacity: [1, 0, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="relative w-1 h-2 bg-slate-400 dark:bg-slate-600 rounded-full"
+            className="relative w-1 h-2 bg-text-muted/40 rounded-full"
           />
         </motion.div>
       </motion.div>
       
-      <style jsx>{`
+      <style>{`
         @keyframes shimmer {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
@@ -502,7 +525,7 @@ function ConstellationStage({ services, stageRef, rotateX, rotateY, shouldReduce
               y1="50%"
               x2={`${x}%`}
               y2={`${y}%`}
-              className="stroke-cyan-500/30 dark:stroke-cyan-400/20"
+              className="stroke-brand-accent/30 dark:stroke-brand-accent/20"
               strokeWidth="2"
               strokeDasharray="6 4"
               initial={{ pathLength: 0, opacity: 0 }}
@@ -524,16 +547,29 @@ function ConstellationStage({ services, stageRef, rotateX, rotateY, shouldReduce
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.4 }}
       >
-        <div className="relative w-24 h-24 rounded-2xl overflow-hidden">
-          <InverseSurface token="glass" className="absolute inset-0 border-2 rounded-2xl" />
-          <InverseSurface token="border" as="div" className="absolute inset-0 rounded-2xl border-2" />
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-transparent to-blue-500/20" />
+        <div 
+          className="relative w-24 h-24 rounded-2xl overflow-hidden border-2"
+          style={{
+            backgroundColor: 'rgba(13, 158, 130, 0.12)',
+            borderColor: 'rgba(13, 158, 130, 0.4)',
+            boxShadow: '0 8px 24px rgba(13, 158, 130, 0.15), 0 0 60px rgba(13, 158, 130, 0.1)'
+          }}
+        >
+          <div 
+            className="absolute inset-0 bg-gradient-to-br rounded-2xl"
+            style={{
+              backgroundImage: 'linear-gradient(135deg, rgba(13, 158, 130, 0.2), transparent, rgba(4, 77, 64, 0.2))'
+            }}
+          />
           <div className="relative z-10 w-full h-full flex items-center justify-center">
-            <Sparkles className="w-10 h-10 text-cyan-500 dark:text-cyan-400" strokeWidth={1.5} />
+            <Sparkles className="w-10 h-10 text-brand-accent dark:text-brand-accent-muted" strokeWidth={1.5} />
           </div>
           {!shouldReduceMotion && (
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent"
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                backgroundImage: 'linear-gradient(90deg, transparent, rgba(13, 158, 130, 0.2), transparent)'
+              }}
               animate={{ x: ['-100%', '200%'] }}
               transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
             />
@@ -603,12 +639,17 @@ function ServiceNode({ x, y, icon: Icon, title, index, shouldReduceMotion }) {
         whileHover={shouldReduceMotion ? {} : { scale: 1.1 }}
         transition={{ type: 'spring', stiffness: 400 }}
       >
-        <div className="w-16 h-16 rounded-xl overflow-hidden cursor-pointer">
-          <InverseSurface token="glass" className="absolute inset-0 border rounded-xl" />
-          <InverseSurface token="border" as="div" className="absolute inset-0 rounded-xl border" />
-          <div className={`absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-xl transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+        <div 
+          className="w-16 h-16 rounded-xl overflow-hidden cursor-pointer relative border transition-all duration-300"
+          style={{
+            backgroundColor: 'rgba(13, 158, 130, 0.08)',
+            borderColor: 'rgba(13, 158, 130, 0.3)',
+            boxShadow: '0 4px 12px rgba(13, 158, 130, 0.1)'
+          }}
+        >
+          <div className={`absolute inset-0 bg-gradient-to-br from-brand-accent/10 to-transparent rounded-xl transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
           <div className="relative z-10 w-full h-full flex items-center justify-center">
-            <Icon className="w-7 h-7 text-cyan-600 dark:text-cyan-400" strokeWidth={1.5} />
+            <Icon className="w-7 h-7 text-brand-accent dark:text-brand-accent-muted" strokeWidth={1.5} />
           </div>
         </div>
       </motion.div>
@@ -680,7 +721,7 @@ function FloatingCards({ shouldReduceMotion, language }) {
             >
               <InverseSurface token="glass" className="absolute inset-0 border" />
               <div className="relative z-10 w-full h-full flex items-center justify-center">
-                <CardIcon className="w-5 h-5 text-cyan-600 dark:text-cyan-400" strokeWidth={1.5} />
+                <CardIcon className="w-5 h-5 text-brand-accent dark:text-brand-accent-muted" strokeWidth={1.5} />
               </div>
             </motion.div>
           </motion.div>

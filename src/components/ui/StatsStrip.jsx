@@ -65,7 +65,7 @@ const StatItem = ({ stat, index }) => {
         <div className="text-2xl md:text-3xl font-bold text-primary-deep">
           <Bidi>{displayValue}{stat.suffix}</Bidi>
         </div>
-        <p className="text-xs text-text-muted font-medium">
+        <p className="text-text-muted font-medium" style={{ fontSize: '14px', lineHeight: '1.4' }}>
           {stat.label}
         </p>
       </div>

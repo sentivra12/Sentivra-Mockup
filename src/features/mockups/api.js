@@ -91,9 +91,16 @@ export async function fetchAllMockups() {
 }
 
 export async function createMockup(mockup) {
+  // Sync legacy columns to avoid any remaining NOT NULL constraints
+  const payload = {
+    ...mockup,
+    title: mockup.title_en || mockup.title || null,
+    category: mockup.category || null,
+  };
+
   const { data, error } = await supabase
     .from('mockups')
-    .insert([mockup])
+    .insert([payload])
     .select()
     .single();
 
@@ -102,9 +109,16 @@ export async function createMockup(mockup) {
 }
 
 export async function updateMockup(id, updates) {
+  // Keep legacy columns in sync
+  const payload = {
+    ...updates,
+    title: updates.title_en || updates.title || null,
+    category: updates.category || null,
+  };
+
   const { data, error } = await supabase
     .from('mockups')
-    .update(updates)
+    .update(payload)
     .eq('id', id)
     .select()
     .single();

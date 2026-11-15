@@ -19,7 +19,8 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { ArrowRight, MessageCircle, Mail, Phone, Sparkles, Palette, LayoutGrid } from 'lucide-react';
 import InverseSurface from '@/components/ui/InverseSurface';
 import { Button } from '@/components/ui/button';

@@ -1,0 +1,35 @@
+{
+  "navbar": {
+    "name": "Navbar container",
+    "maxWidth": "1280px",
+    "paddingLeft": "32px",
+    "paddingRight": "32px",
+    "marginLeft": "80px",
+    "marginRight": "80px",
+    "left": 80,
+    "width": 1280,
+    "classes": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  },
+  "hero": {
+    "name": "Hero container",
+    "maxWidth": "1280px",
+    "paddingLeft": "32px",
+    "paddingRight": "32px",
+    "marginLeft": "0px",
+    "marginRight": "0px",
+    "left": 80,
+    "width": 1280,
+    "classes": "relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20"
+  },
+  "nextSection": {
+    "name": "Next section container",
+    "maxWidth": "1280px",
+    "paddingLeft": "32px",
+    "paddingRight": "32px",
+    "marginLeft": "0px",
+    "marginRight": "0px",
+    "left": 80,
+    "width": 1280,
+    "classes": "relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  }
+}

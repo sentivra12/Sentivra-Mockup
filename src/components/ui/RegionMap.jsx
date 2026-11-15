@@ -2,7 +2,20 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin } from 'lucide-react';
 
-const RegionMap = ({ countries }) => {
+const RegionMap = ({ countries = [] }) => {
+  // Default coordinates for countries without coordinate data
+  const defaultCoordinates = [
+    { x: 50, y: 60 },   // Egypt
+    { x: 60, y: 55 },   // UAE
+    { x: 65, y: 65 },   // Oman
+  ];
+
+  // Filter countries that have coordinates or assign defaults
+  const countriesWithCoords = countries.map((country, index) => ({
+    ...country,
+    coordinates: country.coordinates || defaultCoordinates[index] || { x: 50, y: 50 }
+  }));
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -32,7 +45,7 @@ const RegionMap = ({ countries }) => {
         {/* Connecting path between countries */}
         <motion.path
           d="M 200 240 Q 240 200, 240 220 Q 250 200, 260 260"
-          stroke="#5C7E8F"
+          stroke="rgb(13, 158, 130)"
           strokeWidth="2"
           strokeDasharray="8 4"
           fill="none"
@@ -43,7 +56,7 @@ const RegionMap = ({ countries }) => {
         />
 
         {/* Country location pins */}
-        {countries.map((country, index) => {
+        {countriesWithCoords.map((country, index) => {
           const x = (country.coordinates.x / 100) * 400;
           const y = (country.coordinates.y / 100) * 400;
 
@@ -60,7 +73,7 @@ const RegionMap = ({ countries }) => {
                 cx={x}
                 cy={y}
                 r="25"
-                fill="#5C7E8F"
+                fill="rgb(13, 158, 130)"
                 opacity="0.2"
                 className="animate-ping"
                 style={{ animationDuration: '3s', animationDelay: `${index * 0.3}s` }}
@@ -72,7 +85,7 @@ const RegionMap = ({ countries }) => {
                 cy={y}
                 r="20"
                 fill="white"
-                stroke="#5C7E8F"
+                stroke="rgb(13, 158, 130)"
                 strokeWidth="3"
               />
               

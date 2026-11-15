@@ -12,7 +12,13 @@
     "test:rls": "node scripts/rls-test.mjs",
     "test:diagnose": "playwright test tests/diagnose-empty-dropdown.spec.mjs --headed",
     "test:mockups": "playwright test tests/mockups.e2e.spec.mjs",
-    "test:mockups:headed": "playwright test tests/mockups.e2e.spec.mjs --headed"
+    "test:mockups:headed": "playwright test tests/mockups.e2e.spec.mjs --headed",
+    "test:hero": "playwright test tests/hero.spec.mjs",
+    "test:hero:headed": "playwright test tests/hero.spec.mjs --headed",
+    "test:client-logos": "playwright test tests/client-logos.spec.mjs",
+    "test:client-logos:headed": "playwright test tests/client-logos.spec.mjs --headed",
+    "test:testimonials": "playwright test tests/testimonials-flash.spec.mjs",
+    "test:testimonials:headed": "playwright test tests/testimonials-flash.spec.mjs --headed"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.0.5",

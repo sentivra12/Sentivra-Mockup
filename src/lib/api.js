@@ -377,10 +377,19 @@ export const deleteProject = async (id) => {
 // =============================================
 
 export const fetchMockups = async (category = null) => {
-  return fetchAll('mockups', {
-    filter: category ? { category, is_active: true } : { is_active: true },
-    orderBy: 'display_order',
-  });
+  // Always join category so cards can read category?.slug / name_en / name_ar
+  // Never fall back to static data — throw so React Query surfaces the real error.
+  const { data, error } = await supabase
+    .from('mockups')
+    .select(`
+      *,
+      category:mockup_categories(id, slug, name_en, name_ar, icon, color)
+    `)
+    .eq('is_active', true)
+    .order('display_order', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
 };
 
 export const createMockup = async (values) => {

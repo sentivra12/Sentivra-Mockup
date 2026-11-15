@@ -1,6 +1,6 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import Header from '@/components/Header';
 import HomePage from '@/pages/HomePage';
 import ServicesPage from '@/pages/ServicesPage';
@@ -17,6 +17,7 @@ import ScrollToTop from '@/components/ScrollToTop';
 import ScrollProgress from '@/components/ScrollProgress';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { SkipToContent } from '@/components/SkipToContent';
+import { useMotionPreference } from '@/hooks/useMotionPreference';
 
 // Lazy load admin components for code splitting
 const LoginPage = lazy(() => import('@/admin/pages/LoginPage'));
@@ -54,10 +55,15 @@ const AdminLoadingFallback = () => (
 function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const motionPreference = useMotionPreference();
 
+  // Apply motion mode to document element
+  useEffect(() => {
+    document.documentElement.setAttribute('data-motion', motionPreference.mode);
+  }, [motionPreference.mode]);
 
   return (
-    <>
+    <MotionConfig reducedMotion="never">
       {/* Public Site Routes */}
       {!isAdminRoute && (
         <div className="min-h-screen bg-frost-soft dark:bg-gray-900">
@@ -122,7 +128,7 @@ function App() {
           </Routes>
         </Suspense>
       )}
-    </>
+    </MotionConfig>
   );
 }
 

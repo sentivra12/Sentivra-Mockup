@@ -25,7 +25,7 @@ const PageHero = ({
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-gradient-to-br from-frost-soft to-frost overflow-hidden">
       {/* Background Image */}
       {backgroundImage && (
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0">
           <img 
             src={backgroundImage} 
             alt="" 
@@ -33,6 +33,8 @@ const PageHero = ({
             width="1200"
             height="800"
           />
+          {/* Stronger overlay for better contrast */}
+          <div className="absolute inset-0 bg-gradient-to-br from-frost-soft/90 via-frost/85 to-frost-soft/90 dark:from-brand-950/95 dark:via-brand-900/90 dark:to-brand-950/95" />
         </div>
       )}
 
@@ -83,7 +85,7 @@ const PageHero = ({
           >
             {/* Breadcrumb */}
             {breadcrumbs.length > 0 && (
-              <nav className={`flex items-center text-sm text-text-muted ${language === 'ar' ? 'space-x-reverse' : ''} space-x-2`}>
+              <nav className={`flex items-center text-sm md:text-base text-text-muted ${language === 'ar' ? 'space-x-reverse' : ''} space-x-2`} aria-label={language === 'ar' ? 'التنقل' : 'Breadcrumb'}>
                 {breadcrumbs.map((crumb, index) => (
                   <React.Fragment key={index}>
                     {index > 0 && <ChevronRight className="h-4 w-4" />}
@@ -95,7 +97,7 @@ const PageHero = ({
                         {crumb.label}
                       </Link>
                     ) : (
-                      <span className="text-primary-deep font-medium">{crumb.label}</span>
+                      <span className="text-primary-deep dark:text-primary-light font-medium">{crumb.label}</span>
                     )}
                   </React.Fragment>
                 ))}
@@ -122,7 +124,7 @@ const PageHero = ({
 
             {/* Description */}
             {description && (
-              <p className="text-lg text-text-muted leading-relaxed">
+              <p className="text-lg md:text-xl text-primary-deep dark:text-primary-light leading-relaxed font-medium" dir="auto">
                 {description}
               </p>
             )}

@@ -11,7 +11,8 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useReducedMotion, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { Search, Code, Rocket, Pencil, Terminal, CheckCircle } from 'lucide-react';
 import InverseSurface from '@/components/ui/InverseSurface';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -103,9 +104,9 @@ export default function HowWeWorkTimeline({ language = 'en', dir = 'ltr' }) {
             {/* Desktop: Horizontal */}
             <div className="hidden md:block">
               {/* Connector line */}
-              <div className="absolute top-16 left-0 right-0 h-0.5 bg-slate-200 dark:bg-slate-800">
+              <div className="absolute top-16 left-0 right-0 h-0.5 bg-border">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-cyan-500 to-green-500"
+                  className="h-full bg-gradient-to-r from-brand-accent to-success-text"
                   initial={{ width: '0%' }}
                   animate={isInView && !shouldReduceMotion ? { width: '100%' } : {}}
                   transition={{ duration: 2, ease: 'easeInOut' }}
@@ -132,9 +133,9 @@ export default function HowWeWorkTimeline({ language = 'en', dir = 'ltr' }) {
             {/* Mobile: Vertical */}
             <div className="md:hidden space-y-8">
               {/* Connector line */}
-              <div className={`absolute top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-800 ${dir === 'rtl' ? 'right-6' : 'left-6'}`}>
+              <div className={`absolute top-0 bottom-0 w-0.5 bg-border ${dir === 'rtl' ? 'right-6' : 'left-6'}`}>
                 <motion.div
-                  className="w-full bg-gradient-to-b from-cyan-500 to-green-500"
+                  className="w-full bg-gradient-to-b from-brand-accent to-success-text"
                   initial={{ height: '0%' }}
                   animate={isInView && !shouldReduceMotion ? { height: '100%' } : {}}
                   transition={{ duration: 2, ease: 'easeInOut' }}
@@ -199,8 +200,8 @@ function TimelineStep({ step, index, isActive, isHorizontal, shouldReduceMotion,
             token="glass"
             className={`w-16 h-16 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
               isActive 
-                ? 'border-cyan-500 shadow-lg shadow-cyan-500/50' 
-                : 'border-slate-300 dark:border-slate-700'
+                ? 'border-brand-accent shadow-lg shadow-brand-accent/50' 
+                : 'border-border-subtle'
             }`}
           >
             <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${step.color} opacity-0 transition-opacity duration-500 ${
@@ -209,8 +210,8 @@ function TimelineStep({ step, index, isActive, isHorizontal, shouldReduceMotion,
             <StepIcon 
               className={`relative z-10 w-7 h-7 transition-colors duration-500 ${
                 isActive 
-                  ? 'text-cyan-500 dark:text-cyan-400' 
-                  : 'text-slate-400 dark:text-slate-600'
+                  ? 'text-brand-accent dark:text-brand-accent-muted' 
+                  : 'text-text-muted/40'
               }`}
               strokeWidth={1.5}
             />
@@ -221,8 +222,8 @@ function TimelineStep({ step, index, isActive, isHorizontal, shouldReduceMotion,
         <div className="mt-3">
           <span className={`font-mono text-xs font-bold transition-colors duration-500 ${
             isActive 
-              ? 'text-cyan-600 dark:text-cyan-400' 
-              : 'text-slate-400 dark:text-slate-600'
+              ? 'text-brand-accent dark:text-brand-accent-muted' 
+              : 'text-text-muted/40'
           }`}>
             {String(index + 1).padStart(2, '0')}
           </span>
@@ -234,7 +235,7 @@ function TimelineStep({ step, index, isActive, isHorizontal, shouldReduceMotion,
         <motion.h3
           className="text-xl font-bold mb-2"
           animate={shouldReduceMotion ? {} : {
-            color: isActive ? undefined : '#94a3b8'
+            color: isActive ? undefined : 'var(--color-text-muted)'
           }}
           transition={{ duration: 0.5 }}
         >
@@ -242,7 +243,7 @@ function TimelineStep({ step, index, isActive, isHorizontal, shouldReduceMotion,
         </motion.h3>
         
         <motion.p
-          className="text-sm leading-relaxed text-text-muted dark:text-slate-400"
+          className="text-sm leading-relaxed text-text-muted"
           animate={shouldReduceMotion ? {} : {
             opacity: isActive ? 1 : 0.6
           }}
@@ -261,15 +262,15 @@ function TimelineStep({ step, index, isActive, isHorizontal, shouldReduceMotion,
 function StepVisual({ VisualIcon, isActive, shouldReduceMotion, color }) {
   if (shouldReduceMotion) {
     return (
-      <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center">
-        <VisualIcon className="w-6 h-6 text-slate-400" />
+      <div className="w-12 h-12 rounded-lg bg-frost-soft border border-border-subtle flex items-center justify-center">
+        <VisualIcon className="w-6 h-6 text-text-muted/40" />
       </div>
     );
   }
   
   return (
     <motion.div
-      className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden"
+      className="w-12 h-12 rounded-lg bg-frost-soft border border-border-subtle flex items-center justify-center overflow-hidden"
       animate={{
         borderColor: isActive ? 'rgba(6, 182, 212, 0.5)' : undefined
       }}
@@ -295,8 +296,8 @@ function StepVisual({ VisualIcon, isActive, shouldReduceMotion, color }) {
         <VisualIcon 
           className={`w-6 h-6 transition-colors duration-500 ${
             isActive 
-              ? 'text-cyan-500 dark:text-cyan-400' 
-              : 'text-slate-400 dark:text-slate-600'
+              ? 'text-brand-accent dark:text-brand-accent-muted' 
+              : 'text-text-muted/40'
           }`}
         />
       </motion.div>

@@ -13,7 +13,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { useSearchParams } from 'react-router-dom';
 import { 
   LayoutGrid, Briefcase, ShoppingCart, UtensilsCrossed, Heart, 
@@ -61,15 +62,16 @@ const MockupsFilterBarPremium = ({
     icon: 'LayoutGrid'
   };
   
-  // Calculate mockup counts per category
+  // Calculate mockup counts per category — only published rows
+  const publishedMockups = safeMockups.filter(m => m.is_active === true || m.published === true);
   const allCategories = [allCategory, ...safeCategories];
   const categoryCounts = allCategories.map(cat => ({
     ...cat,
-    count: cat.slug === 'all' 
-      ? safeMockups.filter(m => m.published || m.is_active).length
-      : safeMockups.filter(m => {
-          const mockupCategorySlug = m.category_slug || m.slug;
-          return (m.published || m.is_active) && mockupCategorySlug === cat.slug;
+    count: cat.slug === 'all'
+      ? publishedMockups.length
+      : publishedMockups.filter(m => {
+          const catSlug = m.category?.slug || m.category_slug;
+          return catSlug === cat.slug;
         }).length
   }));
   
@@ -153,7 +155,7 @@ const MockupsFilterBarPremium = ({
       initial={shouldReduceMotion ? {} : { opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className={`sticky top-16 z-40 border-b backdrop-blur-xl transition-colors ${
+      className={`sticky top-[var(--header-height)] z-40 border-b backdrop-blur-xl transition-colors ${
         isDark 
           ? 'bg-[#0A1525]/80 border-white/5' 
           : 'bg-white/80 border-slate-200/50'

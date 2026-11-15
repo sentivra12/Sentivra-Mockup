@@ -1,0 +1,282 @@
+[
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 390,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-390-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 390,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-390-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 768,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-768-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 768,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-768-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 1024,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-1024-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 1024,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-1024-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 1440,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-1440-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 1440,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-1440-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 1920,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-1920-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "width": 1920,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-en-1920-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 390,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-390-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 390,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-390-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 768,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-768-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 768,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-768-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 1024,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-1024-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 1024,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-1024-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 1440,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-1440-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 1440,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-1440-reduce.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 1920,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-1920-no-preference.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "width": 1920,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-light-ar-1920-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 390,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-390-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 390,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-390-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 768,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-768-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 768,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-768-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 1024,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-1024-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 1024,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-1024-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 1440,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-1440-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 1440,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-1440-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 1920,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-1920-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "width": 1920,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-en-1920-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 390,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-390-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 390,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-390-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 768,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-768-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 768,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-768-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 1024,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-1024-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 1024,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-1024-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 1440,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-1440-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 1440,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-1440-reduce.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 1920,
+    "motion": "no-preference",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-1920-no-preference.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "width": 1920,
+    "motion": "reduce",
+    "filename": "tests/screenshots/hero-BEFORE-dark-ar-1920-reduce.png"
+  }
+]

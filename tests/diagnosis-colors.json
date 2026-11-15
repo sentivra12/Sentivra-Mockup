@@ -1,0 +1,46 @@
+{
+  "h1Color": "rgb(2, 35, 30)",
+  "h1Background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+  "childElements": [
+    {
+      "tag": "SPAN",
+      "text": "Software Solutions",
+      "color": "rgb(2, 35, 30)",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "backgroundImage": "none",
+      "WebkitBackgroundClip": "border-box",
+      "WebkitTextFillColor": "rgb(2, 35, 30)",
+      "classes": "relative inline-block"
+    },
+    {
+      "tag": "SPAN",
+      "text": "Software Solutions",
+      "color": "rgba(0, 0, 0, 0)",
+      "background": "rgba(0, 0, 0, 0) linear-gradient(to right, rgb(15, 23, 42), rgb(51, 65, 85), rgb(8, 145, 178)) repeat scroll 144.44% 0px / 200% 100% padding-box text",
+      "backgroundImage": "linear-gradient(to right, rgb(15, 23, 42), rgb(51, 65, 85), rgb(8, 145, 178))",
+      "WebkitBackgroundClip": "text",
+      "WebkitTextFillColor": "rgba(0, 0, 0, 0)",
+      "classes": "bg-gradient-to-r from-slate-900 via-slate-700 to-cyan-600 dark:from-slate-100 dark:via-slate-300 dark:to-cyan-400 bg-clip-text text-transparent bg-[length:200%_100%]"
+    },
+    {
+      "tag": "svg",
+      "text": "",
+      "color": "rgb(2, 35, 30)",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "backgroundImage": "none",
+      "WebkitBackgroundClip": "border-box",
+      "WebkitTextFillColor": "rgb(2, 35, 30)",
+      "classes": {}
+    },
+    {
+      "tag": "path",
+      "text": "",
+      "color": "rgb(2, 35, 30)",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "backgroundImage": "none",
+      "WebkitBackgroundClip": "border-box",
+      "WebkitTextFillColor": "rgb(2, 35, 30)",
+      "classes": {}
+    }
+  ]
+}

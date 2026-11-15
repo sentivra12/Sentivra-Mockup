@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useSpring, useReducedMotion } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 
 export default function ScrollProgressBar() {
   const { scrollYProgress } = useScroll();

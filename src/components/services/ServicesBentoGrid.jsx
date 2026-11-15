@@ -13,7 +13,8 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { 
   Search, X, ArrowRight,
   Code, Smartphone, Layers, Database, BarChart3, Bot,
@@ -108,9 +109,9 @@ export default function ServicesBentoGrid({
             {/* Search */}
             <div className="lg:w-80">
               <div className="relative">
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm focus-within:ring-2 focus-within:ring-cyan-500/50 transition-shadow">
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-surface-elevated backdrop-blur-sm focus-within:ring-2 focus-within:ring-brand-accent/50 transition-shadow">
                   <Search 
-                    className="w-5 h-5 text-slate-400 dark:text-slate-500 flex-shrink-0" 
+                    className="w-5 h-5 text-text-muted flex-shrink-0" 
                     strokeWidth={1.5}
                     aria-hidden="true"
                   />
@@ -120,14 +121,14 @@ export default function ServicesBentoGrid({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={language === 'ar' ? 'ابحث... (/)' : 'Search... (/)'}
-                    className="flex-1 bg-transparent border-none outline-none text-base text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                    className="flex-1 bg-transparent border-none outline-none text-base text-primary-deep dark:text-white placeholder:text-text-muted"
                     aria-label={language === 'ar' ? 'بحث الخدمات' : 'Search services'}
                     dir={dir}
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                      className="text-text-muted hover:text-primary transition-colors"
                       aria-label={language === 'ar' ? 'مسح' : 'Clear'}
                     >
                       <X className="w-4 h-4" />
@@ -181,20 +182,20 @@ export default function ServicesBentoGrid({
               animate={{ opacity: 1 }}
               className="text-center py-16"
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900 mb-4">
-                <Search className="w-8 h-8 text-slate-400" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-frost-soft mb-4">
+                <Search className="w-8 h-8 text-text-muted" />
               </div>
               <h3 className="text-xl font-bold mb-2 text-primary-deep dark:text-white">
                 {language === 'ar' ? 'لا توجد نتائج' : 'No Results Found'}
               </h3>
-              <p className="mb-6 text-text-muted dark:text-slate-400">
+              <p className="mb-6 text-text-muted">
                 {language === 'ar' 
                   ? `لا توجد خدمات تطابق "${searchQuery}"`
                   : `No services match "${searchQuery}"`}
               </p>
               <button
                 onClick={() => setSearchQuery('')}
-                className="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-semibold transition-colors"
+                className="px-6 py-3 bg-brand-accent hover:bg-brand-accent-hover text-white rounded-lg font-semibold transition-colors"
               >
                 {language === 'ar' ? 'مسح البحث' : 'Clear Search'}
               </button>
@@ -251,10 +252,10 @@ function ServiceBentoCard({ service, index, isFeatured, language, dir, shouldRed
       >
         <div className="relative h-full p-6 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col min-h-[400px]">
           {/* Glass background */}
-          <div className="absolute inset-0 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm" />
+          <div className="absolute inset-0 rounded-2xl bg-surface-elevated backdrop-blur-sm" />
           
           {/* Border */}
-          <div className="absolute inset-0 rounded-2xl border border-slate-200 dark:border-slate-800" />
+          <div className="absolute inset-0 rounded-2xl border border-border" />
           {/* Gradient border on hover */}
           <div 
             className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}
@@ -281,11 +282,11 @@ function ServiceBentoCard({ service, index, isFeatured, language, dir, shouldRed
           
           {/* Index label */}
           <div className="relative mb-4 flex items-center justify-between">
-            <span className="font-mono text-xs text-cyan-600 dark:text-cyan-400">
+            <span className="font-mono text-xs text-brand-accent dark:text-brand-accent-muted">
               {String(index + 1).padStart(2, '0')}
             </span>
             {service.is_featured && (
-              <span className="px-2 py-0.5 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-xs font-medium text-cyan-600 dark:text-cyan-400">
+              <span className="px-2 py-0.5 rounded-md bg-brand-accent/10 border border-brand-accent/20 text-xs font-medium text-brand-accent dark:text-brand-accent-muted">
                 {language === 'ar' ? 'مميز' : 'Featured'}
               </span>
             )}
@@ -300,9 +301,9 @@ function ServiceBentoCard({ service, index, isFeatured, language, dir, shouldRed
               token="glass"
               className="inline-flex items-center justify-center w-14 h-14 rounded-xl border"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-xl group-hover:from-cyan-500/20 transition-all duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-accent/10 to-transparent rounded-xl group-hover:from-brand-accent/20 transition-all duration-300" />
               <IconComponent 
-                className="relative z-10 w-7 h-7 text-cyan-500 dark:text-cyan-400" 
+                className="relative z-10 w-7 h-7 text-brand-accent dark:text-brand-accent-muted" 
                 strokeWidth={1.5}
               />
             </InverseSurface>
@@ -338,7 +339,7 @@ function ServiceBentoCard({ service, index, isFeatured, language, dir, shouldRed
               {features.map((feature, idx) => (
                 <span
                   key={idx}
-                  className="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400"
+                  className="px-2 py-1 rounded-md bg-frost-soft text-xs font-medium text-text-muted"
                 >
                   {feature}
                 </span>
@@ -347,7 +348,7 @@ function ServiceBentoCard({ service, index, isFeatured, language, dir, shouldRed
           )}
           
           {/* CTA */}
-          <div className="relative z-10 flex items-center gap-2 text-base font-semibold text-cyan-600 dark:text-cyan-400 group-hover:gap-3 transition-all mt-auto">
+          <div className="relative z-10 flex items-center gap-2 text-base font-semibold text-brand-accent dark:text-brand-accent-muted group-hover:gap-3 transition-all mt-auto">
             <span className="whitespace-nowrap">
               {language === 'ar' ? 'اعرف المزيد' : 'Learn More'}
             </span>
@@ -421,25 +422,25 @@ function BrowserVisual({ isHovered, mounted }) {
         <InverseSurface token="border" as="div" className="absolute inset-0 border-2 rounded" />
         <div className="h-4 border-b-2 flex items-center gap-1 px-2">
           <InverseSurface token="border" as="div" className="absolute top-0 left-0 right-0 h-4 border-b-2" />
-          <div className="relative w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />
-          <div className="relative w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />
-          <div className="relative w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+          <div className="relative w-1.5 h-1.5 rounded-full bg-border-subtle" />
+          <div className="relative w-1.5 h-1.5 rounded-full bg-border-subtle" />
+          <div className="relative w-1.5 h-1.5 rounded-full bg-border-subtle" />
         </div>
         <div className="relative p-2 space-y-2">
           <motion.div
-            className="h-2 bg-slate-300 dark:bg-slate-700 rounded"
+            className="h-2 bg-border-subtle rounded"
             initial={{ width: '0%' }}
             animate={{ width: mounted ? '75%' : '0%' }}
             transition={{ duration: 0.6, delay: 0.2 }}
           />
           <motion.div
-            className="h-2 bg-slate-300 dark:bg-slate-700 rounded"
+            className="h-2 bg-border-subtle rounded"
             initial={{ width: '0%' }}
             animate={{ width: mounted ? '55%' : '0%' }}
             transition={{ duration: 0.6, delay: 0.3 }}
           />
           <motion.div
-            className="h-2 bg-slate-300 dark:bg-slate-700 rounded"
+            className="h-2 bg-border-subtle rounded"
             initial={{ width: '0%' }}
             animate={{ width: mounted ? '65%' : '0%' }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -472,7 +473,7 @@ function TableVisual({ isHovered, mounted }) {
       {[0, 1, 2, 3].map((i) => (
         <motion.div
           key={i}
-          className="h-3 bg-slate-300 dark:bg-slate-700 rounded"
+          className="h-3 bg-border-subtle rounded"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: mounted ? 1 : 0, x: mounted ? 0 : -20 }}
           transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
@@ -488,7 +489,7 @@ function PipelineVisual({ isHovered, mounted }) {
       {[0, 1, 2].map((i) => (
         <div key={i} className="flex-1 space-y-2">
           <motion.div
-            className="h-8 bg-slate-300 dark:bg-slate-700 rounded"
+            className="h-8 bg-border-subtle rounded"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: mounted ? 0 : 20, opacity: mounted ? 1 : 0 }}
             transition={{ duration: 0.4, delay: 0.2 + i * 0.15 }}
@@ -505,7 +506,7 @@ function ChartVisual({ isHovered, mounted }) {
       {[40, 70, 50, 85, 60].map((height, i) => (
         <motion.div
           key={i}
-          className="flex-1 bg-cyan-500/50 rounded-t"
+          className="flex-1 bg-brand-accent/50 rounded-t"
           initial={{ height: '0%' }}
           animate={{ height: mounted ? `${height}%` : '0%' }}
           transition={{ duration: 0.6, delay: 0.2 + i * 0.1 }}
@@ -521,7 +522,7 @@ function ChatVisual({ isHovered, mounted }) {
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className={`h-6 bg-slate-300 dark:bg-slate-700 rounded-lg ${i % 2 === 0 ? 'w-3/4' : 'w-2/3 ml-auto'}`}
+          className={`h-6 bg-border-subtle rounded-lg ${i % 2 === 0 ? 'w-3/4' : 'w-2/3 ml-auto'}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 10 }}
           transition={{ duration: 0.4, delay: 0.2 + i * 0.2 }}

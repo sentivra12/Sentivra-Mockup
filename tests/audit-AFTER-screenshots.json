@@ -1,0 +1,22 @@
+[
+  {
+    "theme": "light",
+    "lang": "en",
+    "filename": "tests/screenshots/services-AFTER-light-en-1440.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "filename": "tests/screenshots/services-AFTER-light-ar-1440.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "filename": "tests/screenshots/services-AFTER-dark-en-1440.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "filename": "tests/screenshots/services-AFTER-dark-ar-1440.png"
+  }
+]

@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { Lightbulb, Award, Target, Users } from 'lucide-react';
 import InverseSurface from '@/components/ui/InverseSurface';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -137,7 +138,7 @@ function WhyUsTile({ reason, index, shouldReduceMotion, language, dir }) {
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${reason.gradient} opacity-10 rounded-xl group-hover:opacity-20 transition-opacity`} aria-hidden="true" />
               <ReasonIcon 
-                className="relative z-10 w-7 h-7 text-cyan-500 dark:text-cyan-400" 
+                className="relative z-10 w-7 h-7 text-brand-accent dark:text-brand-accent-muted" 
                 strokeWidth={1.5}
                 aria-hidden="true"
               />
@@ -151,7 +152,7 @@ function WhyUsTile({ reason, index, shouldReduceMotion, language, dir }) {
         </h3>
         
         {/* Description */}
-        <p className="relative z-10 text-sm leading-relaxed text-text-muted dark:text-slate-400" dir={dir}>
+        <p className="relative z-10 text-sm leading-relaxed text-text-muted" dir={dir}>
           {reason.description}
         </p>
       </InverseSurface>

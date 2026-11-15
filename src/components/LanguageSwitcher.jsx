@@ -3,15 +3,23 @@ import { Globe } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { motion } from 'framer-motion';
 
-const LanguageSwitcher = ({ className = '', variant = 'compact' }) => {
+/**
+ * LanguageSwitcher
+ *
+ * Props:
+ *   variant   'compact' | 'text'   default: 'compact'
+ *   heroMode  boolean               default: false
+ *     When true: brand-glass style (transparent, white text, brand-teal active).
+ *     When false: original surface-bg style.
+ *
+ * Shared component change: heroMode prop added with default false.
+ */
+const LanguageSwitcher = ({ className = '', variant = 'compact', heroMode = false }) => {
   const { language, setLanguage } = useTranslation();
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'ar' : 'en');
-  };
+  const toggleLanguage = () => setLanguage(language === 'en' ? 'ar' : 'en');
 
   if (variant === 'text') {
-    // Simple text toggle for mobile menu
     return (
       <button
         onClick={toggleLanguage}
@@ -24,57 +32,63 @@ const LanguageSwitcher = ({ className = '', variant = 'compact' }) => {
     );
   }
 
-  // Compact variant for desktop nav (matches ThemeToggle style)
+  /* ── Compact variant ─────────────────────────────────────────────── */
+
+  const baseBtn = (lang) => {
+    const isActive = language === lang;
+    if (heroMode) {
+      return [
+        'relative z-10 flex items-center justify-center px-2 h-8 rounded-md text-xs font-semibold',
+        'transition-colors duration-200',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
+        isActive ? 'text-white' : 'text-white/50 hover:text-white/80',
+      ].join(' ');
+    }
+    return [
+      'relative z-10 flex items-center justify-center px-2.5 h-9 rounded-md text-xs font-semibold',
+      'transition-colors duration-200',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1',
+      isActive ? 'text-color-text' : 'text-color-text-muted hover:text-color-text hover:bg-color-surface-raised/50',
+    ].join(' ');
+  };
+
+  const wrapperCls = heroMode
+    ? `relative inline-flex items-center ${className}`
+    : `relative inline-flex items-center gap-0.5 p-0.5 bg-color-surface rounded-lg border border-color-border ${className}`;
+
+  const indicatorLayoutId = heroMode ? 'language-indicator-hero' : 'language-indicator';
+
+  const ActiveBg = heroMode
+    ? <motion.div
+        layoutId={indicatorLayoutId}
+        className="absolute inset-0 rounded-md"
+        style={{ background:'rgba(13,158,130,0.30)', border:'1px solid rgba(13,158,130,0.50)', zIndex:-1 }}
+        transition={{ type:'spring', stiffness:400, damping:30 }}
+      />
+    : <motion.div
+        layoutId={indicatorLayoutId}
+        className="absolute inset-0 bg-color-background rounded-md border border-color-border-strong shadow-sm"
+        style={{ zIndex:-1 }}
+        transition={{ type:'spring', stiffness:400, damping:30 }}
+      />;
+
   return (
-    <div className={`relative inline-flex items-center gap-0.5 p-0.5 bg-color-surface rounded-lg border border-color-border ${className}`}>
-      <button
-        onClick={() => setLanguage('en')}
-        className={`
-          relative z-10 flex items-center justify-center px-2.5 h-9 rounded-md text-xs font-semibold
-          transition-colors duration-200
-          ${
-            language === 'en'
-              ? 'text-color-text'
-              : 'text-color-text-muted hover:text-color-text hover:bg-color-surface-raised/50'
-          }
-        `}
-        aria-label="Switch to English"
-        aria-pressed={language === 'en'}
-      >
-        EN
-        {language === 'en' && (
-          <motion.div
-            layoutId="language-indicator"
-            className="absolute inset-0 bg-color-background rounded-md border border-color-border-strong shadow-sm"
-            style={{ zIndex: -1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-          />
-        )}
-      </button>
-      <button
-        onClick={() => setLanguage('ar')}
-        className={`
-          relative z-10 flex items-center justify-center px-2.5 h-9 rounded-md text-xs font-semibold
-          transition-colors duration-200
-          ${
-            language === 'ar'
-              ? 'text-color-text'
-              : 'text-color-text-muted hover:text-color-text hover:bg-color-surface-raised/50'
-          }
-        `}
-        aria-label="Switch to Arabic"
-        aria-pressed={language === 'ar'}
-      >
-        عربي
-        {language === 'ar' && (
-          <motion.div
-            layoutId="language-indicator"
-            className="absolute inset-0 bg-color-background rounded-md border border-color-border-strong shadow-sm"
-            style={{ zIndex: -1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-          />
-        )}
-      </button>
+    <div className={wrapperCls}>
+      {['en', 'ar'].map(lang => {
+        const isActive = language === lang;
+        return (
+          <button
+            key={lang}
+            onClick={() => setLanguage(lang)}
+            className={baseBtn(lang)}
+            aria-label={lang === 'en' ? 'Switch to English' : 'Switch to Arabic'}
+            aria-pressed={isActive}
+          >
+            {lang === 'en' ? 'EN' : 'عربي'}
+            {isActive && ActiveBg}
+          </button>
+        );
+      })}
     </div>
   );
 };

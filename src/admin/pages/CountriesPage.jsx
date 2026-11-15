@@ -19,11 +19,13 @@ const CountriesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCountry, setEditingCountry] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    country_code: '',
+    name_en: '',
+    name_ar: '',
+    code: '',
     flag_emoji: '',
-    description: '',
-    client_count: 0,
+    description_en: '',
+    description_ar: '',
+    image_url: '',
     display_order: 0,
     is_active: true,
   });
@@ -35,22 +37,26 @@ const CountriesPage = () => {
     if (country) {
       setEditingCountry(country);
       setFormData({
-        name: country.name,
-        country_code: country.country_code || '',
+        name_en: country.name_en || '',
+        name_ar: country.name_ar || '',
+        code: country.code || '',
         flag_emoji: country.flag_emoji || '',
-        description: country.description || '',
-        client_count: country.client_count || 0,
+        description_en: country.description_en || '',
+        description_ar: country.description_ar || '',
+        image_url: country.image_url || '',
         display_order: country.display_order || 0,
         is_active: country.is_active,
       });
     } else {
       setEditingCountry(null);
       setFormData({
-        name: '',
-        country_code: '',
+        name_en: '',
+        name_ar: '',
+        code: '',
         flag_emoji: '',
-        description: '',
-        client_count: 0,
+        description_en: '',
+        description_ar: '',
+        image_url: '',
         display_order: countries.length,
         is_active: true,
       });
@@ -91,10 +97,19 @@ const CountriesPage = () => {
     e.preventDefault();
 
     // Validation
-    if (!formData.name.trim()) {
+    if (!formData.name_en.trim()) {
       toast({
         title: 'Validation Error',
-        description: 'Country name is required.',
+        description: 'Country name (English) is required.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!formData.name_ar.trim()) {
+      toast({
+        title: 'Validation Error',
+        description: 'Country name (Arabic) is required.',
         variant: 'destructive',
       });
       return;
@@ -130,7 +145,8 @@ const CountriesPage = () => {
   };
 
   const handleDelete = async (country) => {
-    if (!confirm(`Are you sure you want to delete "${country.name}"?`)) return;
+    const countryName = country.name_en || country.name;
+    if (!confirm(`Are you sure you want to delete "${countryName}"?`)) return;
 
     try {
       await deleteCountry.mutateAsync(country.id);
@@ -160,20 +176,12 @@ const CountriesPage = () => {
       label: 'Country Name',
       render: (country) => (
         <div>
-          <div className="font-medium">{country.name}</div>
-          {country.country_code && (
-            <div className="text-sm text-muted-foreground">{country.country_code}</div>
+          <div className="font-medium">{country.name_en}</div>
+          <div className="text-sm text-muted-foreground">{country.name_ar}</div>
+          {country.code && (
+            <div className="text-xs text-muted-foreground mt-0.5">{country.code}</div>
           )}
         </div>
-      ),
-    },
-    {
-      key: 'client_count',
-      label: 'Clients',
-      render: (country) => (
-        <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-          {country.client_count || 0}
-        </span>
       ),
     },
     {
@@ -249,19 +257,36 @@ const CountriesPage = () => {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                  {/* Country Name */}
+                  {/* Country Name - English */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Country Name <span className="text-red-500">*</span>
+                      Country Name (English) <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
-                      name="name"
-                      value={formData.name}
+                      name="name_en"
+                      value={formData.name_en}
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      placeholder="United States"
+                      placeholder="United Arab Emirates"
+                    />
+                  </div>
+
+                  {/* Country Name - Arabic */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Country Name (Arabic) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name_ar"
+                      value={formData.name_ar}
+                      onChange={handleChange}
+                      required
+                      dir="rtl"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      placeholder="الإمارات العربية المتحدة"
                     />
                   </div>
 
@@ -273,15 +298,15 @@ const CountriesPage = () => {
                       </label>
                       <input
                         type="text"
-                        name="country_code"
-                        value={formData.country_code}
+                        name="code"
+                        value={formData.code}
                         onChange={handleChange}
                         maxLength={3}
                         className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 uppercase"
-                        placeholder="US"
+                        placeholder="AE"
                       />
                       <p className="text-xs text-muted-foreground mt-1">
-                        2-3 letter code (e.g., US, SAU)
+                        2-3 letter ISO code (e.g., AE, EG, OM)
                       </p>
                     </div>
                     <div>
@@ -295,7 +320,7 @@ const CountriesPage = () => {
                         onChange={handleChange}
                         maxLength={4}
                         className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-2xl"
-                        placeholder="🇺🇸"
+                        placeholder="🇦🇪"
                       />
                       <p className="text-xs text-muted-foreground mt-1">
                         Country flag emoji
@@ -303,52 +328,68 @@ const CountriesPage = () => {
                     </div>
                   </div>
 
-                  {/* Description */}
+                  {/* Description - English */}
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Description (Optional)
+                      Description (English)
                     </label>
                     <textarea
-                      name="description"
-                      value={formData.description}
+                      name="description_en"
+                      value={formData.description_en}
                       onChange={handleChange}
-                      rows={3}
+                      rows={2}
                       className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                       placeholder="Brief description about your presence in this country..."
                     />
                   </div>
 
-                  {/* Client Count and Display Order */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Client Count
-                      </label>
-                      <input
-                        type="number"
-                        name="client_count"
-                        value={formData.client_count}
-                        onChange={handleChange}
-                        min="0"
-                        className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Number of clients in this country
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        Display Order
-                      </label>
-                      <input
-                        type="number"
-                        name="display_order"
-                        value={formData.display_order}
-                        onChange={handleChange}
-                        min="0"
-                        className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      />
-                    </div>
+                  {/* Description - Arabic */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Description (Arabic)
+                    </label>
+                    <textarea
+                      name="description_ar"
+                      value={formData.description_ar}
+                      onChange={handleChange}
+                      rows={2}
+                      dir="rtl"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                      placeholder="وصف موجز عن تواجدك في هذا البلد..."
+                    />
+                  </div>
+
+                  {/* Image URL (optional) */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Image URL (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      name="image_url"
+                      value={formData.image_url}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      placeholder="https://example.com/image.jpg"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Leave empty to show flag emoji as background
+                    </p>
+                  </div>
+
+                  {/* Display Order */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Display Order
+                    </label>
+                    <input
+                      type="number"
+                      name="display_order"
+                      value={formData.display_order}
+                      onChange={handleChange}
+                      min="0"
+                      className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
                   </div>
 
                   {/* Active Status */}

@@ -1,0 +1,22 @@
+[
+  {
+    "theme": "light",
+    "lang": "en",
+    "filename": "tests/screenshots/hero-AFTER-light-en-1440-full.png"
+  },
+  {
+    "theme": "light",
+    "lang": "ar",
+    "filename": "tests/screenshots/hero-AFTER-light-ar-1440-full.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "filename": "tests/screenshots/hero-AFTER-dark-en-1440-full.png"
+  },
+  {
+    "theme": "dark",
+    "lang": "ar",
+    "filename": "tests/screenshots/hero-AFTER-dark-ar-1440-full.png"
+  }
+]
