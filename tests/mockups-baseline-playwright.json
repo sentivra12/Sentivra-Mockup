@@ -1,26 +1,26 @@
 {
   "page": "/mockups",
-  "loadTime": "2839ms",
+  "loadTime": "2857ms",
   "vitals": {
-    "lcp": "5648ms",
-    "lcpElement": "P",
-    "cls": "0.337",
-    "fcp": "1280ms"
+    "lcp": "1152ms",
+    "lcpElement": "unknown",
+    "cls": "0.317",
+    "fcp": "1152ms"
   },
   "network": {
     "requests": 26,
-    "totalBytes": "1905KB",
+    "totalBytes": "2020KB",
     "byType": {
-      "js": "1KB",
+      "js": "0KB",
       "css": "0KB",
-      "images": "1679KB",
+      "images": "1795KB",
       "fonts": "226KB",
       "other": "0KB"
     }
   },
   "images": {
-    "total": 2,
-    "totalBytes": "1679KB",
+    "total": 3,
+    "totalBytes": "1795KB",
     "list": [
       {
         "url": "1794593581889-768ebk.png",
@@ -30,6 +30,11 @@
       {
         "url": "photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
         "bytes": "75KB",
+        "format": "jpeg"
+      },
+      {
+        "url": "photo-1547658719-da2b51169166?w=800&h=600&fit=crop",
+        "bytes": "115KB",
         "format": "jpeg"
       }
     ]
@@ -55,8 +60,8 @@
     },
     {
       "src": "https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=600&fit=crop",
-      "naturalWidth": 0,
-      "naturalHeight": 0,
+      "naturalWidth": 800,
+      "naturalHeight": 600,
       "displayWidth": 376,
       "displayHeight": 235,
       "loading": "lazy",

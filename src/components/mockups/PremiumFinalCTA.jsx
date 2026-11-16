@@ -3,9 +3,10 @@
  * 
  * FIXES:
  * - Empty stage: Now uses correct field (image_url), shows skeleton while loading, CSS fallback
- * - Primary button: High contrast frost/white fill (#EEF2F4) with deep slate text (#0A1525)
+ * - Primary button: Uses inverse-button-primary tokens (white bg / brand-950 text)
  * - WhatsApp button: Visible when whatsapp_number is set in siteSettings
  * - Heading: Balanced with gradient + hand-drawn shimmer underline
+ * - Palette: brand emerald tokens only — no hardcoded old teal/cyan rgba
  * 
  * PREMIUM DESIGN:
  * - Richer aurora blobs, perspective grid floor, light beam sweep, sparkles, shapes, grain
@@ -225,7 +226,7 @@ const PremiumFinalCTA = ({
             <motion.div
               className="absolute w-[700px] h-[700px] rounded-full blur-[120px]"
               style={{
-                background: 'radial-gradient(circle, rgba(92, 126, 143, 0.25) 0%, transparent 65%)',
+                background: 'radial-gradient(circle, rgba(13,158,130,0.18) 0%, transparent 65%)',
                 top: '-15%',
                 left: language === 'ar' ? 'auto' : '-8%',
                 right: language === 'ar' ? '-8%' : 'auto'
@@ -244,7 +245,7 @@ const PremiumFinalCTA = ({
             <motion.div
               className="absolute w-[600px] h-[600px] rounded-full blur-[110px]"
               style={{
-                background: 'radial-gradient(circle, rgba(111, 211, 216, 0.2) 0%, transparent 65%)',
+                background: 'radial-gradient(circle, rgba(13,158,130,0.14) 0%, transparent 65%)',
                 bottom: '-10%',
                 right: language === 'ar' ? 'auto' : '-5%',
                 left: language === 'ar' ? '-5%' : 'auto'
@@ -281,7 +282,7 @@ const PremiumFinalCTA = ({
           <motion.div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'linear-gradient(110deg, transparent 0%, rgba(111, 211, 216, 0.08) 45%, rgba(111, 211, 216, 0.12) 50%, rgba(111, 211, 216, 0.08) 55%, transparent 100%)',
+              background: 'linear-gradient(110deg, transparent 0%, rgba(13,158,130,0.07) 45%, rgba(13,158,130,0.10) 50%, rgba(13,158,130,0.07) 55%, transparent 100%)',
               opacity: isVisible ? 1 : 0
             }}
             animate={isVisible ? {
@@ -386,8 +387,8 @@ const PremiumFinalCTA = ({
               language === 'ar' ? 'flex-row-reverse' : ''
             }`}
             style={{
-              backgroundColor: 'rgba(111, 211, 216, 0.08)',
-              border: '1px solid rgba(111, 211, 216, 0.2)'
+              backgroundColor: 'rgba(13,158,130,0.08)',
+              border: '1px solid rgba(13,158,130,0.22)'
             }}>
               <motion.div
                 className="w-2 h-2 rounded-full"
@@ -426,7 +427,7 @@ const PremiumFinalCTA = ({
                     <span 
                       className="relative inline-block"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(92, 126, 143, 1) 0%, rgba(111, 211, 216, 1) 100%)',
+                        background: 'linear-gradient(135deg, var(--inverse-accent-strong) 0%, var(--inverse-accent) 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text'
@@ -463,9 +464,9 @@ const PremiumFinalCTA = ({
                           />
                           <defs>
                             <linearGradient id="shimmer-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor="rgba(92, 126, 143, 0.4)" />
-                              <stop offset="50%" stopColor="rgba(111, 211, 216, 0.8)" />
-                              <stop offset="100%" stopColor="rgba(92, 126, 143, 0.4)" />
+                              <stop offset="0%" stopColor="rgba(13,158,130,0.4)" />
+                              <stop offset="50%" stopColor="rgba(38,181,154,0.9)" />
+                              <stop offset="100%" stopColor="rgba(13,158,130,0.4)" />
                             </linearGradient>
                           </defs>
                         </motion.svg>
@@ -478,7 +479,7 @@ const PremiumFinalCTA = ({
                     <span 
                       className="relative inline-block"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(92, 126, 143, 1) 0%, rgba(111, 211, 216, 1) 100%)',
+                        background: 'linear-gradient(135deg, var(--inverse-accent-strong) 0%, var(--inverse-accent) 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text'
@@ -515,9 +516,9 @@ const PremiumFinalCTA = ({
                           />
                           <defs>
                             <linearGradient id="shimmer-gradient-en" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor="rgba(92, 126, 143, 0.4)" />
-                              <stop offset="50%" stopColor="rgba(111, 211, 216, 0.8)" />
-                              <stop offset="100%" stopColor="rgba(92, 126, 143, 0.4)" />
+                              <stop offset="0%" stopColor="rgba(13,158,130,0.4)" />
+                              <stop offset="50%" stopColor="rgba(38,181,154,0.9)" />
+                              <stop offset="100%" stopColor="rgba(13,158,130,0.4)" />
                             </linearGradient>
                           </defs>
                         </motion.svg>
@@ -570,8 +571,8 @@ const PremiumFinalCTA = ({
                     height: '48px',
                     minHeight: '48px',
                     whiteSpace: 'nowrap',
-                    backgroundColor: '#EEF2F4',
-                    color: '#0A1525',
+                    backgroundColor: 'var(--inverse-button-primary-bg)',
+                    color: 'var(--inverse-button-primary-fg)',
                     border: 'none'
                   }}
                   aria-label={language === 'ar' ? 'تواصل معنا الآن' : 'Contact Us Now'}
@@ -616,8 +617,8 @@ const PremiumFinalCTA = ({
                     height: '48px',
                     minHeight: '48px',
                     whiteSpace: 'nowrap',
-                    backgroundColor: 'rgba(111, 211, 216, 0.08)',
-                    borderColor: 'rgba(111, 211, 216, 0.25)',
+                    backgroundColor: 'var(--inverse-button-secondary-bg)',
+                    borderColor: 'var(--inverse-button-secondary-border)',
                     borderWidth: '1.5px',
                     color: 'var(--inverse-fg)'
                   }}
@@ -740,7 +741,7 @@ const PremiumFinalCTA = ({
               <div 
                 className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-4/5 h-40 blur-[80px] opacity-25 pointer-events-none"
                 style={{
-                  background: 'radial-gradient(ellipse, rgba(111, 211, 216, 0.6) 0%, transparent 70%)'
+                  background: 'radial-gradient(ellipse, rgba(13,158,130,0.55) 0%, transparent 70%)'
                 }}
                 aria-hidden="true"
               />
@@ -754,8 +755,8 @@ const PremiumFinalCTA = ({
                     <div 
                       className="absolute inset-0 rounded-2xl animate-pulse"
                       style={{
-                        backgroundColor: 'rgba(111, 211, 216, 0.05)',
-                        border: '2px solid rgba(111, 211, 216, 0.15)'
+                        backgroundColor: 'rgba(13,158,130,0.05)',
+                        border: '2px solid rgba(13,158,130,0.12)'
                       }}
                       aria-label={language === 'ar' ? 'جاري التحميل...' : 'Loading...'}
                     />
@@ -765,12 +766,12 @@ const PremiumFinalCTA = ({
                   <div 
                     className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl"
                     style={{
-                      backgroundColor: 'rgba(10, 21, 37, 0.6)',
-                      border: '3px solid rgba(111, 211, 216, 0.2)',
+                      backgroundColor: 'rgba(1,18,15,0.6)',
+                      border: '3px solid rgba(13,158,130,0.22)',
                       boxShadow: `
                         0 20px 60px rgba(0, 0, 0, 0.4),
-                        0 0 0 1px rgba(111, 211, 216, 0.1) inset,
-                        0 0 40px rgba(111, 211, 216, 0.15)
+                        0 0 0 1px rgba(13,158,130,0.10) inset,
+                        0 0 40px rgba(13,158,130,0.12)
                       `
                     }}
                   >
@@ -785,21 +786,21 @@ const PremiumFinalCTA = ({
                       />
                     ) : (
                       // CSS Mini Template Fallback (never empty)
-                      <div className="w-full h-full p-6 flex flex-col gap-4" style={{ backgroundColor: 'rgba(15, 28, 45, 0.8)' }}>
+                      <div className="w-full h-full p-6 flex flex-col gap-4" style={{ backgroundColor: 'rgba(1,18,15,0.8)' }}>
                         <div 
                           className="h-10 rounded-lg" 
-                          style={{ backgroundColor: 'rgba(111, 211, 216, 0.15)' }}
+                          style={{ backgroundColor: 'rgba(13,158,130,0.15)' }}
                         />
                         <div 
                           className="h-6 rounded-lg w-2/3" 
-                          style={{ backgroundColor: 'rgba(111, 211, 216, 0.08)' }}
+                          style={{ backgroundColor: 'rgba(13,158,130,0.08)' }}
                         />
                         <div className="grid grid-cols-3 gap-3 pt-4 flex-1">
                           {[1, 2, 3].map(i => (
                             <div 
                               key={i} 
                               className="rounded-lg" 
-                              style={{ backgroundColor: 'rgba(111, 211, 216, 0.12)' }}
+                              style={{ backgroundColor: 'rgba(13,158,130,0.12)' }}
                             />
                           ))}
                         </div>
@@ -826,8 +827,8 @@ const PremiumFinalCTA = ({
                       <motion.div
                         className="absolute -top-4 backdrop-blur-md rounded-xl px-3 py-2 shadow-lg"
                         style={{
-                          backgroundColor: 'rgba(111, 211, 216, 0.12)',
-                          border: '1px solid rgba(111, 211, 216, 0.25)',
+                          backgroundColor: 'rgba(13,158,130,0.12)',
+                          border: '1px solid rgba(13,158,130,0.25)',
                           [language === 'ar' ? 'left' : 'right']: '-1rem',
                           zIndex: 10
                         }}
@@ -865,8 +866,8 @@ const PremiumFinalCTA = ({
                       <motion.div
                         className="absolute -bottom-6 backdrop-blur-md rounded-xl p-2.5 shadow-lg"
                         style={{
-                          backgroundColor: 'rgba(111, 211, 216, 0.1)',
-                          border: '1px solid rgba(111, 211, 216, 0.2)',
+                          backgroundColor: 'rgba(13,158,130,0.10)',
+                          border: '1px solid rgba(13,158,130,0.20)',
                           [language === 'ar' ? 'right' : 'left']: '1rem',
                           zIndex: 10
                         }}
@@ -884,9 +885,9 @@ const PremiumFinalCTA = ({
                         <div className="flex items-center gap-1.5">
                           <Palette className="w-3.5 h-3.5" style={{ color: 'var(--inverse-accent)' }} />
                           <div className="flex gap-1">
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#5C7E8F' }} />
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#6FD3D8' }} />
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#EEF2F4' }} />
+                            <div className="w-4 h-4 rounded-full bg-brand-700" />
+                            <div className="w-4 h-4 rounded-full bg-brand-500" />
+                            <div className="w-4 h-4 rounded-full bg-brand-100" />
                           </div>
                         </div>
                       </motion.div>
@@ -895,8 +896,8 @@ const PremiumFinalCTA = ({
                       <motion.div
                         className="absolute top-1/3 backdrop-blur-md rounded-lg p-2 shadow-lg"
                         style={{
-                          backgroundColor: 'rgba(111, 211, 216, 0.08)',
-                          border: '1px solid rgba(111, 211, 216, 0.2)',
+                          backgroundColor: 'rgba(13,158,130,0.08)',
+                          border: '1px solid rgba(13,158,130,0.20)',
                           [language === 'ar' ? 'left' : 'right']: '-2.5rem',
                           zIndex: 9
                         }}

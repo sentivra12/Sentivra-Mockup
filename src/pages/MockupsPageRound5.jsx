@@ -12,7 +12,9 @@ import { useMockups, useMockupCategories, useFAQs, useSiteSettings } from '@/hoo
 import { useTranslation } from '@/i18n/useTranslation';
 import { useThemeContext } from '@/theme/ThemeContext';
 import { SEO, useSEO } from '@/components/SEO';
-import MockupsHero from '@/components/mockups/MockupsHeroPremium';
+import MockupsHeroMobile from '@/components/mockups/MockupsHeroMobile';
+// Desktop-only full hero — lazy so its JS is never downloaded on phones
+const MockupsHero = lazy(() => import('@/components/mockups/MockupsHeroPremium'));
 import MockupsFilterBarPremium from '@/components/mockups/MockupsFilterBarPremium';
 import PremiumMockupCardRound5 from '@/components/mockups/PremiumMockupCardRound5';
 import StickyMobileCTA from '@/components/mockups/StickyMobileCTA';
@@ -34,6 +36,28 @@ const MockupsPageRound5 = () => {
   
   // State
   const [activeCategory, setActiveCategory] = useState('all');
+
+  // Phone detection: ≤768px viewport OR hover:none (touch device) OR saveData
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const narrowScreen   = window.matchMedia('(max-width: 768px)').matches;
+    const noHover        = window.matchMedia('(hover: none)').matches;
+    const saveDataActive = typeof navigator !== 'undefined' && navigator.connection?.saveData === true;
+    return narrowScreen || noHover || saveDataActive;
+  });
+
+  // Update on resize (e.g. DevTools re-size) but only once per mount in production
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)');
+    const mqHover = window.matchMedia('(hover: none)');
+    const update = () => {
+      const saveDataActive = typeof navigator !== 'undefined' && navigator.connection?.saveData === true;
+      setIsMobile(mq.matches || mqHover.matches || saveDataActive);
+    };
+    mq.addEventListener('change', update);
+    mqHover.addEventListener('change', update);
+    return () => { mq.removeEventListener('change', update); mqHover.removeEventListener('change', update); };
+  }, []);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedMockup, setSelectedMockup] = useState(null);
@@ -264,8 +288,15 @@ const MockupsPageRound5 = () => {
         <link rel="dns-prefetch" href="https://njovqwbptfhfzbfmwjgk.supabase.co" />
       </Helmet>
 
-      {/* PREMIUM HERO (from previous rounds - don't touch) */}
-      <MockupsHero />
+      {/* HERO — mobile gets the static lightweight version; desktop gets the
+          full animated stage (lazy so its JS is never fetched on phones) */}
+      {isMobile ? (
+        <MockupsHeroMobile />
+      ) : (
+        <Suspense fallback={<HeroDesktopFallback isDark={isDark} />}>
+          <MockupsHero />
+        </Suspense>
+      )}
       
       {/* STICKY GLASS FILTER BAR (hidden if only "All") */}
       <MockupsFilterBarPremium
@@ -281,10 +312,11 @@ const MockupsPageRound5 = () => {
       <section 
         id="mockups-grid"
         ref={sectionRef}
-        className={`relative py-16 lg:py-24 overflow-hidden scroll-mt-header page-with-scroll-top ${isDark ? 'bg-brand-950' : 'bg-white'}`}
+        className={`relative py-12 lg:py-24 overflow-hidden scroll-mt-header page-with-scroll-top ${isDark ? 'bg-brand-950' : 'bg-white'}`}
+        data-mockups-grid
       >
-        {/* LAYERED BACKGROUNDS */}
-        {!disableHeavyEffects && (
+        {/* LAYERED BACKGROUNDS — desktop only, skip on phones to avoid extra compositing layers */}
+        {!disableHeavyEffects && !isMobile && (
           <>
             {/* Aurora Blobs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
@@ -412,13 +444,13 @@ const MockupsPageRound5 = () => {
         )}
         
         <div className="relative z-10 max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header with Search - Staged Reveal */}
-          <motion.div
+          {/* Header with Search — CSS transition on mobile, motion on desktop */}
+          <div
             ref={headerRef}
-            initial={disableHeavyEffects ? {} : { opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end mb-16"
+            className={`grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-end mb-8 lg:mb-16 ${
+              isMobile ? '' : 'motion-safe:animate-[fadeUp_0.6s_ease_forwards]'
+            }`}
+            style={{ minHeight: isMobile ? 'auto' : '120px' }}
           >
             {/* Left: Heading */}
             <div>
@@ -463,10 +495,10 @@ const MockupsPageRound5 = () => {
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   placeholder={language === 'ar' ? 'ابحث عن تصميم...' : 'Search designs...'}
-                  className={`w-full h-14 ${language === 'ar' ? 'pr-12 pl-10' : 'pl-12 pr-10'} rounded-2xl border-2 backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  className={`w-full h-14 ${language === 'ar' ? 'pr-12 pl-10' : 'pl-12 pr-10'} rounded-2xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                     isDark
                       ? 'bg-brand-900/50 border-brand-800 text-white placeholder-text-muted focus:border-brand-accent focus:ring-brand-accent'
-                      : 'bg-white/80 border-brand-200 text-primary-deep placeholder-text-muted focus:border-brand-accent focus:ring-brand-accent'
+                      : 'bg-white border-brand-200 text-primary-deep placeholder-text-muted focus:border-brand-accent focus:ring-brand-accent'
                   }`}
                   style={{
                     boxShadow: isDark
@@ -488,13 +520,11 @@ const MockupsPageRound5 = () => {
                 )}
               </div>
             </div>
-          </motion.div>
+          </div>
           
           {/* Results count with aria-live */}
           {(debouncedSearch || activeCategory !== 'all') && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+            <div
               className="mb-8"
               role="status"
               aria-live="polite"
@@ -513,10 +543,29 @@ const MockupsPageRound5 = () => {
                   </>
                 )}
               </p>
-            </motion.div>
+            </div>
           )}
           
-          {/* GRID or EMPTY STATE */}
+          {/* GRID or EMPTY STATE — on mobile skip AnimatePresence/motion wrappers */}
+          {isMobile ? (
+            <div ref={gridRef}>
+              {visibleMockups.length > 0 ? (
+                <MockupsGridContent
+                  visibleMockups={visibleMockups}
+                  shouldUseFeaturedLayout={shouldUseFeaturedLayout}
+                  handleRequestDesign={handleRequestDesign}
+                  language={language}
+                  isDark={isDark}
+                  disableEffects={true}
+                  isMobile={true}
+                  hasMore={hasMore}
+                  handleLoadMore={handleLoadMore}
+                />
+              ) : (
+                <MockupsEmptyState language={language} isDark={isDark} debouncedSearch={debouncedSearch} activeCategory={activeCategory} handleClearSearch={handleClearSearch} handleCategoryChange={handleCategoryChange} />
+              )}
+            </div>
+          ) : (
           <AnimatePresence mode="wait">
             {visibleMockups.length > 0 ? (
               <motion.div
@@ -527,131 +576,23 @@ const MockupsPageRound5 = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                {/* PREMIUM RESPONSIVE GRID: auto-fit, min 300px, max 3 cols (<1600px), 4 cols (>=1600px) */}
-                <div 
-                  className="grid gap-8 mb-16"
-                  style={{
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                    maxWidth: '100%'
-                  }}
-                  role="list"
-                  aria-label={language === 'ar' ? 'قائمة التصاميم' : 'Mockup designs list'}
-                >
-                  {/* Apply max 3 cols at <1600px, 4 cols at >=1600px via CSS */}
-                  <style>{`
-                    @media (min-width: 768px) and (max-width: 1599px) {
-                      #mockups-grid > div > div[role="list"] {
-                        grid-template-columns: repeat(auto-fit, minmax(300px, calc(33.333% - 22px))) !important;
-                      }
-                    }
-                    @media (min-width: 1600px) {
-                      #mockups-grid > div > div[role="list"] {
-                        grid-template-columns: repeat(auto-fit, minmax(300px, calc(25% - 24px))) !important;
-                      }
-                    }
-                    @media (max-width: 767px) {
-                      #mockups-grid > div > div[role="list"] {
-                        grid-template-columns: 1fr !important;
-                        justify-items: stretch;
-                        max-width: 100%;
-                      }
-                      #mockups-grid > div > div[role="list"] > div {
-                        max-width: 100%;
-                      }
-                    }
-                  `}</style>
-                  
-                  {visibleMockups.map((mockup, index) => {
-                    const isFeatured = mockup.is_featured && shouldUseFeaturedLayout && index === 0;
-                    
-                    return (
-                      <div 
-                        key={mockup.id} 
-                        role="listitem"
-                        style={isFeatured ? { gridColumn: 'span 2' } : {}}
-                      >
-                        <PremiumMockupCardRound5
-                          mockup={mockup}
-                          onRequestDesign={handleRequestDesign}
-                          index={index}
-                          isFirst={index === 0}
-                          isFeatured={isFeatured}
-                          language={language}
-                          isDark={isDark}
-                          disableEffects={disableHeavyEffects}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                {/* Load More */}
-                {hasMore && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="flex justify-center"
-                  >
-                    <Button
-                      onClick={handleLoadMore}
-                      size="lg"
-                      className={`px-10 h-14 font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl bg-gradient-to-r from-brand-accent to-brand-accent-deep text-white hover:from-brand-accent-deep hover:to-brand-accent ${language === 'ar' ? 'flex-row-reverse' : ''}`}
-                    >
-                      <span>{language === 'ar' ? 'تحميل المزيد' : 'Load More'}</span>
-                      <ChevronDown className={`w-5 h-5 ${language === 'ar' ? 'mr-2' : 'ml-2'}`} aria-hidden="true" />
-                    </Button>
-                  </motion.div>
-                )}
+                <MockupsGridContent
+                  visibleMockups={visibleMockups}
+                  shouldUseFeaturedLayout={shouldUseFeaturedLayout}
+                  handleRequestDesign={handleRequestDesign}
+                  language={language}
+                  isDark={isDark}
+                  disableEffects={disableHeavyEffects}
+                  isMobile={false}
+                  hasMore={hasMore}
+                  handleLoadMore={handleLoadMore}
+                />
               </motion.div>
             ) : (
-              // Empty state
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4 }}
-                className="text-center py-24"
-              >
-                <div className="max-w-md mx-auto">
-                  <div 
-                    className={`w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm ${
-                      isDark ? 'bg-brand-900/50 border border-brand-800' : 'bg-brand-50 border border-brand-200'
-                    }`}
-                  >
-                    <Search className={`w-12 h-12 ${isDark ? 'text-brand-accent' : 'text-brand-accent'}`} />
-                  </div>
-                  <h3 className={`text-2xl font-bold mb-3 ${isDark ? 'text-white' : 'text-primary-deep'}`}>
-                    {language === 'ar' ? 'لم يتم العثور على نتائج' : 'No designs found'}
-                  </h3>
-                  <p className={`mb-6 ${isDark ? 'text-text-muted' : 'text-text-muted'}`}>
-                    {debouncedSearch ? (
-                      language === 'ar' 
-                        ? `لم نتمكن من العثور على تصاميم تطابق "${debouncedSearch}"`
-                        : `We couldn't find any designs matching "${debouncedSearch}"`
-                    ) : (
-                      language === 'ar'
-                        ? 'لا توجد تصاميم في هذه الفئة حالياً'
-                        : 'No designs in this category yet'
-                    )}
-                  </p>
-                  <Button
-                    onClick={handleResetFilters}
-                    variant="outline"
-                    className={`rounded-xl border-2 ${
-                      isDark
-                        ? 'border-brand-accent/30 text-white hover:bg-brand-accent/10'
-                        : 'border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-white'
-                    } ${language === 'ar' ? 'flex-row-reverse' : ''}`}
-                  >
-                    {language === 'ar' ? 'عرض جميع التصاميم' : 'Show All Designs'}
-                  </Button>
-                </div>
-              </motion.div>
+              <MockupsEmptyState language={language} isDark={isDark} debouncedSearch={debouncedSearch} handleResetFilters={handleResetFilters} />
             )}
           </AnimatePresence>
+          )} {/* end desktop ternary */}
         </div>
       </section>
       
@@ -700,3 +641,123 @@ const MockupsPageRound5 = () => {
 };
 
 export default MockupsPageRound5;
+
+/* ── Thin fallback shown while lazy desktop hero chunk loads ── */
+const HeroDesktopFallback = ({ isDark }) => (
+  <div
+    className={`w-full min-h-[88vh] flex items-center justify-center ${
+      isDark ? 'bg-[#0A1525]' : 'bg-gradient-to-br from-white via-[#F0F9FF] to-white'
+    }`}
+    aria-hidden="true"
+  />
+);
+
+import { memo } from 'react';
+
+/* ── Memoised card wrapper — avoids re-render of off-screen cards on search/filter ── */
+const MemoCard = memo(function MemoCard({ mockup, onRequestDesign, index, isFirst, isFeatured, language, isDark, disableEffects, isMobile }) {
+  return (
+    <div
+      role="listitem"
+      style={{
+        /* Reserve card height on mobile so images don't cause CLS */
+        ...(isFeatured ? { gridColumn: 'span 2' } : {}),
+        /* content-visibility: auto defers paint for below-fold cards */
+        ...(isMobile && index >= 3 ? { contentVisibility: 'auto', containIntrinsicSize: '0 460px' } : {}),
+      }}
+    >
+      <PremiumMockupCardRound5
+        mockup={mockup}
+        onRequestDesign={onRequestDesign}
+        index={index}
+        isFirst={isFirst}
+        isFeatured={isFeatured}
+        language={language}
+        isDark={isDark}
+        disableEffects={disableEffects}
+      />
+    </div>
+  );
+});
+
+/* ── Grid content — same markup used for both mobile (plain) and desktop (motion) ── */
+const MockupsGridContent = ({ visibleMockups, shouldUseFeaturedLayout, handleRequestDesign, language, isDark, disableEffects, isMobile, hasMore, handleLoadMore }) => (
+  <>
+    <div
+      className="grid gap-6 mb-16"
+      style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', maxWidth: '100%' }}
+      role="list"
+      aria-label={language === 'ar' ? 'قائمة التصاميم' : 'Mockup designs list'}
+    >
+      <style>{`
+        @media (min-width: 768px) and (max-width: 1599px) {
+          #mockups-grid div[role="list"] { grid-template-columns: repeat(3, 1fr) !important; }
+        }
+        @media (min-width: 1600px) {
+          #mockups-grid div[role="list"] { grid-template-columns: repeat(4, 1fr) !important; }
+        }
+        @media (max-width: 767px) {
+          #mockups-grid div[role="list"] { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+      {visibleMockups.map((mockup, index) => {
+        const isFeatured = mockup.is_featured && shouldUseFeaturedLayout && index === 0;
+        return (
+          <MemoCard
+            key={mockup.id}
+            mockup={mockup}
+            onRequestDesign={handleRequestDesign}
+            index={index}
+            isFirst={index === 0}
+            isFeatured={isFeatured}
+            language={language}
+            isDark={isDark}
+            disableEffects={disableEffects}
+            isMobile={isMobile}
+          />
+        );
+      })}
+    </div>
+
+    {hasMore && (
+      <div className="flex justify-center">
+        <Button
+          onClick={handleLoadMore}
+          size="lg"
+          className={`px-10 h-12 font-semibold rounded-2xl transition-colors bg-gradient-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 ${language === 'ar' ? 'flex-row-reverse' : ''}`}
+        >
+          <span>{language === 'ar' ? 'تحميل المزيد' : 'Load More'}</span>
+          <ChevronDown className={`w-5 h-5 ${language === 'ar' ? 'mr-2' : 'ml-2'}`} aria-hidden="true" />
+        </Button>
+      </div>
+    )}
+  </>
+);
+
+/* ── Empty state — simple, no framer-motion ── */
+const MockupsEmptyState = ({ language, isDark, debouncedSearch, handleClearSearch, handleResetFilters }) => (
+  <div className="text-center py-24">
+    <div className="max-w-md mx-auto">
+      <div className={`w-24 h-24 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
+        isDark ? 'bg-brand-900/50 border border-brand-800' : 'bg-brand-50 border border-brand-200'
+      }`}>
+        <Search className="w-12 h-12 text-brand-500" />
+      </div>
+      <h3 className={`text-2xl font-bold mb-3 ${isDark ? 'text-white' : 'text-primary-deep'}`}>
+        {language === 'ar' ? 'لم يتم العثور على نتائج' : 'No designs found'}
+      </h3>
+      <p className="mb-6 text-text-muted">
+        {debouncedSearch
+          ? (language === 'ar' ? `لم نتمكن من العثور على تصاميم تطابق "${debouncedSearch}"` : `No designs matching "${debouncedSearch}"`)
+          : (language === 'ar' ? 'لا توجد تصاميم في هذه الفئة حالياً' : 'No designs in this category yet')}
+      </p>
+      <Button
+        onClick={handleResetFilters || handleClearSearch}
+        variant="outline"
+        className={`rounded-xl border-2 border-brand-500 text-brand-600 hover:bg-brand-50 ${language === 'ar' ? 'flex-row-reverse' : ''}`}
+      >
+        {language === 'ar' ? 'عرض جميع التصاميم' : 'Show All Designs'}
+      </Button>
+    </div>
+  </div>
+);

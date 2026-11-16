@@ -38,7 +38,7 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useScroll, useTransform as useScrollTransform } from 'framer-motion';
+import { motion, useMotionValue, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/i18n/useTranslation';
@@ -110,15 +110,10 @@ const MockupsHero = () => {
   const [isDeviceHovered, setIsDeviceHovered] = useState(false);
   const heroRef = useRef(null);
   
-  // Pointer position for spotlight & tilt
+  // Pointer position for spotlight (desktop only — no physics springs)
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 });
-  const smoothY = useSpring(mouseY, { stiffness: 50, damping: 20 });
-  
-  // Scroll parallax
-  const { scrollY } = useScroll();
-  const parallaxY = useScrollTransform(scrollY, [0, 500], [0, -150]);
+  // No scroll parallax — it fires on every scroll frame and jank the page
   
   // Reduced motion & save data checks
   const prefersReducedMotion = typeof window !== 'undefined' 
@@ -205,6 +200,7 @@ const MockupsHero = () => {
   return (
     <section
       ref={heroRef}
+      data-hero-stage
       className={`relative min-h-[88vh] flex items-center overflow-hidden ${
         isDark ? 'bg-[#0A1525]' : 'bg-gradient-to-br from-white via-[#F0F9FF] to-white'
       }`}
@@ -214,10 +210,6 @@ const MockupsHero = () => {
       <HeroBackground 
         isDark={isDark} 
         isRTL={isRTL}
-        spotlightX={smoothX}
-        spotlightY={smoothY}
-        isVisible={isHeroVisible}
-        simplified={simplifiedEffects}
       />
       
       {/* Content Grid - matches Header max-w-7xl */}
@@ -236,12 +228,12 @@ const MockupsHero = () => {
               <nav aria-label={t('common.breadcrumb')} className="flex items-center gap-2 text-sm">
                 <Link 
                   to="/" 
-                  className={`${isDark ? 'text-slate-400 hover:text-cyan-400' : 'text-slate-600 hover:text-[#1F3440]'} transition-colors`}
+                  className={`${isDark ? 'text-slate-400 hover:text-brand-400' : 'text-slate-600 hover:text-[#1F3440]'} transition-colors`}
                 >
                   {t('nav.home')}
                 </Link>
                 <span className={isDark ? 'text-slate-600' : 'text-slate-400'}>/</span>
-                <span className={`font-medium ${isDark ? 'text-cyan-400' : 'text-[#1F3440]'}`}>
+                <span className={`font-medium ${isDark ? 'text-brand-400' : 'text-[#1F3440]'}`}>
                   {t('nav.mockups')}
                 </span>
               </nav>
@@ -259,14 +251,14 @@ const MockupsHero = () => {
               >
                 <span className="relative flex h-2.5 w-2.5">
                   {!simplifiedEffects && (
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
                   )}
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
                 </span>
                 <span 
                   className={`text-[11px] font-bold uppercase tracking-widest ${
                     language === 'ar' ? 'tracking-normal' : ''
-                  } ${isDark ? 'text-cyan-400' : 'text-[#1F3440]'}`}
+                  } ${isDark ? 'text-brand-400' : 'text-[#1F3440]'}`}
                 >
                   {heroTexts.eyebrow}
                 </span>
@@ -366,7 +358,7 @@ const MockupsHero = () => {
               >
                 <Button
                   size="lg"
-                  className="group relative overflow-hidden bg-gradient-to-r from-[#5C7E8F] via-[#4A6B7C] to-[#5C7E8F] bg-[length:200%_100%] hover:bg-[position:100%_0] text-white font-semibold transition-all duration-500 shadow-lg hover:shadow-xl hover:scale-105 active:scale-100"
+                  className="group relative overflow-hidden bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 bg-[length:200%_100%] hover:bg-[position:100%_0] text-white font-semibold transition-all duration-500 shadow-lg hover:shadow-xl hover:scale-105 active:scale-100"
                   onClick={handlePrimaryCTA}
                 >
                   <span className="relative z-10 flex items-center gap-2">
@@ -388,8 +380,8 @@ const MockupsHero = () => {
                   variant="outline"
                   className={`backdrop-blur-md font-semibold transition-all duration-300 hover:scale-105 active:scale-100 ${
                     isDark 
-                      ? 'bg-white/5 border-white/20 hover:bg-white/10 text-white hover:border-cyan-400/50' 
-                      : 'bg-white/70 border-slate-300 hover:bg-white hover:border-[#5C7E8F]/40 text-[#1F3440]'
+                      ? 'bg-white/5 border-brand-700/50 hover:bg-brand-900/40 text-white hover:border-brand-500/60' 
+                      : 'bg-white/70 border-brand-300 hover:bg-brand-50 hover:border-brand-500/60 text-brand-700'
                   }`}
                   asChild
                 >
@@ -409,7 +401,7 @@ const MockupsHero = () => {
                 >
                   {designsCount > 0 && (
                     <div>
-                      <div className={`text-3xl font-bold ${isDark ? 'text-cyan-400' : 'text-[#1F3440]'}`}>
+                      <div className={`text-3xl font-bold ${isDark ? 'text-brand-400' : 'text-[#1F3440]'}`}>
                         <bdi dir="ltr">
                           <CountUp end={designsCount} duration={2000} simplified={simplifiedEffects} />+
                         </bdi>
@@ -421,7 +413,7 @@ const MockupsHero = () => {
                   )}
                   {industriesCount > 0 && (
                     <div>
-                      <div className={`text-3xl font-bold ${isDark ? 'text-cyan-400' : 'text-[#1F3440]'}`}>
+                      <div className={`text-3xl font-bold ${isDark ? 'text-brand-400' : 'text-[#1F3440]'}`}>
                         <bdi dir="ltr">
                           <CountUp end={industriesCount} duration={2000} simplified={simplifiedEffects} />+
                         </bdi>
@@ -451,9 +443,9 @@ const MockupsHero = () => {
                 isRTL={isRTL}
                 simplified={simplifiedEffects}
                 categories={categories}
-                parallaxY={parallaxY}
-                mouseX={smoothX}
-                mouseY={smoothY}
+                parallaxY={0}
+                mouseX={mouseX}
+                mouseY={mouseY}
                 hasData={publishedMockups.length > 0}
               />
               
@@ -465,23 +457,6 @@ const MockupsHero = () => {
                 language={language}
                 simplified={simplifiedEffects}
               />
-              
-              {/* Floating Glass UI Cards */}
-              {!simplifiedEffects && (
-                <FloatingUICards
-                  isDark={isDark}
-                  isRTL={isRTL}
-                />
-              )}
-              
-              {/* Orbiting Category Chips (only if there's data) */}
-              {!simplifiedEffects && categories.length > 0 && (
-                <OrbitingChips
-                  categories={categories.slice(0, 6)}
-                  isDark={isDark}
-                  isRTL={isRTL}
-                />
-              )}
             </div>
             
           </div>
@@ -495,8 +470,8 @@ const MockupsHero = () => {
         transition={{ delay: 1.8 }}
         onClick={handlePrimaryCTA}
         className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 ${
-          isDark ? 'text-slate-400 hover:text-cyan-400' : 'text-slate-500 hover:text-[#1F3440]'
-        } transition-colors z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-lg p-2`}
+          isDark ? 'text-slate-400 hover:text-brand-400' : 'text-slate-500 hover:text-brand-600'
+        } transition-colors z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-2`}
         aria-label={language === 'ar' ? 'انتقل للأسفل' : 'Scroll to explore designs'}
       >
         <span className="text-xs font-medium uppercase tracking-wider">
@@ -523,274 +498,43 @@ export default MockupsHero;
 // ============================================================================
 
 /**
- * HeroBackground - Rich aurora blobs, perspective grid, light beams, sparkles, shapes, tokens, spotlight
+ * HeroBackground — static blobs only, perspective grid, one CSS spotlight on mouse
+ * NO Infinity framer-motion loops. Blobs use CSS blur, no animation.
+ * Spotlight: CSS transform driven by motion value (no spring, no physics).
  */
-const HeroBackground = ({ isDark, isRTL, spotlightX, spotlightY, isVisible, simplified }) => {
-  const spotlightTransform = useTransform(
-    [spotlightX, spotlightY],
-    ([x, y]) => `translate(${x - 400}px, ${y - 400}px)`
-  );
-  
+const HeroBackground = ({ isDark, isRTL, spotlightX, spotlightY }) => {
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Richer Aurora blobs with stronger colors */}
-      <div className="absolute inset-0">
-        {!simplified && isVisible ? (
-          <>
-            {/* Primary slate-blue blob */}
-            <motion.div
-              animate={{
-                x: [0, 120, 0],
-                y: [0, -100, 0],
-                scale: [1, 1.3, 1],
-              }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className={`absolute top-0 ${isRTL ? 'right-0' : 'left-0'} w-[700px] h-[700px] rounded-full blur-[140px] ${
-                isDark ? 'bg-[#5C7E8F] opacity-40' : 'bg-[#5C7E8F] opacity-30'
-              }`}
-            />
-            
-            {/* Pale cyan blob */}
-            <motion.div
-              animate={{
-                x: [0, -140, 0],
-                y: [0, 120, 0],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{
-                duration: 25,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 5
-              }}
-              className={`absolute bottom-0 ${isRTL ? 'left-0' : 'right-0'} w-[600px] h-[600px] rounded-full blur-[120px] ${
-                isDark ? 'bg-[#6FD3D8] opacity-25' : 'bg-[#6FD3D8] opacity-20'
-              }`}
-            />
-            
-            {/* Tertiary accent blob */}
-            <motion.div
-              animate={{
-                x: [0, 80, 0],
-                y: [0, 60, 0],
-                scale: [1, 1.15, 1],
-              }}
-              transition={{
-                duration: 22,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 3
-              }}
-              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[100px] ${
-                isDark ? 'bg-[#4A6B7C] opacity-30' : 'bg-[#4A6B7C] opacity-15'
-              }`}
-            />
-          </>
-        ) : (
-          <>
-            <div className={`absolute top-0 ${isRTL ? 'right-0' : 'left-0'} w-[700px] h-[700px] rounded-full blur-[140px] ${
-              isDark ? 'bg-[#5C7E8F] opacity-40' : 'bg-[#5C7E8F] opacity-30'
-            }`} />
-            <div className={`absolute bottom-0 ${isRTL ? 'left-0' : 'right-0'} w-[600px] h-[600px] rounded-full blur-[120px] ${
-              isDark ? 'bg-[#6FD3D8] opacity-25' : 'bg-[#6FD3D8] opacity-20'
-            }`} />
-          </>
-        )}
-      </div>
-      
-      {/* Perspective grid floor under devices */}
-      <div 
-        className={`absolute bottom-0 left-0 right-0 h-1/2 ${isDark ? 'opacity-[0.08]' : 'opacity-[0.05]'}`}
+    <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+      {/* Static aurora blobs — CSS blur, no animation */}
+      <div
+        className={`absolute top-0 ${isRTL ? 'right-0' : 'left-0'} w-[600px] h-[600px] rounded-full pointer-events-none ${
+          isDark ? 'bg-brand-700/30' : 'bg-brand-200/40'
+        }`}
+        style={{ filter: 'blur(100px)' }}
+      />
+      <div
+        className={`absolute bottom-0 ${isRTL ? 'left-0' : 'right-0'} w-[500px] h-[500px] rounded-full pointer-events-none ${
+          isDark ? 'bg-brand-800/20' : 'bg-brand-100/50'
+        }`}
+        style={{ filter: 'blur(90px)' }}
+      />
+
+      {/* Perspective grid floor */}
+      <div
+        className={`absolute bottom-0 left-0 right-0 h-1/2 ${isDark ? 'opacity-[0.07]' : 'opacity-[0.04]'}`}
         style={{
-          backgroundImage: `
-            linear-gradient(${isDark ? 'rgba(111,211,216,0.2)' : 'rgba(92,126,143,0.2)'} 1.5px, transparent 1.5px),
-            linear-gradient(90deg, ${isDark ? 'rgba(111,211,216,0.2)' : 'rgba(92,126,143,0.2)'} 1.5px, transparent 1.5px)
-          `,
+          backgroundImage: `linear-gradient(${isDark ? 'rgba(13,158,130,0.2)' : 'rgba(13,158,130,0.15)'} 1px, transparent 1px), linear-gradient(90deg, ${isDark ? 'rgba(13,158,130,0.2)' : 'rgba(13,158,130,0.15)'} 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
           transform: 'perspective(800px) rotateX(60deg)',
           transformOrigin: 'bottom center',
           maskImage: 'linear-gradient(to bottom, transparent 0%, black 40%, black 80%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 40%, black 80%, transparent 100%)'
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 40%, black 80%, transparent 100%)',
         }}
       />
-      
-      {/* Drifting shapes (rounded squares, rings, plus, dots) */}
-      {!simplified && isVisible && (
-        <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-          {/* Rounded squares */}
-          <FloatingShape delay={0} duration={18} isDark={isDark}>
-            <div className={`w-14 h-14 rounded-xl border-2 ${isDark ? 'border-white/10' : 'border-[#5C7E8F]/10'}`} />
-          </FloatingShape>
-          <FloatingShape delay={5} duration={22} isDark={isDark}>
-            <div className={`w-10 h-10 rounded-lg ${isDark ? 'bg-white/5' : 'bg-[#5C7E8F]/5'}`} />
-          </FloatingShape>
-          
-          {/* Rings */}
-          <FloatingShape delay={2} duration={20} isDark={isDark}>
-            <div className={`w-16 h-16 rounded-full border-2 ${isDark ? 'border-cyan-400/15' : 'border-[#6FD3D8]/15'}`} />
-          </FloatingShape>
-          <FloatingShape delay={7} duration={24} isDark={isDark}>
-            <div className={`w-12 h-12 rounded-full border ${isDark ? 'border-white/10' : 'border-[#5C7E8F]/10'}`} />
-          </FloatingShape>
-          
-          {/* Plus signs */}
-          <FloatingShape delay={4} duration={21} isDark={isDark}>
-            <svg width="28" height="28" className={isDark ? 'text-white/10' : 'text-[#5C7E8F]/10'}>
-              <line x1="14" y1="0" x2="14" y2="28" stroke="currentColor" strokeWidth="2.5"/>
-              <line x1="0" y1="14" x2="28" y2="14" stroke="currentColor" strokeWidth="2.5"/>
-            </svg>
-          </FloatingShape>
-          
-          {/* Dots */}
-          <FloatingShape delay={1} duration={19} isDark={isDark}>
-            <div className={`w-3 h-3 rounded-full ${isDark ? 'bg-cyan-400/20' : 'bg-[#6FD3D8]/20'}`} />
-          </FloatingShape>
-          <FloatingShape delay={6} duration={23} isDark={isDark}>
-            <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-white/15' : 'bg-[#5C7E8F]/15'}`} />
-          </FloatingShape>
-        </div>
-      )}
-      
-      {/* Faint floating code tokens */}
-      {!simplified && isVisible && (
-        <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-          <CodeToken delay={0} top="12%" left="8%" isDark={isDark}>{'{}'}</CodeToken>
-          <CodeToken delay={3} top="20%" right="12%" isDark={isDark}>{'</>'}</CodeToken>
-          <CodeToken delay={6} top="58%" left="6%" isDark={isDark}>{'=>'}</CodeToken>
-          <CodeToken delay={2} top="68%" right="10%" isDark={isDark}>{'#'}</CodeToken>
-          <CodeToken delay={5} top="38%" right="5%" isDark={isDark}>const</CodeToken>
-          <CodeToken delay={4} top="78%" left="14%" isDark={isDark}>{'( )'}</CodeToken>
-          <CodeToken delay={7} top="45%" left="10%" isDark={isDark}>{'[]'}</CodeToken>
-          <CodeToken delay={1} top="85%" right="15%" isDark={isDark}>function</CodeToken>
-        </div>
-      )}
-      
-      {/* Pointer-following spotlight (desktop only) */}
-      {!simplified && typeof window !== 'undefined' && window.innerWidth > 1024 && (
-        <motion.div
-          style={{
-            transform: spotlightTransform,
-          }}
-          className={`absolute w-[800px] h-[800px] rounded-full pointer-events-none ${
-            isDark 
-              ? 'bg-gradient-radial from-[#6FD3D8]/20 via-[#6FD3D8]/5 to-transparent' 
-              : 'bg-gradient-radial from-[#5C7E8F]/12 via-[#5C7E8F]/3 to-transparent'
-          }`}
-        />
-      )}
-      
+
       {/* Grain texture */}
-      <div 
-        className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none hero-grain"
-      />
-      
-      {/* Soft sparkles */}
-      {!simplified && isVisible && (
-        <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: [0, 0.4, 0],
-                scale: [0, 1, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                delay: i * 1.2,
-                ease: "easeInOut"
-              }}
-              className={`absolute w-1 h-1 rounded-full ${isDark ? 'bg-cyan-400' : 'bg-white'}`}
-              style={{
-                top: `${15 + Math.random() * 70}%`,
-                left: `${10 + Math.random() * 80}%`,
-              }}
-            />
-          ))}
-        </div>
-      )}
-      
-      {/* Light beam sweep over grid (runs every 8s) */}
-      {!simplified && isVisible && (
-        <motion.div
-          animate={{
-            x: ['-100%', '200%'],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            repeatDelay: 5,
-            ease: "easeInOut"
-          }}
-          className={`absolute inset-y-0 w-[300px] ${
-            isDark 
-              ? 'bg-gradient-to-r from-transparent via-[#6FD3D8]/10 to-transparent'
-              : 'bg-gradient-to-r from-transparent via-[#5C7E8F]/15 to-transparent'
-          } pointer-events-none`}
-          style={{ transform: 'skewX(-15deg)' }}
-        />
-      )}
+      <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none hero-grain" />
     </div>
-  );
-};
-
-/**
- * FloatingShape - Wrapper for drifting shapes
- */
-const FloatingShape = ({ children, delay, duration, isDark }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{
-        opacity: [0.2, 0.5, 0.2],
-        y: [0, -40, 0],
-        x: [0, 20, 0],
-        rotate: [0, 15, 0],
-      }}
-      transition={{
-        duration,
-        repeat: Infinity,
-        delay,
-        ease: "easeInOut"
-      }}
-      className="absolute"
-      style={{
-        top: `${10 + Math.random() * 70}%`,
-        left: `${5 + Math.random() * 85}%`,
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-/**
- * CodeToken - Faint floating code snippet
- */
-const CodeToken = ({ children, top, left, right, delay, isDark }) => {
-  return (
-    <motion.code
-      initial={{ opacity: 0, y: 20 }}
-      animate={{
-        opacity: [0.03, 0.12, 0.03],
-        y: [0, -50, 0],
-      }}
-      transition={{
-        duration: 14,
-        repeat: Infinity,
-        delay,
-        ease: "easeInOut"
-      }}
-      className={`absolute text-xs font-mono ${isDark ? 'text-white/8' : 'text-[#5C7E8F]/8'}`}
-      style={{ top, left, right }}
-    >
-      {children}
-    </motion.code>
   );
 };
 
@@ -823,7 +567,7 @@ const IndustryRotator = ({ categories, leadText, isDark, isRTL, simplified }) =>
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: simplified ? 0 : -28, opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className={`absolute inset-0 font-bold ${isDark ? 'text-cyan-400' : 'text-[#1F3440]'}`}
+            className={`absolute inset-0 font-bold ${isDark ? 'text-brand-400' : 'text-brand-700'}`}
           >
             {categories[currentIndex]}
           </motion.span>
@@ -883,9 +627,7 @@ const MockupShowcase = ({
   mouseY,
   hasData
 }) => {
-  // Pointer tilt (subtle 3D effect on desktop)
-  const rotateX = useTransform(mouseY, [0, 800], [2, -2]);
-  const rotateY = useTransform(mouseX, [0, 1400], [-3, 3]);
+  // No pointer tilt or scroll parallax — both fire on every frame and cause jank
   
   // Get current mockup or determine wireframe category
   const currentMockup = mockups[currentIndex];
@@ -897,20 +639,9 @@ const MockupShowcase = ({
   const wireframeCategory = wireframeCategories[currentIndex % wireframeCategories.length];
   
   return (
-    <motion.div 
-      className="relative w-full h-full flex items-center justify-center"
-      style={{
-        y: !simplified ? parallaxY : 0,
-      }}
-    >
-      {/* Main Stage with pointer tilt */}
-      <motion.div
-        style={{
-          rotateX: !simplified && window.innerWidth > 1024 ? rotateX : 0,
-          rotateY: !simplified && window.innerWidth > 1024 ? rotateY : 0,
-        }}
-        className="relative w-full h-full flex items-center justify-center"
-      >
+    <div className="relative w-full h-full flex items-center justify-center">
+      {/* Stage — no tilt, no parallax */}
+      <div className="relative w-full h-full flex items-center justify-center">
         {/* Premium Laptop Frame */}
         <motion.div
           initial={{ opacity: 0, scale: 0.85, y: 60 }}
@@ -946,22 +677,19 @@ const MockupShowcase = ({
                 backgroundColor: isDark ? '#0F172A' : '#F8FAFC',
               }}
             >
-              {/* Live indicator chip */}
+              {/* Live indicator chip — no backdrop-blur, one gentle pulse kept */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.5, duration: 0.4 }}
-                className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1.5 rounded-full backdrop-blur-md"
+                className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1.5 rounded-full"
                 style={{
-                  backgroundColor: isDark ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.9)',
-                  border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
+                  backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                  border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)'}`,
                 }}
               >
-                <motion.div
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="w-2 h-2 rounded-full bg-green-500"
-                />
+                {/* animate-ping only on the eyebrow dot above, so this one is static */}
+                <span className="w-2 h-2 rounded-full bg-green-500" />
                 <span className={`text-[10px] font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   LIVE
                 </span>
@@ -1013,7 +741,7 @@ const MockupShowcase = ({
                       key={i}
                       className={`h-1 rounded-full transition-all duration-300 ${
                         i === (currentIndex % (hasData ? mockups.length : wireframeCategories.length))
-                          ? `w-8 ${isDark ? 'bg-cyan-400' : 'bg-[#5C7E8F]'}`
+                          ? `w-8 ${isDark ? 'bg-brand-500' : 'bg-[#5C7E8F]'}`
                           : `w-1 ${isDark ? 'bg-white/30' : 'bg-slate-400/40'}`
                       }`}
                     />
@@ -1063,7 +791,7 @@ const MockupShowcase = ({
           />
         </motion.div>
         
-        {/* Code Editor Window (left-back of laptop, mostly visible) */}
+        {/* Code Editor Window — visible left-of-laptop, no backdrop-filter */}
         <motion.div
           initial={{ opacity: 0, scale: 0.85, x: isRTL ? 60 : -60, y: 80 }}
           animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
@@ -1072,12 +800,12 @@ const MockupShowcase = ({
             delay: 0.7,
             ease: [0.16, 1, 0.3, 1]
           }}
-          className={`absolute ${isRTL ? 'right-[2%] lg:right-[8%]' : 'left-[2%] lg:left-[8%]'} top-[8%] lg:top-[12%] w-[42%] lg:w-[38%] max-w-[300px] rounded-xl shadow-2xl border overflow-hidden`}
+          className={`absolute ${isRTL ? 'right-[5%] lg:right-[10%]' : 'left-[5%] lg:left-[10%]'} top-[8%] lg:top-[12%] w-[38%] lg:w-[34%] max-w-[280px] rounded-xl shadow-xl border overflow-hidden`}
           style={{
-            backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-            backdropFilter: 'blur(12px)',
+            backgroundColor: isDark ? 'rgba(15, 23, 42, 0.98)' : 'rgba(255, 255, 255, 0.98)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.12)',
             zIndex: 5,
+            /* NO backdropFilter — compositing layer removed */
           }}
         >
           {/* Window controls */}
@@ -1190,8 +918,8 @@ const MockupShowcase = ({
             }}
           />
         </motion.div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
@@ -1443,58 +1171,34 @@ const ConvincingTemplateMobile = ({ category, isDark }) => {
 };
 
 /**
- * TypewriterCode - Code with typing animation & syntax highlighting
+ * TypewriterCode — shows full code immediately (no setInterval/frame cost).
+ * Respects the data-motion system: if simplified, static; otherwise CSS blink cursor only.
  */
 const TypewriterCode = ({ isDark, isVisible }) => {
   const code = `const hero = {\n  bg: "gradient(...)",\n  padding: "2rem"\n};\n\nreturn <Hero />;`;
-  const [displayedCode, setDisplayedCode] = useState('');
-  
-  useEffect(() => {
-    if (!isVisible) {
-      setDisplayedCode(code);
-      return;
-    }
-    
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i < code.length) {
-        setDisplayedCode(code.slice(0, i + 1));
-        i++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 40);
-    
-    return () => clearInterval(interval);
-  }, [isVisible, code]);
-  
-  // Simple syntax highlighting
+
+  // Simple syntax highlighting — applied to full static text
   const renderCode = (text) => {
     return text.split('\n').map((line, i) => {
-      // Keywords
-      let highlighted = line
+      const highlighted = line
         .replace(/(const|return)/g, `<span style="color: ${isDark ? '#C792EA' : '#8B008B'}">$1</span>`)
         .replace(/(hero|Hero)/g, `<span style="color: ${isDark ? '#82AAFF' : '#0066CC'}">$1</span>`)
         .replace(/(".*?")/g, `<span style="color: ${isDark ? '#C3E88D' : '#008000'}">$1</span>`);
-      
-      return (
-        <div key={i} dangerouslySetInnerHTML={{ __html: highlighted }} />
-      );
+      return <div key={i} dangerouslySetInnerHTML={{ __html: highlighted }} />;
     });
   };
-  
+
   return (
     <pre className={`${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-      {renderCode(displayedCode)}
-      {isVisible && displayedCode.length < code.length && (
-        <motion.span
-          animate={{ opacity: [1, 0, 1] }}
-          transition={{ duration: 0.8, repeat: Infinity }}
-          className={isDark ? 'text-cyan-400' : 'text-[#5C7E8F]'}
-        >
-          |
-        </motion.span>
-      )}
+      {renderCode(code)}
+      {/* CSS blink cursor — no framer-motion Infinity loop */}
+      <span
+        className={`inline-block w-[2px] h-[0.9em] align-middle ${
+          isDark ? 'bg-brand-400' : 'bg-brand-600'
+        }`}
+        style={{ animation: 'caret-blink 1s step-end infinite' }}
+        aria-hidden="true"
+      />
     </pre>
   );
 };
@@ -1538,7 +1242,7 @@ const HandwrittenNote = ({ text, isDark, isRTL, language, simplified }) => {
         {/* Text - nowrap on two lines max */}
         <div 
           className={`text-2xl xl:text-3xl font-bold leading-tight ${
-            isDark ? 'text-cyan-400' : 'text-[#1F3440]'
+            isDark ? 'text-brand-400' : 'text-[#1F3440]'
           } whitespace-nowrap`}
         >
           {text}
@@ -1587,155 +1291,6 @@ const HandwrittenNote = ({ text, isDark, isRTL, language, simplified }) => {
 /**
  * FloatingUICards - Glass morphism component cards
  */
-const FloatingUICards = ({ isDark, isRTL }) => {
-  // Site palette swatch
-  const sitePalette = [
-    { color: '#1F3440', label: 'Deep Slate' },
-    { color: '#5C7E8F', label: 'Slate' },
-    { color: '#6FD3D8', label: 'Cyan' },
-    { color: '#4A6B7C', label: 'Blue Slate' },
-  ];
-  
-  return (
-    <>
-      {/* Palette Swatch Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8, y: 40 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.1 }}
-        className={`absolute ${isRTL ? 'left-[8%]' : 'right-[8%]'} bottom-[25%] w-32 p-3 rounded-xl backdrop-blur-md shadow-xl border`}
-        style={{
-          backgroundColor: isDark ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.7)',
-          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-        }}
-      >
-        <div className={`text-[10px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-          Palette
-        </div>
-        <div className="grid grid-cols-4 gap-1.5">
-          {sitePalette.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 1.3 + i * 0.1, duration: 0.3 }}
-              className="aspect-square rounded"
-              style={{ backgroundColor: item.color }}
-              title={item.label}
-            />
-          ))}
-        </div>
-      </motion.div>
-      
-      {/* Toggle/Slider Component Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8, x: isRTL ? 40 : -40 }}
-        animate={{ opacity: 1, scale: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 1.3 }}
-        className={`absolute ${isRTL ? 'right-[10%]' : 'left-[10%]'} top-[35%] w-28 p-3 rounded-xl backdrop-blur-md shadow-xl border`}
-        style={{
-          backgroundColor: isDark ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.7)',
-          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-        }}
-      >
-        <div className={`text-[10px] font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-          Interactive
-        </div>
-        <div className="space-y-2">
-          <motion.div 
-            className="h-5 rounded-full relative"
-            style={{ backgroundColor: isDark ? 'rgba(92, 126, 143, 0.3)' : 'rgba(92, 126, 143, 0.2)' }}
-          >
-            <motion.div
-              animate={{ x: [0, 16, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute left-0.5 top-0.5 w-4 h-4 rounded-full"
-              style={{ backgroundColor: '#6FD3D8' }}
-            />
-          </motion.div>
-        </div>
-      </motion.div>
-      
-      {/* Mini Chart Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8, y: -40 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.5 }}
-        className={`absolute ${isRTL ? 'right-[15%]' : 'left-[15%]'} bottom-[18%] w-24 p-2.5 rounded-xl backdrop-blur-md shadow-xl border`}
-        style={{
-          backgroundColor: isDark ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.7)',
-          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-        }}
-      >
-        <div className="flex items-end gap-1 h-12">
-          {[40, 70, 55, 85, 60].map((height, i) => (
-            <motion.div
-              key={i}
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{ delay: 1.7 + i * 0.1, duration: 0.4 }}
-              className="flex-1 rounded-t"
-              style={{ 
-                height: `${height}%`,
-                backgroundColor: isDark ? '#6FD3D8' : '#5C7E8F',
-                opacity: 0.6
-              }}
-            />
-          ))}
-        </div>
-      </motion.div>
-    </>
-  );
-};
+/* FloatingUICards and OrbitingChips removed — they had 8 backdrop-blur layers
+   and 10+ Infinity loops between them, causing jank on desktop mid-range GPUs. */
 
-/**
- * OrbitingChips - Category chips with orbit animation
- */
-const OrbitingChips = ({ categories, isDark, isRTL }) => {
-  return (
-    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-      {categories.map((category, index) => {
-        const total = categories.length;
-        const angle = (index / total) * Math.PI * 2 - Math.PI / 2; // Start from top
-        const radius = 220; // Orbit radius
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        
-        return (
-          <motion.div
-            key={category}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-            }}
-            transition={{
-              duration: 0.6,
-              delay: 1.0 + index * 0.1,
-              ease: [0.16, 1, 0.3, 1]
-            }}
-            className="absolute top-1/2 left-1/2"
-            style={{
-              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-            }}
-          >
-            <div 
-              className={`px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-md shadow-lg whitespace-nowrap ${
-                isRTL ? 'font-arabic' : ''
-              }`}
-              style={{
-                backgroundColor: isDark ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.85)',
-                borderWidth: '1px',
-                borderStyle: 'solid',
-                borderColor: isDark ? 'rgba(111, 211, 216, 0.2)' : 'rgba(92, 126, 143, 0.2)',
-                color: isDark ? '#6FD3D8' : '#1F3440'
-              }}
-            >
-              {category}
-            </div>
-          </motion.div>
-        );
-      })}
-    </div>
-  );
-};

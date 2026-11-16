@@ -483,6 +483,67 @@ html[lang="ar"] * { letter-spacing: normal; }
   50%, 100% { opacity: 0; }
 }
 
+/* Gallery header fade-up — CSS animation used instead of framer-motion on desktop */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Phone hero (MockupsHeroMobile) ─────────────────────────────────────── */
+
+/* ONE animation: slow radial glow drift */
+@keyframes hero-glow-shift {
+  0%   { opacity: 0.35; transform: translate(0, 0) scale(1); }
+  40%  { opacity: 0.50; transform: translate(12px, -8px) scale(1.08); }
+  70%  { opacity: 0.40; transform: translate(-8px, 6px) scale(1.04); }
+  100% { opacity: 0.35; transform: translate(0, 0) scale(1); }
+}
+
+.hero-glow-anim {
+  animation: hero-glow-shift 14s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+.hero-glow-anim-paused {
+  animation: none;
+  opacity: 0.35;
+}
+
+/* Respect data-motion="calm" set on <html> by useMotionPreference */
+[data-motion="calm"] .hero-glow-anim {
+  animation: none;
+  opacity: 0.35;
+}
+
+/* Content fade-up on load — 400ms, solid fallback at 1.5s */
+@keyframes hero-content-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-content-fadein {
+  animation: hero-content-up 0.4s ease-out 0.05s both;
+}
+/* Fallback: if animation never fires (e.g. very old browser), show content */
+@supports not (animation-timeline: scroll()) {
+  .hero-content-fadein { opacity: 1; transform: none; }
+}
+/* Calm mode: no fade, content visible immediately */
+[data-motion="calm"] .hero-content-fadein {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* Gradient text — emerald, with solid color fallback */
+.hero-gradient-text {
+  background: linear-gradient(135deg, #0D9E82 0%, #26B59A 50%, #06796A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #0D9E82; /* solid fallback when bg-clip not supported */
+}
+/* Category chips scrollbar hide */
+[data-mockups-hero-mobile] .overflow-x-auto::-webkit-scrollbar { display: none; }
+
 /* Orbit ring rotation */
 @keyframes orbit-cw {
   from { transform: rotate(0deg); }

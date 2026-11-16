@@ -158,7 +158,7 @@ const MockupsFilterBarPremium = ({
       transition={{ duration: 0.4, delay: 0.2 }}
       className={`sticky top-[var(--header-height)] z-40 border-b transition-colors md:backdrop-blur-xl ${
         isDark 
-          ? 'bg-[#0A1525]/80 border-white/5' 
+          ? 'bg-brand-950/80 border-white/5' 
           : 'bg-white/80 border-slate-200/50'
       }`}
     >
@@ -169,7 +169,7 @@ const MockupsFilterBarPremium = ({
           <div 
             className={`absolute left-0 top-0 bottom-0 w-8 pointer-events-none z-10 ${
               isDark
-                ? 'bg-gradient-to-r from-[#0A1525]/80 to-transparent'
+                ? 'bg-gradient-to-r from-brand-950/80 to-transparent'
                 : 'bg-gradient-to-r from-white/80 to-transparent'
             }`}
           />
@@ -280,7 +280,7 @@ const MockupsFilterBarPremium = ({
           <div 
             className={`absolute right-0 top-0 bottom-0 w-8 pointer-events-none z-10 ${
               isDark
-                ? 'bg-gradient-to-l from-[#0A1525]/80 to-transparent'
+                ? 'bg-gradient-to-l from-brand-950/80 to-transparent'
                 : 'bg-gradient-to-l from-white/80 to-transparent'
             }`}
           />
