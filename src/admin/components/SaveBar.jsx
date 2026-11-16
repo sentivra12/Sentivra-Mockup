@@ -74,7 +74,7 @@ const SaveBar = ({
   };
 
   // For reduced motion, just fade in/out without sliding
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const animationVariants = prefersReducedMotion 
     ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
     : variants;

@@ -55,7 +55,7 @@ import BrandBackground from '@/components/ui/BrandBackground';
 import HeroVisual from '@/components/home/HeroVisual';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useServices } from '@/hooks/useContent';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 
 /* ─── helpers ───────────────────────────────────────────────────────────── */
 
@@ -231,8 +231,7 @@ const PremiumHero = ({ hero, trustBadges = [] }) => {
 
   /* ── Trust chips ────────────────────────────────────────────────────── */
   const trustChips = (trustBadges || []).slice(0, 4);
-  const getIcon = (name) =>
-    name && LucideIcons[name] ? LucideIcons[name] : LucideIcons.Shield;
+  const getTrustIcon = (name) => getIcon(name, getIcon('Shield'));
 
   /* ── Video autoplay ─────────────────────────────────────────────────── */
   useEffect(() => {
@@ -288,12 +287,20 @@ const PremiumHero = ({ hero, trustBadges = [] }) => {
     <section
       className="relative overflow-hidden flex flex-col"
       style={{
-        minHeight: 'clamp(640px, 88svh, 940px)',
+        minHeight: 'clamp(360px, 88svh, 940px)',
         /* Light theme: a soft mint veil over the gradient ensures AA text contrast */
         background: 'linear-gradient(135deg, #0D9E82 0%, #06796A 40%, #055A4F 70%, #02231E 100%)',
       }}
       aria-label="Hero section"
     >
+      {/* Mobile-specific height adjustment */}
+      <style>{`
+        @media (max-width: 767px) {
+          section[aria-label="Hero section"] {
+            min-height: clamp(480px, 60vh, 600px) !important;
+          }
+        }
+      `}</style>
       {/* ── Background layers ────────────────────────────────────────── */}
       <BrandBackground grain aurora={!lowPower} grid beam={!lowPower} />
 
@@ -522,7 +529,7 @@ const PremiumHero = ({ hero, trustBadges = [] }) => {
                   style={shouldReduceMotion ? { opacity: 1 } : {}}
                 >
                   {trustChips.map((chip) => {
-                    const ChipIcon = getIcon(chip.icon);
+                    const ChipIcon = getTrustIcon(chip.icon);
                     return (
                       <motion.div
                         key={chip.id}

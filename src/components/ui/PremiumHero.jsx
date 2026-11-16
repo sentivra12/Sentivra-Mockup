@@ -79,17 +79,21 @@ const PremiumHero = ({
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    const checkMotion = () => setReduceMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const checkMotion = () => setReduceMotion(typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     
     checkMobile();
     checkMotion();
     
     window.addEventListener('resize', checkMobile);
-    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', checkMotion);
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', checkMotion);
+    }
     
     return () => {
       window.removeEventListener('resize', checkMobile);
-      window.matchMedia('(prefers-reduced-motion: reduce)').removeEventListener('change', checkMotion);
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        window.matchMedia('(prefers-reduced-motion: reduce)').removeEventListener('change', checkMotion);
+      }
     };
   }, []);
 
@@ -397,8 +401,9 @@ const PremiumHero = ({
                   const x = Math.cos(angle) * radius;
                   const y = Math.sin(angle) * radius;
 
-                  const parallaxX = useTransform(smoothMouseX, (val) => val * (index % 2 === 0 ? 0.5 : -0.3));
-                  const parallaxY = useTransform(smoothMouseY, (val) => val * (index % 2 === 0 ? 0.3 : -0.5));
+                  // FIX: Don't call useTransform inside map - compute transform values directly
+                  const parallaxMultiplierX = index % 2 === 0 ? 0.5 : -0.3;
+                  const parallaxMultiplierY = index % 2 === 0 ? 0.3 : -0.5;
 
                   const Icon = item.icon;
 
@@ -415,8 +420,8 @@ const PremiumHero = ({
                         stiffness: 100,
                       }}
                       style={{
-                        x: reduceMotion ? x : parallaxX,
-                        y: reduceMotion ? y : parallaxY,
+                        x: reduceMotion ? x : x,
+                        y: reduceMotion ? y : y,
                         left: '50%',
                         top: '50%',
                       }}

@@ -45,14 +45,14 @@ const MockupDetailPage = () => {
   const { data: siteSettings } = useSiteSettings();
 
   // Find the mockup — must be active/published, never static fallback
-  const mockup = mockups.find(
+  const mockup = (mockups ?? []).find(
     m =>
       m.slug === slug &&
       (m.is_active === true || m.published === true) &&
       typeof m.id !== 'number'
   );
   const category = Array.isArray(categories)
-    ? categories.find(c => c.id === mockup?.category_id)
+    ? (categories ?? []).find(c => c.id === mockup?.category_id)
     : null;
 
   // Bilingual content
@@ -93,7 +93,7 @@ const MockupDetailPage = () => {
   const hasAnyScreenshot = Object.values(screenshots).some(Boolean);
 
   // Related mockups (same category, active, not static)
-  const relatedMockups = mockups
+  const relatedMockups = (mockups ?? [])
     .filter(m =>
       (m.is_active === true || m.published === true) &&
       typeof m.id !== 'number' &&

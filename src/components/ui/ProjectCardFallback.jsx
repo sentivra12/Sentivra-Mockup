@@ -1,5 +1,5 @@
 import React from 'react';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 
 /**
  * ProjectCardFallback - Designed fallback visual for missing project covers
@@ -29,7 +29,7 @@ const ProjectCardFallback = ({
   className = '' 
 }) => {
   // Get icon component
-  const Icon = LucideIcons[icon] || LucideIcons.Folder;
+  const Icon = getIcon(icon, getIcon('Folder'));
 
   // Category-based gradient colors
   const gradientMap = {
@@ -137,7 +137,7 @@ export const ProjectCardFallbackLogo = ({
   icon = 'Code',
   className = '' 
 }) => {
-  const Icon = LucideIcons[icon] || LucideIcons.Folder;
+  const Icon = getIcon(icon, getIcon('Folder'));
 
   return (
     <div className={`relative w-full aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-800 dark:to-gray-900 ${className}`}>

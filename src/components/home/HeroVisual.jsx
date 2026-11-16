@@ -36,7 +36,8 @@ import React, {
   useState, useEffect, useRef, useCallback, useMemo,
 } from 'react';
 import { useReducedMotion } from '@/hooks/useMotionPreference';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
+import { BarChart2, MessageSquare } from 'lucide-react';
 import { SPMark } from '@/components/ui/Logo';
 import Sparkle from '@/components/ui/Sparkle';
 
@@ -291,7 +292,7 @@ const GlassCore = ({ size = 88, animate }) => (
 
 /* ─── Service orbit node ─────────────────────────────────────────────────── */
 const ServiceNode = ({ node, hovered, onHover, animate }) => {
-  const Icon = LucideIcons[node.icon] || LucideIcons.Cpu;
+  const Icon = getIcon(node.icon, getIcon('Cpu'));
   const hi   = hovered === node.id;
   return (
     <div
@@ -427,7 +428,7 @@ const DashboardCard = ({ animate }) => {
       {/* Header row */}
       <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:7 }}>
         <div style={{ display:'flex',alignItems:'center',gap:4 }}>
-          <LucideIcons.BarChart2 size={11} style={{ color:'#55C8B1' }} />
+          <BarChart2 size={11} style={{ color:'#55C8B1' }} />
           <span style={{ fontSize:9,fontWeight:700,color:'#B2F0E0',textTransform:'uppercase',letterSpacing:'0.08em' }}>Analytics</span>
         </div>
         {/* Live chip — corner-only, tight */}
@@ -471,7 +472,7 @@ const ChatCard = ({ animate }) => (
     {/* Header */}
     <div style={{ display:'flex',alignItems:'center',gap:6,marginBottom:8 }}>
       <div style={{ width:20,height:20,borderRadius:7,background:'rgba(13,158,130,0.30)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
-        <LucideIcons.MessageSquare size={11} style={{ color:'#55C8B1' }} />
+        <MessageSquare size={11} style={{ color:'#55C8B1' }} />
       </div>
       <span style={{ fontSize:10,fontWeight:700,color:'#B2F0E0',letterSpacing:'0.03em' }}>AI Assistant</span>
       <span style={{ marginLeft:'auto',width:6,height:6,borderRadius:'50%',background:'#26B59A',

@@ -45,7 +45,7 @@ const MockupsPage = () => {
   ];
 
   // Filter mockups based on category and search
-  const filteredMockups = mockups.filter((mockup) => {
+  const filteredMockups = (mockups ?? []).filter((mockup) => {
     const matchesCategory = activeCategory === 'all' || mockup.category === activeCategory;
     const matchesSearch = searchQuery === '' || 
       mockup.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

@@ -60,7 +60,7 @@ const MockupsPagePremium = () => {
   
   // Filter mockups
   const filteredMockups = useMemo(() => {
-    return mockups.filter((mockup) => {
+    return (mockups ?? []).filter((mockup) => {
       // Published/active only
       if (!mockup.published && !mockup.is_active) return false;
       

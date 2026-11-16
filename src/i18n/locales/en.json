@@ -364,6 +364,20 @@
       "button": "Our Journey"
     }
   },
+  "errors": {
+    "boundary": {
+      "title": "Something went wrong",
+      "description": "The page encountered an error and couldn't be displayed",
+      "reload": "Reload Page",
+      "home": "Go Home"
+    },
+    "route": {
+      "title": "This section encountered an error",
+      "description": "Try reloading this section",
+      "tryAgain": "Try Again",
+      "home": "Go Home"
+    }
+  },
   "contact": {
     "meta": {
       "title": "Contact Us - Sentivra",

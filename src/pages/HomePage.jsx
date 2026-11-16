@@ -26,7 +26,6 @@ import PageTransition from '@/components/PageTransition';
 import TrustedBySection from '@/components/sections/TrustedBySection';
 import OurImpactSection from '@/components/sections/OurImpactSection';
 import { LoadingState, ErrorState } from '@/components/ui/EmptyState';
-import * as LucideIcons from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import { SEO, useSEO } from '@/components/SEO';
 import '../index.css';
@@ -47,11 +46,7 @@ const HomePage = () => {
   const { data: processSteps = [], isLoading: processLoading } = useProcessSteps();
   const { data: whyChooseUs = [], isLoading: whyLoading } = useWhyChooseUs();
 
-  // Helper function to get icon component
-  const getIcon = (iconName) => {
-    const Icon = LucideIcons[iconName];
-    return Icon || LucideIcons.Box;
-  };
+
 
   useEffect(() => {
     if (location.hash) {

@@ -67,7 +67,7 @@ const AboutPage = () => {
 
   // Build country list text from actual data
   // Filter out countries without valid names
-  const validCountries = countries.filter(c => {
+  const validCountries = (countries ?? []).filter(c => {
     const name = language === 'ar' ? (c.name_ar || c.name) : (c.name_en || c.name);
     return name && name.trim() !== '';
   });
@@ -296,7 +296,7 @@ const AboutPage = () => {
 
           {/* Values Cards - Desktop Grid */}
           <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
+            {(values ?? []).map((value, index) => (
               <ValueCard 
                 key={value.id} 
                 value={value} 
@@ -308,7 +308,7 @@ const AboutPage = () => {
 
           {/* Values Cards - Mobile Compact */}
           <div className="md:hidden grid grid-cols-2 gap-8">
-            {values.map((value, index) => (
+            {(values ?? []).map((value, index) => (
               <ValueCard 
                 key={value.id} 
                 value={value} 

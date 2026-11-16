@@ -750,3 +750,26 @@ html[data-motion="calm"] .underline-draw {
   flex-shrink: 0;
   color: var(--color-primary);
 }
+
+/* ─── Mobile typography fixes for WCAG compliance ─────────────────────────── */
+@media (max-width: 767px) {
+  /* Ensure minimum 14px font size on mobile for better readability */
+  body {
+    font-size: clamp(14px, 4vw, 16px);
+  }
+  
+  /* Service and mockup card text */
+  .text-sm {
+    font-size: clamp(14px, 3.5vw, 14px) !important;
+  }
+  
+  /* Category pills and small UI elements */
+  .text-xs {
+    font-size: clamp(12px, 3vw, 12px) !important;
+  }
+  
+  /* Button text */
+  button, .btn {
+    font-size: clamp(14px, 3.8vw, 16px) !important;
+  }
+}

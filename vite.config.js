@@ -210,7 +210,7 @@ export default defineConfig({
 		},
 	},
 	build: {
-		sourcemap: true, // Enable sourcemaps for debugging
+		sourcemap: 'hidden', // Generate sourcemaps but don't expose them to visitors
 		rollupOptions: {
 			external: [
 				'@babel/parser',

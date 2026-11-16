@@ -40,10 +40,10 @@ const ProjectDetailPage = () => {
   const { data: categories = [] } = useProjectCategories();
 
   // Find the project
-  const project = projects.find(p => p.slug === slug && p.is_active);
+  const project = (projects ?? []).find(p => p.slug === slug && p.is_active);
   
   // Get category info
-  const category = categories.find(cat => cat.id === project?.category_id);
+  const category = (categories ?? []).find(cat => cat.id === project?.category_id);
 
   // Parse tech stack
   const parseTechStack = (techData) => {
@@ -117,7 +117,7 @@ const ProjectDetailPage = () => {
   const categoryName = isRTL ? category?.name_ar : category?.name_en;
 
   // Related projects (same category, excluding current)
-  const relatedProjects = projects
+  const relatedProjects = (projects ?? [])
     .filter(p => p.is_active && p.category_id === project.category_id && p.slug !== slug)
     .slice(0, 3);
 

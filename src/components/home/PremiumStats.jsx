@@ -13,14 +13,14 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import AnimatedCounter from '../AnimatedCounter';
 import { useTranslation } from '../../i18n/useTranslation';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 
 const PremiumStatCard = ({ stat, index }) => {
   const cardRef = useRef(null);
   const isInView = useInView(cardRef, { once: true, margin: "-100px" });
 
   // Resolve icon name to component
-  const IconComponent = stat.icon && LucideIcons[stat.icon] ? LucideIcons[stat.icon] : null;
+  const IconComponent = getIcon(stat.icon);
 
   return (
     <motion.div

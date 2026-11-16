@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 
 /**
  * Enhanced Service Card with CSS-only mini visuals
@@ -223,31 +223,31 @@ const getServiceIcon = (slug, title) => {
   const normalized = `${slug} ${title}`.toLowerCase();
   
   if (normalized.includes('web-development') && !normalized.includes('application')) {
-    return LucideIcons.Globe; // Web Development
+    return getIcon('Globe'); // Web Development
   }
   if (normalized.includes('web') && normalized.includes('application')) {
-    return LucideIcons.Layout; // Web Application Development
+    return getIcon('Layout'); // Web Application Development
   }
   if (normalized.includes('mobile') && !normalized.includes('application-development')) {
-    return LucideIcons.Smartphone; // Mobile Applications
+    return getIcon('Smartphone'); // Mobile Applications
   }
   if (normalized.includes('mobile') && normalized.includes('application-development')) {
-    return LucideIcons.TabletSmartphone; // Mobile Application Development
+    return getIcon('TabletSmartphone'); // Mobile Application Development
   }
   if (normalized.includes('erp')) {
-    return LucideIcons.PackageSearch;
+    return getIcon('PackageSearch');
   }
   if (normalized.includes('crm')) {
-    return LucideIcons.Users;
+    return getIcon('Users');
   }
   if (normalized.includes('data') || normalized.includes('analys') || normalized.includes('intelligence')) {
-    return LucideIcons.BarChart3;
+    return getIcon('BarChart3');
   }
   if (normalized.includes('ai') || normalized.includes('chatbot')) {
-    return LucideIcons.Bot;
+    return getIcon('Bot');
   }
   
-  return LucideIcons.Box;
+  return getIcon('Box');
 };
 
 const EnhancedServiceCard = ({ service, delay = 0, featured = false, language = 'en' }) => {

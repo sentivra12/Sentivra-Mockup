@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
-import { Mail, Phone, MessageCircle, MapPin } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import { Mail, Phone, MessageCircle, MapPin, CheckCircle, Users, Award, Clock, Search } from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 import { 
   useServices, 
   useFAQs, 
@@ -43,11 +43,7 @@ const ServicesPage = () => {
   const { data: pageContent = [] } = useAllPageContent('services');
   const { data: siteSettings } = useSiteSettings();
 
-  // Helper function to get icon component
-  const getIcon = (iconName) => {
-    const Icon = LucideIcons[iconName];
-    return Icon || LucideIcons.Box;
-  };
+
 
   // Get page content sections
   const heroContent = pageContent.find(c => c.section_key === 'hero') || {};
@@ -56,10 +52,10 @@ const ServicesPage = () => {
   const faqContent = pageContent.find(c => c.section_key === 'faq') || {};
 
   // Filter active services
-  const activeServices = services.filter(s => s.is_active);
+  const activeServices = (services ?? []).filter(s => s.is_active);
 
   // Count services per category
-  const categoriesWithCounts = categories.map(cat => ({
+  const categoriesWithCounts = (categories ?? []).map(cat => ({
     ...cat,
     count: activeServices.filter(s => s.category_id === cat.id).length,
   }));
@@ -89,10 +85,10 @@ const ServicesPage = () => {
 
   // Stats for Why Choose Us (temporary hardcoded until stats table is added)
   const stats = [
-    { value: 50, suffix: '+', icon: LucideIcons.CheckCircle, label: isRTL ? 'مشروع ناجح' : 'Successful Projects' },
-    { value: 98, suffix: '%', icon: LucideIcons.Users, label: isRTL ? 'رضا العملاء' : 'Client Satisfaction' },
-    { value: 5, suffix: '+', icon: LucideIcons.Award, label: isRTL ? 'سنوات الخبرة' : 'Years Experience' },
-    { value: 24, suffix: '/7', icon: LucideIcons.Clock, label: isRTL ? 'دعم مستمر' : 'Ongoing Support' },
+    { value: 50, suffix: '+', icon: CheckCircle, label: isRTL ? 'مشروع ناجح' : 'Successful Projects' },
+    { value: 98, suffix: '%', icon: Users, label: isRTL ? 'رضا العملاء' : 'Client Satisfaction' },
+    { value: 5, suffix: '+', icon: Award, label: isRTL ? 'سنوات الخبرة' : 'Years Experience' },
+    { value: 24, suffix: '/7', icon: Clock, label: isRTL ? 'دعم مستمر' : 'Ongoing Support' },
   ];
 
   // Handle category change with URL sync
@@ -222,7 +218,7 @@ const ServicesPage = () => {
                     className="text-center py-20"
                   >
                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-frost-soft mb-6">
-                      <LucideIcons.Search className="w-10 h-10 text-text-muted" />
+                      <Search className="w-10 h-10 text-text-muted" />
                     </div>
                     <h3 className="text-2xl font-bold text-primary-deep mb-2">
                       {isRTL ? 'لا توجد خدمات' : 'No Services Found'}

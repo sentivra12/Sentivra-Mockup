@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
+import { Layers, ArrowRight } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { useMockups, useFAQs, useMockupCategories } from '@/hooks/useContent';
 import { useTranslation } from '@/i18n/useTranslation';
 import { SEO, useSEO } from '@/components/SEO';
@@ -15,8 +17,6 @@ import FAQAccordion from '@/components/ui/FAQAccordion';
 import SectionHeader from '@/components/ui/SectionHeader';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
 import Container from '@/components/ui/Container';
 import Section from '@/components/ui/Section';
 
@@ -40,17 +40,17 @@ const MockupsPage = () => {
     { 
       id: 'all', 
       label: language === 'ar' ? 'جميع التصاميم' : 'All Mockups', 
-      icon: LucideIcons.Layers 
+      icon: Layers 
     },
-    ...categoriesData.map(cat => ({
+    ...(categoriesData ?? []).map(cat => ({
       id: cat.id,
       label: language === 'ar' ? cat.name_ar : cat.name_en,
-      icon: LucideIcons[cat.icon] || LucideIcons.Layers
+      icon: LucideIcons[cat.icon] || Layers
     }))
   ];
 
   // Filter mockups based on category and search
-  const filteredMockups = mockups.filter((mockup) => {
+  const filteredMockups = (mockups ?? []).filter((mockup) => {
     const matchesCategory = activeCategory === 'all' || mockup.category_id === activeCategory;
     const matchesSearch = searchQuery === '' || 
       (mockup.title_en && mockup.title_en.toLowerCase().includes(searchQuery.toLowerCase())) ||

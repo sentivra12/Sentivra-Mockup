@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 
 /**
  * FloatingCategoryChip - Orbiting glass chip with category icon + name
@@ -15,7 +15,7 @@ const FloatingCategoryChip = ({
   if (!category) return null;
 
   // Get icon component
-  const IconComponent = LucideIcons[category.icon] || LucideIcons.LayoutGrid;
+  const IconComponent = getIcon(category.icon, getIcon('LayoutGrid'));
 
   // Calculate position in circle (evenly distributed)
   const angle = (360 / total) * index;

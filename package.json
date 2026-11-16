@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "node scripts/validate-translations.cjs && node tools/generate-llms.js && npx vite build",
     "preview": "vite preview",
+    "lint": "eslint src --ext .js,.jsx",
+    "lint:fix": "eslint src --ext .js,.jsx --fix",
     "validate-translations": "node scripts/validate-translations.cjs",
     "check:schema": "node scripts/check-schema.mjs",
     "test:rls": "node scripts/rls-test.mjs",

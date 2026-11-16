@@ -21,7 +21,7 @@ import { useTranslation } from '@/i18n/useTranslation';
 const PremiumCTA = ({ className = '' }) => {
   const { t, language } = useTranslation();
   const isRTL = language === 'ar';
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   
   const { data: siteSettings } = useSiteSettings();
   const { data: mockups = [] } = useMockups();

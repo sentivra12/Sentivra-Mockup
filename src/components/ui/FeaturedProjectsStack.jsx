@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 import { useTranslation } from '@/i18n/useTranslation';
 
 /**
@@ -35,17 +35,21 @@ const FeaturedProjectsStack = ({ projects = [], className = '' }) => {
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    const checkMotion = () => setReduceMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const checkMotion = () => setReduceMotion(typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     
     checkMobile();
     checkMotion();
     
     window.addEventListener('resize', checkMobile);
-    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', checkMotion);
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', checkMotion);
+    }
     
     return () => {
       window.removeEventListener('resize', checkMobile);
-      window.matchMedia('(prefers-reduced-motion: reduce)').removeEventListener('change', checkMotion);
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        window.matchMedia('(prefers-reduced-motion: reduce)').removeEventListener('change', checkMotion);
+      }
     };
   }, []);
 
@@ -68,11 +72,7 @@ const FeaturedProjectsStack = ({ projects = [], className = '' }) => {
     return null;
   }
 
-  // Helper to get icon component
-  const getIcon = (iconName) => {
-    const Icon = LucideIcons[iconName];
-    return Icon || LucideIcons.Folder;
-  };
+
 
   // Helper to get category from project
   const getCategory = (project) => {
@@ -98,12 +98,9 @@ const FeaturedProjectsStack = ({ projects = [], className = '' }) => {
             const yOffset = index * 20; // Vertical spacing
             const xOffset = (index - 1) * 40; // Horizontal spacing
 
-            const parallaxX = useTransform(smoothMouseX, (val) => 
-              val * (index === 1 ? 1 : index === 0 ? 0.7 : 0.5)
-            );
-            const parallaxY = useTransform(smoothMouseY, (val) => 
-              val * (index === 1 ? 1 : index === 0 ? 0.5 : 0.7)
-            );
+            // FIX: Don't call useTransform inside map - compute transform values directly
+            const parallaxMultiplierX = index === 1 ? 1 : index === 0 ? 0.7 : 0.5;
+            const parallaxMultiplierY = index === 1 ? 1 : index === 0 ? 0.5 : 0.7;
 
             const Icon = getIcon(project.icon || 'Folder');
 
@@ -119,8 +116,8 @@ const FeaturedProjectsStack = ({ projects = [], className = '' }) => {
                   stiffness: 100,
                 }}
                 style={{
-                  x: reduceMotion ? xOffset : parallaxX,
-                  y: reduceMotion ? yOffset : parallaxY,
+                  x: reduceMotion ? xOffset : xOffset,
+                  y: reduceMotion ? yOffset : yOffset,
                   rotate: reduceMotion ? rotation : rotation,
                   zIndex,
                 }}

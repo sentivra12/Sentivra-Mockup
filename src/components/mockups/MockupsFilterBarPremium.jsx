@@ -95,11 +95,6 @@ const MockupsFilterBarPremium = ({
     }
   }, [activeCategory, visibleCategories]);
   
-  // HIDE if only "All" exists - AFTER all hooks
-  if (visibleCategories.length === 1) {
-    return null;
-  }
-  
   // Sync URL with active category
   useEffect(() => {
     const urlCategory = searchParams.get('category');
@@ -132,6 +127,12 @@ const MockupsFilterBarPremium = ({
       }
     }
   }, [activeCategory]);
+  
+  // FIX: Move early return AFTER all hooks to comply with rules-of-hooks
+  // HIDE if only "All" exists
+  if (visibleCategories.length === 1) {
+    return null;
+  }
   
   const handleCategoryChange = (slug) => {
     onCategoryChange(slug);

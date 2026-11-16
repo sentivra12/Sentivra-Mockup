@@ -171,7 +171,7 @@ const ContactPage = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <FAQAccordion faqs={faqs.slice(0, Math.ceil(faqs.length / 2))} />
+              <FAQAccordion faqs={(faqs ?? []).slice(0, Math.ceil((faqs ?? []).length / 2))} />
             </motion.div>
 
             {/* Right Column */}
@@ -181,7 +181,7 @@ const ContactPage = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <FAQAccordion faqs={faqs.slice(Math.ceil(faqs.length / 2))} />
+              <FAQAccordion faqs={(faqs ?? []).slice(Math.ceil((faqs ?? []).length / 2))} />
             </motion.div>
           </div>
         </Container>

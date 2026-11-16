@@ -11,17 +11,14 @@ import { Link } from 'react-router-dom';
 import { GlassCard } from '../ui/GlassCard';
 import SectionHeader from '../ui/SectionHeader';
 import { useTranslation } from '../../i18n/useTranslation';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 
 const ServiceCard = ({ service, index, language }) => {
   const [hovered, setHovered] = useState(false);
   const shouldReduceMotion    = useReducedMotion();
   const isRTL = language === 'ar';
 
-  const IconComponent =
-    service.icon && LucideIcons[service.icon]
-      ? LucideIcons[service.icon]
-      : LucideIcons.Code;
+  const IconComponent = getIcon(service.icon, getIcon('Code'));
 
   const title = language === 'ar'
     ? (service.title_ar || service.title)

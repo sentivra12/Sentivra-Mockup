@@ -85,7 +85,7 @@ const MockupsPageRound5 = () => {
   
   // Staged reveal with IntersectionObserver
   useEffect(() => {
-    if (disableHeavyEffects) return;
+    if (disableHeavyEffects || typeof IntersectionObserver === 'undefined') return;
     
     const observer = new IntersectionObserver(
       (entries) => {
@@ -116,7 +116,7 @@ const MockupsPageRound5 = () => {
   
   // Filter mockups — only published/active rows, never static fallback data
   const filteredMockups = useMemo(() => {
-    return mockups.filter((mockup) => {
+    return (mockups ?? []).filter((mockup) => {
       // Guard: static fallback rows have numeric ids (1,2,3...) — skip them when real DB data is present
       // A proper DB row always has a UUID slug and no numeric id field
       if (typeof mockup.id === 'number') return false;
@@ -547,7 +547,11 @@ const MockupsPageRound5 = () => {
                     @media (max-width: 767px) {
                       #mockups-grid > div > div[role="list"] {
                         grid-template-columns: 1fr !important;
-                        justify-items: center;
+                        justify-items: stretch;
+                        max-width: 100%;
+                      }
+                      #mockups-grid > div > div[role="list"] > div {
+                        max-width: 100%;
                       }
                     }
                   `}</style>
@@ -662,7 +666,7 @@ const MockupsPageRound5 = () => {
       
       {/* ROUND 6: PREMIUM FINAL CTA WITH DEVICE STAGE */}
       <PremiumFinalCTA
-        mockups={mockups.filter(m => (m.is_active === true || m.published === true) && typeof m.id !== 'number')}
+        mockups={(mockups ?? []).filter(m => (m.is_active === true || m.published === true) && typeof m.id !== 'number')}
         categories={categories}
         siteSettings={siteSettings}
         language={language}

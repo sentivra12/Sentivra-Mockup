@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 import { useTranslation } from '@/i18n/useTranslation';
 
 /**
@@ -25,11 +25,7 @@ const CategoryFilter = ({ categories = [], activeCategory = 'all', onCategoryCha
   const isRTL = language === 'ar';
   const activeRef = useRef(null);
 
-  // Get icon component
-  const getIcon = (iconName) => {
-    const Icon = LucideIcons[iconName];
-    return Icon || LucideIcons.Layers;
-  };
+
 
   // Add "All" option
   const allOption = {

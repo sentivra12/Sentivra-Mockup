@@ -3,7 +3,7 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/i18n/useTranslation';
-import * as LucideIcons from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 
 /**
  * PremiumServiceCard - Enhanced service card with fallback visual generator
@@ -43,11 +43,7 @@ const PremiumServiceCard = ({ service, delay = 0, featured = false }) => {
   const spotlightX = useTransform(mouseX, (val) => `${val}px`);
   const spotlightY = useTransform(mouseY, (val) => `${val}px`);
 
-  // Get icon component
-  const getIcon = (iconName) => {
-    const Icon = LucideIcons[iconName];
-    return Icon || LucideIcons.Box;
-  };
+
 
   const Icon = getIcon(service.icon || 'Box');
   const isFeatured = featured || service.is_featured;

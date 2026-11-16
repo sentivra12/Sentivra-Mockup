@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Mail, Phone, MessageCircle, MapPin } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import { Search, Mail, Phone, MessageCircle, MapPin, ArrowRight } from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 import { 
   useProjects, 
   useTestimonials, 
@@ -67,14 +67,10 @@ const OurWorkPage = () => {
   const faqHeaderContent = pageContent.find(c => c.section_key === 'faq-header') || {};
   const ctaContent = pageContent.find(c => c.section_key === 'cta') || {};
 
-  // Helper to get icon component
-  const getIcon = (iconName) => {
-    const Icon = LucideIcons[iconName];
-    return Icon || LucideIcons.Folder;
-  };
+
 
   // Filter active projects
-  const activeProjects = projects.filter(p => p.is_active);
+  const activeProjects = (projects ?? []).filter(p => p.is_active);
 
   // Get featured projects for hero (max 3)
   const featuredProjects = activeProjects
@@ -87,7 +83,7 @@ const OurWorkPage = () => {
     }));
 
   // Count projects per category
-  const categoriesWithCounts = categories.map(cat => {
+  const categoriesWithCounts = (categories ?? []).map(cat => {
     const count = cat.slug === 'all' 
       ? activeProjects.length
       : activeProjects.filter(p => p.project_categories?.slug === cat.slug).length;
@@ -177,8 +173,8 @@ const OurWorkPage = () => {
 
   // Filter real testimonials (hide demo ones in production)
   const realTestimonials = import.meta.env.PROD 
-    ? testimonials.filter(t => !t.is_demo)
-    : testimonials;
+    ? (testimonials ?? []).filter(t => !t.is_demo)
+    : (testimonials ?? []);
 
   // Show loading state
   if (projectsLoading || categoriesLoading) {
@@ -443,7 +439,7 @@ const OurWorkPage = () => {
                     `}
                   >
                     {isRTL ? processContent.primary_button_label_ar : processContent.primary_button_label_en}
-                    <LucideIcons.ArrowRight className={`
+                    <ArrowRight className={`
                       h-5 w-5 ${isRTL ? 'mr-2 group-hover:-translate-x-1 rotate-180' : 'ml-2 group-hover:translate-x-1'} 
                       transition-transform
                     `} />

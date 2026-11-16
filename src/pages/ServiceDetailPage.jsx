@@ -2,8 +2,8 @@ import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Check, ExternalLink } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import { ArrowLeft, Check, ExternalLink, AlertCircle, ArrowRight } from 'lucide-react';
+import { getIcon } from '@/utils/iconMap';
 import { useServices, useServiceCategories } from '@/hooks/useContent';
 import { useTranslation } from '@/i18n/useTranslation';
 import { SEO } from '@/components/SEO';
@@ -37,16 +37,12 @@ const ServiceDetailPage = () => {
   const { data: categories = [] } = useServiceCategories();
 
   // Find the service
-  const service = services.find(s => s.slug === slug && s.is_active);
+  const service = (services ?? []).find(s => s.slug === slug && s.is_active);
   
   // Get category info
-  const category = categories.find(cat => cat.id === service?.category_id);
+  const category = (categories ?? []).find(cat => cat.id === service?.category_id);
 
-  // Get icon component
-  const getIcon = (iconName) => {
-    const Icon = LucideIcons[iconName];
-    return Icon || LucideIcons.Box;
-  };
+
 
   // Parse features array
   const parseFeatures = (featuresData) => {
@@ -88,7 +84,7 @@ const ServiceDetailPage = () => {
       <div className="min-h-screen flex items-center justify-center pt-16">
         <div className="text-center max-w-md px-4">
           <div className="w-20 h-20 rounded-full bg-frost-soft flex items-center justify-center mx-auto mb-6">
-            <LucideIcons.AlertCircle className="w-10 h-10 text-text-muted" />
+            <AlertCircle className="w-10 h-10 text-text-muted" />
           </div>
           <h1 className="text-3xl font-bold text-primary-deep mb-4">
             {isRTL ? 'الخدمة غير موجودة' : 'Service Not Found'}
@@ -120,7 +116,7 @@ const ServiceDetailPage = () => {
   const Icon = getIcon(service.icon);
 
   // Related services (same category, excluding current)
-  const relatedServices = services
+  const relatedServices = (services ?? [])
     .filter(s => s.is_active && s.category_id === service.category_id && s.slug !== slug)
     .slice(0, 3);
 
@@ -205,7 +201,7 @@ const ServiceDetailPage = () => {
                   className="bg-inverse-accent hover:bg-inverse-accent/90 text-inverse-bg font-semibold px-8 py-6 rounded-lg shadow-lg hover:shadow-xl transition-all"
                 >
                   {isRTL ? 'ابدأ مشروعك' : 'Start Your Project'}
-                  <LucideIcons.ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
+                  <ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
                 </Button>
               </Link>
             </motion.div>
@@ -402,7 +398,7 @@ const ServiceDetailPage = () => {
                   className="bg-inverse-accent hover:bg-inverse-accent/90 text-inverse-bg font-semibold px-8 py-6 rounded-lg shadow-lg hover:shadow-xl transition-all"
                 >
                   {isRTL ? 'تواصل معنا' : 'Contact Us'}
-                  <LucideIcons.ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
+                  <ArrowRight className={`w-5 h-5 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
                 </Button>
               </Link>
               <Link to="/our-work">

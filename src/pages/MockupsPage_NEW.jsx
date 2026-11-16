@@ -80,7 +80,7 @@ const MockupsPage = () => {
 
   // Filter and sort mockups
   const getFilteredMockups = () => {
-    let filtered = mockups.filter(m => m.is_active);
+    let filtered = (mockups ?? []).filter(m => m.is_active);
 
     // Category filter
     if (activeCategory !== 'all') {
@@ -195,9 +195,9 @@ const MockupsPage = () => {
             <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-4">
               {/* Category pills */}
               <div className={`flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                {categories.filter(c => c.is_active).map((category) => {
+                {(categories ?? []).filter(c => c.is_active).map((category) => {
                   const isActive = activeCategory === category.slug;
-                  const count = mockups.filter(m => 
+                  const count = (mockups ?? []).filter(m => 
                     m.is_active && (category.slug === 'all' || m.category_id === category.id)
                   ).length;
 
