@@ -92,6 +92,7 @@ const EMPTY_FORM = {
   long_description_en: '',
   long_description_ar: '',
   desktop_screenshot_url: '',
+  thumbnail_url: '',
   image_alt_en: '',
   image_alt_ar: '',
   tags: [],           // string[]
@@ -236,6 +237,7 @@ export default function AdminMockupsPage() {
       long_description_en:   mockup.long_description_en  || '',
       long_description_ar:   mockup.long_description_ar  || '',
       desktop_screenshot_url: mockup.desktop_screenshot_url || '',
+      thumbnail_url:         mockup.thumbnail_url || '',
       image_alt_en:          mockup.image_alt_en        || '',
       image_alt_ar:          mockup.image_alt_ar        || '',
       tags:    parseTags(mockup.tags),
@@ -313,15 +315,34 @@ export default function AdminMockupsPage() {
       toast({ title: 'Invalid file', description: 'Please upload an image (PNG, JPG, WebP…)', variant: 'destructive' });
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'File too large', description: 'Max 5 MB', variant: 'destructive' });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Maximum 10 MB. Please compress your image.', variant: 'destructive' });
       return;
     }
     setUploadingImg(true);
     try {
-      const url = await uploadImage.mutateAsync({ file });
-      patchForm({ desktop_screenshot_url: url });
-      toast({ title: 'Uploaded', description: 'Image uploaded successfully.' });
+      const { createOptimizedVersions } = await import('@/utils/imageResize');
+      
+      const { card, full, original } = await createOptimizedVersions(file);
+      
+      // Upload card version (thumbnail)
+      const cardFile = new File([card.blob], `card-${Date.now()}.webp`, { type: 'image/webp' });
+      const thumbnailUrl = await uploadImage.mutateAsync({ file: cardFile });
+      
+      // Upload full version  
+      const fullFile = new File([full.blob], `full-${Date.now()}.webp`, { type: 'image/webp' });
+      const fullUrl = await uploadImage.mutateAsync({ file: fullFile });
+      
+      patchForm({ 
+        desktop_screenshot_url: fullUrl,
+        thumbnail_url: thumbnailUrl
+      });
+      
+      const saved = Math.round((original.size - card.size - full.size) / 1024);
+      toast({ 
+        title: 'Uploaded & Optimized', 
+        description: `Card: ${Math.round(card.size/1024)}KB, Full: ${Math.round(full.size/1024)}KB (saved ${saved}KB)` 
+      });
     } catch (err) {
       toast({ title: 'Upload failed', description: err.message, variant: 'destructive' });
     } finally {

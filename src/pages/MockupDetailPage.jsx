@@ -84,11 +84,11 @@ const MockupDetailPage = () => {
     try { return JSON.parse(src); } catch { return []; }
   })();
 
-  // Screenshots per device
+  // Screenshots per device - prefer optimized versions
   const screenshots = mockup ? {
-    desktop: mockup.desktop_screenshot_url || mockup.cover_image_url || mockup.image_url,
-    tablet: mockup.tablet_screenshot_url || mockup.desktop_screenshot_url || mockup.cover_image_url,
-    mobile: mockup.mobile_screenshot_url || mockup.desktop_screenshot_url || mockup.cover_image_url,
+    desktop: mockup.desktop_screenshot_url || mockup.thumbnail_url || mockup.cover_image_url || mockup.image_url,
+    tablet: mockup.tablet_screenshot_url || mockup.thumbnail_url || mockup.desktop_screenshot_url || mockup.cover_image_url,
+    mobile: mockup.mobile_screenshot_url || mockup.thumbnail_url || mockup.desktop_screenshot_url || mockup.cover_image_url,
   } : {};
   const hasAnyScreenshot = Object.values(screenshots).some(Boolean);
 
@@ -257,7 +257,7 @@ const MockupDetailPage = () => {
                 className="relative"
               >
                 <div className="relative aspect-[4/3] flex items-center justify-center">
-                  <DeviceFrame type="laptop" mockup={mockup} className="w-full" animate={false} />
+                  <DeviceFrame type="laptop" mockup={mockup} className="w-full" animate={false} priority />
                 </div>
               </motion.div>
             )}

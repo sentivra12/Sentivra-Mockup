@@ -260,6 +260,8 @@ const MockupsPageRound5 = () => {
       <Helmet>
         <title>{seoData.title}</title>
         <meta name="description" content={seoData.description} />
+        <link rel="preconnect" href="https://njovqwbptfhfzbfmwjgk.supabase.co" />
+        <link rel="dns-prefetch" href="https://njovqwbptfhfzbfmwjgk.supabase.co" />
       </Helmet>
 
       {/* PREMIUM HERO (from previous rounds - don't touch) */}

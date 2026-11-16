@@ -1,11 +1,11 @@
 {
   "page": "/mockups",
-  "loadTime": "2835ms",
+  "loadTime": "2839ms",
   "vitals": {
-    "lcp": "5552ms",
+    "lcp": "5648ms",
     "lcpElement": "P",
-    "cls": "0.317",
-    "fcp": "1092ms"
+    "cls": "0.337",
+    "fcp": "1280ms"
   },
   "network": {
     "requests": 26,

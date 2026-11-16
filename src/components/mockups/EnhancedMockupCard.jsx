@@ -46,8 +46,8 @@ const EnhancedMockupCard = ({
     : (mockup.short_description_en || mockup.short_description);
   const categoryName = isRTL ? category?.name_ar : category?.name_en;
 
-  // Determine which image to show
-  const screenshot = mockup.desktop_screenshot_url || mockup.cover_image_url || mockup.image_url;
+  // Determine which image to show - prefer thumbnail (optimized) for card view
+  const screenshot = mockup.thumbnail_url || mockup.desktop_screenshot_url || mockup.cover_image_url || mockup.image_url;
   const hasImage = screenshot && !imageError;
   const hasFullPageScreenshot = !!mockup.full_page_screenshot_url;
 

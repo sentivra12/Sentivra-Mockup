@@ -18,7 +18,8 @@ const DeviceFrame = ({
   type = 'laptop', // 'laptop' | 'tablet' | 'mobile'
   mockup = null,
   className = '',
-  animate = true 
+  animate = true,
+  priority = false // fetchpriority="high" for hero images
 }) => {
   const { language } = useTranslation();
   const isRTL = language === 'ar';
@@ -26,18 +27,20 @@ const DeviceFrame = ({
   const [imageError, setImageError] = useState(false);
 
   // Determine which screenshot to use based on device type
+  // For hero/preview: use thumbnail (640px) for faster loading, full image for detail views
   const getScreenshot = () => {
     if (!mockup) return null;
     
     switch (type) {
       case 'laptop':
-        return mockup.desktop_screenshot_url || mockup.cover_image_url || mockup.image_url;
+        // Use thumbnail for initial load, desktop_screenshot for full quality
+        return mockup.desktop_screenshot_url || mockup.thumbnail_url || mockup.cover_image_url || mockup.image_url;
       case 'tablet':
-        return mockup.tablet_screenshot_url || mockup.desktop_screenshot_url || mockup.cover_image_url;
+        return mockup.tablet_screenshot_url || mockup.thumbnail_url || mockup.desktop_screenshot_url || mockup.cover_image_url;
       case 'mobile':
-        return mockup.mobile_screenshot_url || mockup.cover_image_url;
+        return mockup.mobile_screenshot_url || mockup.thumbnail_url || mockup.cover_image_url;
       default:
-        return mockup.cover_image_url;
+        return mockup.thumbnail_url || mockup.cover_image_url;
     }
   };
 
@@ -97,7 +100,8 @@ const DeviceFrame = ({
                 <img
                   src={screenshot}
                   alt={getAltText()}
-                  loading="lazy"
+                  loading={priority ? "eager" : "lazy"}
+                  fetchpriority={priority ? "high" : "auto"}
                   className={`w-full h-full object-cover transition-opacity duration-500 ${
                     imageLoaded ? 'opacity-100' : 'opacity-0'
                   }`}
@@ -146,7 +150,8 @@ const DeviceFrame = ({
                 <img
                   src={screenshot}
                   alt={getAltText()}
-                  loading="lazy"
+                  loading={priority ? "eager" : "lazy"}
+                  fetchpriority={priority ? "high" : "auto"}
                   className={`w-full h-full object-cover transition-opacity duration-500 ${
                     imageLoaded ? 'opacity-100' : 'opacity-0'
                   }`}
@@ -196,7 +201,8 @@ const DeviceFrame = ({
                 <img
                   src={screenshot}
                   alt={getAltText()}
-                  loading="lazy"
+                  loading={priority ? "eager" : "lazy"}
+                  fetchpriority={priority ? "high" : "auto"}
                   className={`w-full h-full object-cover transition-opacity duration-500 ${
                     imageLoaded ? 'opacity-100' : 'opacity-0'
                   }`}

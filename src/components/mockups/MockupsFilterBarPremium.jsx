@@ -156,7 +156,7 @@ const MockupsFilterBarPremium = ({
       initial={shouldReduceMotion ? {} : { opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className={`sticky top-[var(--header-height)] z-40 border-b backdrop-blur-xl transition-colors ${
+      className={`sticky top-[var(--header-height)] z-40 border-b transition-colors md:backdrop-blur-xl ${
         isDark 
           ? 'bg-[#0A1525]/80 border-white/5' 
           : 'bg-white/80 border-slate-200/50'
@@ -183,7 +183,7 @@ const MockupsFilterBarPremium = ({
           >
             {/* Glass background bar */}
             <div 
-              className={`relative rounded-2xl border backdrop-blur-md ${
+              className={`relative rounded-2xl border md:backdrop-blur-md ${
                 isDark
                   ? 'bg-white/5 border-white/10'
                   : 'bg-slate-50/80 border-slate-200/50'
