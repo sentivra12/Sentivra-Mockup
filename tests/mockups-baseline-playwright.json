@@ -1,0 +1,91 @@
+{
+  "page": "/mockups",
+  "loadTime": "2835ms",
+  "vitals": {
+    "lcp": "5552ms",
+    "lcpElement": "P",
+    "cls": "0.317",
+    "fcp": "1092ms"
+  },
+  "network": {
+    "requests": 26,
+    "totalBytes": "1905KB",
+    "byType": {
+      "js": "1KB",
+      "css": "0KB",
+      "images": "1679KB",
+      "fonts": "226KB",
+      "other": "0KB"
+    }
+  },
+  "images": {
+    "total": 2,
+    "totalBytes": "1679KB",
+    "list": [
+      {
+        "url": "1794593581889-768ebk.png",
+        "bytes": "1604KB",
+        "format": "png"
+      },
+      {
+        "url": "photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+        "bytes": "75KB",
+        "format": "jpeg"
+      }
+    ]
+  },
+  "imageElements": [
+    {
+      "src": "https://sgpmklrdglrgbvbxshrf.supabase.co/storage/v1/object/public/site-media/mockups/1794593581889-7",
+      "naturalWidth": 1080,
+      "naturalHeight": 1350,
+      "displayWidth": 376,
+      "displayHeight": 235,
+      "loading": "eager",
+      "fetchpriority": "high"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+      "naturalWidth": 800,
+      "naturalHeight": 600,
+      "displayWidth": 376,
+      "displayHeight": 235,
+      "loading": "lazy",
+      "fetchpriority": "auto"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=600&fit=crop",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "displayWidth": 376,
+      "displayHeight": 235,
+      "loading": "lazy",
+      "fetchpriority": "auto"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "displayWidth": 376,
+      "displayHeight": 235,
+      "loading": "lazy",
+      "fetchpriority": "auto"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+      "naturalWidth": 800,
+      "naturalHeight": 600,
+      "displayWidth": 342,
+      "displayHeight": 212,
+      "loading": "lazy",
+      "fetchpriority": "auto"
+    }
+  ],
+  "longTasks": {
+    "total": 0,
+    "over50ms": 0,
+    "longest": "0ms",
+    "list": []
+  },
+  "mockupCards": 4
+}

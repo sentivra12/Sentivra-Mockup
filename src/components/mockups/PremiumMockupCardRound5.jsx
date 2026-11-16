@@ -99,8 +99,9 @@ const PremiumMockupCardRound5 = ({
     ? (mockup.category?.name_ar || mockup.category_name_ar || null)
     : (mockup.category?.name_en || mockup.category_name_en || null);
   
-  // Image URL with fallback chain (cover > desktop screenshot > legacy image_url)
-  const imageUrl = mockup.cover_image_url || mockup.desktop_screenshot_url || mockup.image_url || null;
+  // Image URL with fallback chain
+  // Prefer thumbnail_url (optimized) for cards, fall back to full-size images
+  const imageUrl = mockup.thumbnail_url || mockup.cover_image_url || mockup.desktop_screenshot_url || mockup.image_url || null;
 
   // website_url takes priority over demo_url for the "visit live" action
   const liveUrl = mockup.website_url || mockup.live_url || mockup.demo_url || null;
@@ -350,11 +351,11 @@ const PremiumMockupCardRound5 = ({
               ref={imageRef}
               src={imageUrl}
               alt={title}
+              width="640"
+              height="400"
               loading={isFirst ? 'eager' : 'lazy'}
               fetchpriority={isFirst ? 'high' : 'auto'}
               decoding="async"
-              width="800"
-              height="500"
               onLoad={handleImageLoad}
               onError={() => setImageError(true)}
               className={`w-full h-full object-cover object-top transition-all duration-500 ${
@@ -518,4 +519,4 @@ if (typeof document !== 'undefined') {
   document.head.appendChild(styleSheet);
 }
 
-export default PremiumMockupCardRound5;
+export default React.memo(PremiumMockupCardRound5);

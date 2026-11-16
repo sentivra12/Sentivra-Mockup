@@ -163,7 +163,8 @@ export const useMockups = (category = null) => {
   return useQuery({
     queryKey: ['mockups', category],
     queryFn: () => api.fetchMockups(category),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 };
 

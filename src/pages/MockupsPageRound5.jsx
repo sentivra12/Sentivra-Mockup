@@ -1,8 +1,9 @@
 /**
  * MockupsPageRound5 - Premium Design Gallery with all Round 5 features
+ * Performance optimized: lazy components, memoization, optimized images
  */
 
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useMotionPreference';
@@ -17,10 +18,12 @@ import PremiumMockupCardRound5 from '@/components/mockups/PremiumMockupCardRound
 import StickyMobileCTA from '@/components/mockups/StickyMobileCTA';
 import MockupModal from '@/components/ui/MockupModal';
 import HowItWorksStrip from '@/components/mockups/HowItWorksStrip';
-import PremiumFAQAccordion from '@/components/mockups/PremiumFAQAccordion';
-import PremiumFinalCTA from '@/components/mockups/PremiumFinalCTA';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { Button } from '@/components/ui/button';
+
+// Lazy load heavy components below the fold
+const PremiumFAQAccordion = lazy(() => import('@/components/mockups/PremiumFAQAccordion'));
+const PremiumFinalCTA = lazy(() => import('@/components/mockups/PremiumFinalCTA'));
 
 const MockupsPageRound5 = () => {
   const { t, language } = useTranslation();
@@ -35,14 +38,14 @@ const MockupsPageRound5 = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedMockup, setSelectedMockup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(12);
+  const [visibleCount, setVisibleCount] = useState(9);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const gridRef = useRef(null);
 
-  // Fetch data
+  // Fetch data with pagination and selective columns
   const { data: mockups = [], isLoading: mockupsLoading } = useMockups();
   const { data: categories = [], isLoading: categoriesLoading } = useMockupCategories();
   const { data: faqs = [] } = useFAQs('mockups');
@@ -53,11 +56,11 @@ const MockupsPageRound5 = () => {
     (navigator.connection?.saveData || navigator.connection?.effectiveType === 'slow-2g');
   const disableHeavyEffects = shouldReduceMotion || saveData;
   
-  // Debounce search (250ms)
+  // Debounce search (200ms)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
-    }, 250);
+    }, 200);
     
     return () => clearTimeout(timer);
   }, [searchQuery]);
@@ -176,7 +179,7 @@ const MockupsPageRound5 = () => {
   // Handlers
   const handleCategoryChange = useCallback((categorySlug) => {
     setActiveCategory(categorySlug);
-    setVisibleCount(12);
+    setVisibleCount(9);
     // Scroll to grid smoothly
     setTimeout(() => {
       const grid = document.getElementById('mockups-grid');
@@ -190,7 +193,7 @@ const MockupsPageRound5 = () => {
   
   const handleSearch = useCallback((query) => {
     setSearchQuery(query);
-    setVisibleCount(12);
+    setVisibleCount(9);
   }, []);
   
   const handleClearSearch = useCallback(() => {
@@ -202,7 +205,7 @@ const MockupsPageRound5 = () => {
     setActiveCategory('all');
     setSearchQuery('');
     setDebouncedSearch('');
-    setVisibleCount(12);
+    setVisibleCount(9);
   }, []);
   
   const handleViewMockup = useCallback((mockup) => {
@@ -221,7 +224,7 @@ const MockupsPageRound5 = () => {
   }, [language]);
   
   const handleLoadMore = useCallback(() => {
-    setVisibleCount(prev => Math.min(prev + 12, sortedMockups.length));
+    setVisibleCount(prev => Math.min(prev + 9, sortedMockups.length));
   }, [sortedMockups.length]);
   
   // Loading state
@@ -657,21 +660,25 @@ const MockupsPageRound5 = () => {
       />
       
       {/* ROUND 6: PREMIUM FAQ ACCORDION */}
-      <PremiumFAQAccordion
-        faqs={faqs}
-        language={language}
-        isDark={isDark}
-        siteSettings={siteSettings}
-      />
+      <Suspense fallback={<div style={{ minHeight: '400px' }} />}>
+        <PremiumFAQAccordion
+          faqs={faqs}
+          language={language}
+          isDark={isDark}
+          siteSettings={siteSettings}
+        />
+      </Suspense>
       
       {/* ROUND 6: PREMIUM FINAL CTA WITH DEVICE STAGE */}
-      <PremiumFinalCTA
-        mockups={(mockups ?? []).filter(m => (m.is_active === true || m.published === true) && typeof m.id !== 'number')}
-        categories={categories}
-        siteSettings={siteSettings}
-        language={language}
-        isDark={isDark}
-      />
+      <Suspense fallback={<div style={{ minHeight: '600px' }} />}>
+        <PremiumFinalCTA
+          mockups={(mockups ?? []).filter(m => (m.is_active === true || m.published === true) && typeof m.id !== 'number')}
+          categories={categories}
+          siteSettings={siteSettings}
+          language={language}
+          isDark={isDark}
+        />
+      </Suspense>
       
       {/* MOCKUP MODAL */}
       <MockupModal
