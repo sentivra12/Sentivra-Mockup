@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Menu } from 'lucide-react';
 import { useTranslation } from '@/i18n/useTranslation';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import Logo from '@/components/ui/Logo';
 import { Button } from '@/components/ui/button';
+import { MobileMenu } from '@/components/MobileMenu';
 
 const Header = () => {
-  const [isScrolled, setIsScrolled]         = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const location   = useLocation();
+  const hamburgerRef = useRef(null);
+  const location = useLocation();
   const [activeHash, setActiveHash] = useState('');
   const { t, language } = useTranslation();
   const isRTL = language === 'ar';
@@ -33,31 +35,6 @@ const Header = () => {
   useEffect(() => {
     setActiveHash(location.hash);
   }, [location.hash]);
-
-  /* ── Body scroll-lock when mobile menu open ─────────────────────────── */
-  useEffect(() => {
-    const bar = window.innerWidth - document.documentElement.clientWidth;
-    if (isMobileMenuOpen) {
-      document.body.style.overflow    = 'hidden';
-      document.body.style.paddingRight = `${bar}px`;
-    } else {
-      document.body.style.overflow    = '';
-      document.body.style.paddingRight = '';
-    }
-    return () => {
-      document.body.style.overflow    = '';
-      document.body.style.paddingRight = '';
-    };
-  }, [isMobileMenuOpen]);
-
-  /* ── Esc closes menu ────────────────────────────────────────────────── */
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Escape' && isMobileMenuOpen) setIsMobileMenuOpen(false);
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [isMobileMenuOpen]);
 
   const navItems = [
     { name: t('nav.home'),     path: '/',        exact: true },
@@ -200,6 +177,7 @@ const Header = () => {
 
           {/* ── Mobile hamburger ────────────────────────────────────── */}
           <button
+            ref={hamburgerRef}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={[
               'md:hidden p-3 rounded-xl transition-colors',
@@ -212,108 +190,19 @@ const Header = () => {
             ].join(' ')}
             aria-label={isMobileMenuOpen ? t('common.closeMenu') : t('common.openMenu')}
             aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-menu"
+            aria-controls="mobile-menu-panel"
           >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <Menu size={24} />
           </button>
         </div>
       </div>
 
-      {/* ── Mobile Menu ─────────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="md:hidden fixed inset-0 bg-brand-900/90 backdrop-blur-md z-40"
-              onClick={() => setIsMobileMenuOpen(false)}
-              aria-hidden="true"
-            />
-
-            {/* Panel */}
-            <motion.div
-              id="mobile-menu"
-              initial={{ x: isRTL ? '-100%' : '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: isRTL ? '-100%' : '100%' }}
-              transition={{ type: 'tween', duration: 0.28 }}
-              className={[
-                'md:hidden fixed top-0 bottom-0 w-full max-w-sm',
-                'bg-white dark:bg-brand-950',
-                'z-50 shadow-xl overflow-y-auto',
-                isRTL ? 'left-0' : 'right-0',
-              ].join(' ')}
-              role="dialog"
-              aria-modal="true"
-              aria-label={t('common.mobileNavigation')}
-            >
-              {/* Panel header */}
-              <div className={`flex justify-between items-center p-5 border-b border-brand-100 dark:border-brand-800 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                <Link
-                  to="/"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Logo variant="full" size={32} />
-                </Link>
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 rounded-xl text-brand-700 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-brand-900/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                  aria-label={t('common.closeMenu')}
-                >
-                  <X size={22} />
-                </button>
-              </div>
-
-              {/* Nav links */}
-              <nav className="p-5 space-y-1" aria-label="Mobile navigation">
-                {navItems.map((item) => {
-                  const isActive = item.exact
-                    ? location.pathname === item.path
-                    : location.pathname.startsWith(item.path);
-                  return (
-                    <Link
-                      key={item.name}
-                      to={item.path}
-                      onClick={(e) => handleNavClick(e, item.path)}
-                      className={[
-                        'flex items-center px-4 py-3.5 rounded-xl text-base font-semibold transition-colors',
-                        isActive
-                          ? 'bg-brand-50 dark:bg-brand-900/40 text-brand-700 dark:text-brand-300'
-                          : 'text-brand-800 dark:text-brand-200 hover:bg-brand-50 dark:hover:bg-brand-900/30',
-                        isRTL ? 'flex-row-reverse' : '',
-                      ].join(' ')}
-                      aria-current={isActive ? 'page' : undefined}
-                    >
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </nav>
-
-              {/* Controls + CTA */}
-              <div className="p-5 border-t border-brand-100 dark:border-brand-800 space-y-4">
-                <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <span className="text-sm font-medium text-brand-700 dark:text-brand-300">{t('theme.title')}</span>
-                  <ThemeToggle />
-                </div>
-                <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <span className="text-sm font-medium text-brand-700 dark:text-brand-300">{t('language.title')}</span>
-                  <LanguageSwitcher variant="compact" />
-                </div>
-                <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block">
-                  <Button size="lg" className="w-full shadow-md">
-                    {t('nav.contactUs')}
-                  </Button>
-                </Link>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Portal-based mobile menu */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        hamburgerRef={hamburgerRef}
+      />
     </motion.header>
   );
 };

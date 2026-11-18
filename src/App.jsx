@@ -6,7 +6,7 @@ import HomePage from '@/pages/HomePage'; // Keep home eager for LCP
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import ScrollProgress from '@/components/ScrollProgress';
-import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import WhatsAppFloat from '@/components/common/WhatsAppFloat';
 import { SkipToContent } from '@/components/SkipToContent';
 import { useMotionPreference } from '@/hooks/useMotionPreference';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
@@ -135,7 +135,7 @@ function App() {
           </main>
           <Footer />
           <ScrollToTop />
-          <WhatsAppButton />
+          <WhatsAppFloat />
         </div>
       )}
 

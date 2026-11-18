@@ -14,7 +14,21 @@ import { ChevronUp } from 'lucide-react';
  */
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [liftUp, setLiftUp]       = useState(false);
+  const [liftUp, setLiftUp] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Detect mobile menu state
+  useEffect(() => {
+    const checkMenu = () => {
+      const menu = document.getElementById('mobile-menu-panel');
+      setIsMobileMenuOpen(!!menu);
+    };
+    
+    const observer = new MutationObserver(checkMenu);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -38,7 +52,7 @@ const ScrollToTop = () => {
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {isVisible && !isMobileMenuOpen && (
         <motion.button
           key="scroll-top"
           initial={{ opacity: 0, scale: 0.8 }}

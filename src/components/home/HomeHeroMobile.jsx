@@ -795,15 +795,6 @@ export default function HomeHeroMobile({ hero }) {
         paddingInlineStart:16, paddingInlineEnd:16,
         position:'relative', zIndex:10,
       }}>
-        {/* WhatsApp */}
-        <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noopener noreferrer"
-          aria-label="WhatsApp"
-          style={{ width:56, height:56, borderRadius:'50%', flexShrink:0,
-            background:'#FFFFFF', display:'flex', alignItems:'center',
-            justifyContent:'center', color:'#128C7E', textDecoration:'none' }}>
-          <WaIcon />
-        </a>
-
         {/* progress segments */}
         <div style={{ flex:1, display:'flex', gap:4, alignItems:'center', minWidth:0 }}>
           {slides.map((_, i) => {
