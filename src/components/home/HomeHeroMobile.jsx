@@ -21,6 +21,16 @@ import { useMotionPreference } from '@/hooks/useMotionPreference';
 import { useServices, useSiteSettings } from '@/hooks/useContent';
 import { getHeroSlideCopy } from './heroSlideCopy';
 
+/* ══════════════════════ TIMING CONSTANTS ════════════════════════════ */
+const AUTOPLAY_MS = 2000;
+const SLIDE_LEAVE_MS = 250;
+const SLIDE_ENTER_MS = 350;
+const STAGGER_KEYWORD_MS = 0;
+const STAGGER_HEADLINE_MS = 40;
+const STAGGER_DESC_MS = 80;
+const SPARKLE_MS = 480;
+const CALM_FADE_MS = 200;
+
 /* ══════════════════════ CSS injected once ═══════════════════════════ */
 const CSS = `
 /* Fonts: Cormorant Garamond (Latin display serif) + Aref Ruqaa (Arabic title) */
@@ -67,27 +77,27 @@ const CSS = `
   grid-row:1; grid-column:1;
   display:flex; flex-direction:column; justify-content:flex-end;
   opacity:0; pointer-events:none; visibility:hidden;
-  transition: opacity 450ms ease-out, transform 450ms ease-out;
+  transition: opacity var(--slide-leave-ms) ease-out, transform var(--slide-leave-ms) ease-out;
 }
 .hhm-slide.hhm-active {
   opacity:1; pointer-events:auto; z-index:1; visibility:visible;
-  transition: opacity 600ms cubic-bezier(.22,.61,.36,1), transform 600ms cubic-bezier(.22,.61,.36,1);
+  transition: opacity var(--slide-enter-ms) cubic-bezier(.22,.61,.36,1), transform var(--slide-enter-ms) cubic-bezier(.22,.61,.36,1);
 }
 .hhm-slide.hhm-leaving {
   opacity:0; transform:translateY(-12px); visibility:visible;
-  transition: opacity 450ms ease-out, transform 450ms ease-out;
+  transition: opacity var(--slide-leave-ms) ease-out, transform var(--slide-leave-ms) ease-out;
 }
-/* reduced-motion: keep 300ms opacity crossfade, no transforms */
+/* reduced-motion: keep calm fade, no transforms */
 [data-motion="calm"] .hhm-slide {
-  transition: opacity 300ms ease-out;
+  transition: opacity var(--calm-fade-ms) ease-out;
   transform:none;
 }
 [data-motion="calm"] .hhm-slide.hhm-active {
-  transition: opacity 300ms ease-out;
+  transition: opacity var(--calm-fade-ms) ease-out;
   transform:none;
 }
 [data-motion="calm"] .hhm-slide.hhm-leaving {
-  transition: opacity 300ms ease-out;
+  transition: opacity var(--calm-fade-ms) ease-out;
   transform:none;
 }
 
@@ -97,33 +107,31 @@ const CSS = `
 }
 .hhm-active .hhm-kw {
   opacity:1; transform:none;
-  transition: opacity 600ms cubic-bezier(.22,.61,.36,1), transform 600ms cubic-bezier(.22,.61,.36,1);
-  transition-delay: 0ms;
+  transition: opacity var(--slide-enter-ms) cubic-bezier(.22,.61,.36,1), transform var(--slide-enter-ms) cubic-bezier(.22,.61,.36,1);
+  transition-delay: var(--stagger-kw-ms);
 }
 .hhm-active .hhm-ttl {
   opacity:1; transform:none;
-  transition: opacity 600ms cubic-bezier(.22,.61,.36,1), transform 600ms cubic-bezier(.22,.61,.36,1);
-  transition-delay: 80ms;
+  transition: opacity var(--slide-enter-ms) cubic-bezier(.22,.61,.36,1), transform var(--slide-enter-ms) cubic-bezier(.22,.61,.36,1);
+  transition-delay: var(--stagger-hl-ms);
 }
 .hhm-active .hhm-dsc {
   opacity:1; transform:none;
-  transition: opacity 600ms cubic-bezier(.22,.61,.36,1), transform 600ms cubic-bezier(.22,.61,.36,1);
-  transition-delay: 160ms;
+  transition: opacity var(--slide-enter-ms) cubic-bezier(.22,.61,.36,1), transform var(--slide-enter-ms) cubic-bezier(.22,.61,.36,1);
+  transition-delay: var(--stagger-desc-ms);
 }
 [data-motion="calm"] .hhm-kw,
 [data-motion="calm"] .hhm-ttl,
-[data-motion="calm"] .hhm-dsc { transition: opacity 300ms ease-out; transform:none; }
+[data-motion="calm"] .hhm-dsc { transition: opacity var(--calm-fade-ms) ease-out; transform:none; }
 
-/* progress bar — per-slide duration */
-@keyframes hhm-prog-full { from{transform:scaleX(0)} to{transform:scaleX(1)} }
-@keyframes hhm-prog-calm { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+/* progress bar — per-slide duration from CSS variable */
+@keyframes hhm-prog { from{transform:scaleX(0)} to{transform:scaleX(1)} }
 .hhm-bar { transform-origin:left; transform:scaleX(0); }
-.hhm-bar.hhm-fill-full  { animation:hhm-prog-full 4.5s linear forwards; }
-.hhm-bar.hhm-fill-calm  { animation:hhm-prog-calm 6s linear forwards; }
+.hhm-bar.hhm-fill  { animation:hhm-prog var(--autoplay-ms) linear forwards; }
 .hhm-bar.hhm-pause { animation-play-state:paused; }
 .hhm-bar.hhm-done  { transform:scaleX(1); animation:none; }
 
-/* sparkle — full mode: scale+rotate on change; calm mode: opacity pulse 1→0.85 */
+/* sparkle — full mode: scale+rotate; calm mode: opacity pulse */
 @keyframes hhm-spk-a {
   0%  { transform:scale(1)    rotate(0deg); }
   50% { transform:scale(1.08) rotate(10deg); }
@@ -138,8 +146,8 @@ const CSS = `
   0%,100%{ opacity:1; }
   50%    { opacity:0.85; }
 }
-.hhm-spk-wrap[data-anim="a"] > svg { animation:hhm-spk-a .7s ease-out forwards; }
-.hhm-spk-wrap[data-anim="b"] > svg { animation:hhm-spk-b .7s ease-out forwards; }
+.hhm-spk-wrap[data-anim="a"] > svg { animation:hhm-spk-a var(--sparkle-ms) ease-out forwards; }
+.hhm-spk-wrap[data-anim="b"] > svg { animation:hhm-spk-b var(--sparkle-ms) ease-out forwards; }
 [data-motion="calm"] .hhm-spk-wrap > svg {
   animation: hhm-spk-pulse 4s ease-in-out infinite;
   transform:none;
@@ -154,32 +162,44 @@ const CSS = `
 .hhm-glow.hhm-paused { animation-play-state:paused; }
 [data-motion="calm"] .hhm-glow { animation:none; opacity:.36; transform:none; }
 
-/* particles — full mode: 3 depth layers drifting; calm mode: STATIC but VISIBLE */
-@keyframes hhm-far  {
+/* particles — full mode: 3 depth layers drifting with large motion; calm mode: gentle small drift */
+@keyframes hhm-far-full  {
   0%  {transform:translate3d(0,0,0)}
-  100%{transform:translate3d(10px,-20px,0)}
+  100%{transform:translate3d(14px,-32px,0)}
 }
-@keyframes hhm-mid  {
+@keyframes hhm-mid-full  {
   0%  {transform:translate3d(0,0,0)}
-  100%{transform:translate3d(14px,-28px,0)}
+  100%{transform:translate3d(18px,-38px,0)}
 }
-@keyframes hhm-near {
+@keyframes hhm-near-full {
   0%  {transform:translate3d(0,0,0)}
-  100%{transform:translate3d(-14px,28px,0)}
+  100%{transform:translate3d(-20px,40px,0)}
 }
-@keyframes hhm-twkl { 0%,100%{opacity:var(--ob)} 50%{opacity:calc(var(--ob)*1.8)} }
+@keyframes hhm-far-calm  {
+  0%  {transform:translate3d(0,0,0)}
+  100%{transform:translate3d(6px,-10px,0)}
+}
+@keyframes hhm-mid-calm  {
+  0%  {transform:translate3d(0,0,0)}
+  100%{transform:translate3d(8px,-12px,0)}
+}
+@keyframes hhm-near-calm {
+  0%  {transform:translate3d(0,0,0)}
+  100%{transform:translate3d(-10px,12px,0)}
+}
+@keyframes hhm-twkl { 0%,100%{opacity:var(--ob)} 50%{opacity:calc(var(--ob)*1.9)} }
 
-.hhm-p-far  { animation:hhm-far  26s ease-in-out infinite alternate; }
-.hhm-p-mid  { animation:hhm-mid  18s ease-in-out infinite alternate; }
-.hhm-p-near { animation:hhm-near 12s ease-in-out infinite alternate; }
+.hhm-p-far  { animation:hhm-far-full  26s ease-in-out infinite alternate; animation-delay:-8s; }
+.hhm-p-mid  { animation:hhm-mid-full  18s ease-in-out infinite alternate; animation-delay:-5s; }
+.hhm-p-near { animation:hhm-near-full 12s ease-in-out infinite alternate; animation-delay:-3s; }
 .hhm-p-far.hhm-paused,
 .hhm-p-mid.hhm-paused,
 .hhm-p-near.hhm-paused { animation-play-state:paused; }
-[data-motion="calm"] .hhm-p-far,
-[data-motion="calm"] .hhm-p-mid,
-[data-motion="calm"] .hhm-p-near { animation:none; transform:none; will-change:auto; }
+[data-motion="calm"] .hhm-p-far  { animation:hhm-far-calm  30s ease-in-out infinite alternate; animation-delay:-10s; }
+[data-motion="calm"] .hhm-p-mid  { animation:hhm-mid-calm  24s ease-in-out infinite alternate; animation-delay:-7s; }
+[data-motion="calm"] .hhm-p-near { animation:hhm-near-calm 20s ease-in-out infinite alternate; animation-delay:-5s; }
 .hhm-twkl { animation:hhm-twkl 5s ease-in-out infinite; }
-[data-motion="calm"] .hhm-twkl { animation:none; opacity:var(--ob); }
+[data-motion="calm"] .hhm-twkl { animation:hhm-twkl 6s ease-in-out infinite; }
 
 /* short screens ≤700px height: tighten sizes, 2-line desc */
 @media (max-height:700px) {
@@ -493,24 +513,41 @@ export default function HomeHeroMobile({ hero }) {
     return () => document.removeEventListener('visibilitychange', fn);
   }, []);
 
-  const canPlay = inView && tabVis && !touching && !focused && allowLoop && total > 1;
+  const canPlay = inView && tabVis && !touching && !focused && total > 1;
 
-  /* autoplay — 6s in calm mode (plain crossfade), 4.5s in full mode */
+  /* autoplay — runs in ALL modes (full/calm/reduced), only paused by tab/scroll/touch */
+  const timerRef = useRef(null);
+  const lastInteractionRef = useRef(0);
+  
   useEffect(() => {
-    if (!canPlay && !isCalm) return;
-    if (total <= 1) return;
-    const interval = isCalm ? 6000 : 4500;
-    const id = setInterval(() => {
-      setLeaving(active);
+    if (!canPlay || total <= 1) {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      return;
+    }
+    
+    timerRef.current = setTimeout(() => {
+      setLeaving(prev => active);
       setActive(p => (p+1) % total);
       setSpkAlt(a => !a);
-    }, interval);
-    return () => clearInterval(id);
-  }, [canPlay, isCalm, total, active]);
+    }, AUTOPLAY_MS);
+    
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [canPlay, total, active]);
+  
+  /* on manual interaction: reset timer to give full duration on new slide */
+  useEffect(() => {
+    if (lastInteractionRef.current === 0) return;
+    const now = Date.now();
+    if ((now - lastInteractionRef.current) < 100) {
+      // manual interaction just happened, timer already restarted by active change
+      lastInteractionRef.current = 0;
+    }
+  }, [active]);
 
   /* nav */
   const goTo   = useCallback((idx) => {
     const next = ((idx%total)+total)%total;
+    lastInteractionRef.current = Date.now();
     setLeaving(active);
     setActive(next);
     setSpkAlt(a => !a);
@@ -532,7 +569,10 @@ export default function HomeHeroMobile({ hero }) {
   const onTouchEnd   = (e) => {
     setTouching(false);
     const dx = e.changedTouches[0].clientX - swipeX.current;
-    if (Math.abs(dx) > 44) (dx>0 ? (isRTL?goNext:goPrev) : (isRTL?goPrev:goNext))();
+    if (Math.abs(dx) > 44) {
+      lastInteractionRef.current = Date.now();
+      (dx>0 ? (isRTL?goNext:goPrev) : (isRTL?goPrev:goNext))();
+    }
   };
 
   /* design tokens */
@@ -553,7 +593,7 @@ export default function HomeHeroMobile({ hero }) {
       data-hhm-motion={isCalm ? 'calm' : 'full'}
       aria-label={isRTL ? 'القسم الرئيسي' : 'Hero section'}
       aria-roledescription="carousel"
-      aria-live={canPlay || isCalm ? 'off' : 'polite'}
+      aria-live={canPlay ? 'off' : 'polite'}
       dir={isRTL ? 'rtl' : 'ltr'}
       className="hhm-root"
       style={{
@@ -561,6 +601,15 @@ export default function HomeHeroMobile({ hero }) {
         /* darker reference match: near-black teal top → deep green bottom */
         background: 'linear-gradient(to bottom, #020f0d 0%, #04211c 45%, #0b3d33 100%)',
         paddingBottom: 'max(14px, env(safe-area-inset-bottom, 0px))',
+        /* CSS variables for timing */
+        '--autoplay-ms': `${AUTOPLAY_MS}ms`,
+        '--slide-leave-ms': `${SLIDE_LEAVE_MS}ms`,
+        '--slide-enter-ms': `${SLIDE_ENTER_MS}ms`,
+        '--stagger-kw-ms': `${STAGGER_KEYWORD_MS}ms`,
+        '--stagger-hl-ms': `${STAGGER_HEADLINE_MS}ms`,
+        '--stagger-desc-ms': `${STAGGER_DESC_MS}ms`,
+        '--sparkle-ms': `${SPARKLE_MS}ms`,
+        '--calm-fade-ms': `${CALM_FADE_MS}ms`,
       }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -760,9 +809,8 @@ export default function HomeHeroMobile({ hero }) {
           {slides.map((_, i) => {
             const isDone = i < active;
             const isBar  = i === active;
-            const animCls = isCalm ? 'hhm-fill-calm' : 'hhm-fill-full';
             let cls = 'hhm-bar';
-            if (isBar && (canPlay || isCalm)) cls += ` ${animCls}`;
+            if (isBar && canPlay) cls += ' hhm-fill';
             else if (isBar) cls += ' hhm-pause';
             else if (isDone) cls += ' hhm-done';
             
