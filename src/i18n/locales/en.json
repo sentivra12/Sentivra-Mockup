@@ -76,7 +76,26 @@
     "ctaSecondary": "Learn More",
     "playVideo": "Play video",
     "pauseVideo": "Pause video",
-    "scrollDown": "Scroll down"
+    "scrollDown": "Scroll down",
+    "carousel": {
+      "cta": "Request a Consultation",
+      "by": "A solution by",
+      "brand": "SENTIVRA",
+      "solutions": "SOFTWARE SOLUTIONS",
+      "slideOf": "of",
+      "prevSlide": "Previous slide",
+      "nextSlide": "Next slide",
+      "openMenu": "Open menu",
+      "whatsapp": "Chat on WhatsApp",
+      "pauseCarousel": "Pause slideshow",
+      "playCarousel": "Play slideshow",
+      "carouselLabel": "Services slideshow",
+      "slideLabel": "Slide",
+      "statusDot": "Now taking consultations",
+      "fallbackKeyword": "DIGITAL",
+      "fallbackTitle": "Complete Software Solutions",
+      "fallbackDesc": "We build tailored web, mobile and enterprise software for your business."
+    }
   },
   "footer": {
     "cta": {

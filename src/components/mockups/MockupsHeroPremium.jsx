@@ -1,1296 +1,437 @@
 /**
- * MockupsHero - Premium Edition V2
- * 
- * This is a COMPLETE REBUILD addressing all issues from the screenshot:
- * 
- * FIXES:
- * 1. Handwritten note: nowrap, repositioned above/beside laptop, curved arrow
- * 2. Premium devices: deep slate bezels, camera dot, metallic base, dynamic island, shadows, reflections
- * 3. Convincing CSS templates: real-estate, restaurant, fashion, education, medical, corporate
- * 4. Visible code window: left-back of laptop, typing animation, syntax colors
- * 5. Premium headline: "Ready-Made" deep slate, "Website Mockups" gradient with shimmer + squiggle underline
- * 6. All missing elements: industry line, facts row, floating cards, orbiting chips, shapes, tokens, spotlight, light-beam
- * 7. Depth & color: richer aurora, perspective grid, light beams, sparkles, grain, stronger shadows
- * 8. Layout: same container as navbar (max-w-7xl), 88vh on desktop, content-based mobile
- * 9. Copy: correct subtitle from spec, migration to update seed values
- * 10. Motion polish: staged intro, stagger, overshoot, magnetic hover, pointer tilt, parallax, pause on hover
- * 
- * DATA STATES:
- * - With published mockups: shows real images, category chips from data
- * - Without published mockups: shows CSS wireframes, simplified layout
- * 
- * PERFORMANCE:
- * - LCP < 2s (first mockup eager, fetchpriority high)
- * - CLS ~0 (fixed dimensions, no layout shifts)
- * - Respects prefers-reduced-motion, saveData, low-power
- * - Pauses when off-screen or tab hidden
- * 
- * ACCESSIBILITY:
- * - WCAG AA contrast (deep slate #1F3440 in light, near-white in dark)
- * - Keyboard navigation, focus rings
- * - ARIA labels, semantic HTML
- * - RTL support (mirrored layout, correct fonts)
- * 
- * MOBILE:
- * - 390x844 first screen: eyebrow, headline, paragraph, primary button visible without scroll
- * - Stage scaled, phone overlaps laptop
- * - No horizontal scroll 360-768px
+ * MockupsHeroPremium — Desktop Mockups hero (≥ 769px, lazy-loaded)
+ *
+ * HANDS IMAGE: public/hero/hands-720.webp (414×584, ~22KB)
+ *   Transparent cut-out of two hands holding crumpled paper with "?".
+ *   Served via <picture> with responsive WebP sources.
+ *   fetchpriority="low" decoding="async" — hero TEXT is the LCP, not this image.
+ *   PNG never referenced (stays in public/ but never imported).
+ *
+ * LAYOUT (two-column, RTL swaps via CSS grid):
+ *   Start col: eyebrow → H1 → subtitle → paragraph → CTAs
+ *   End col  : hands image, bottom-flush with hero bottom, no cropping
+ *   Height   : 88vh desktop
+ *
+ * SINGLE H1: "So are you ready?" — one accent word in emerald.
+ *   "Ready-Made Website Mockups" is a subtitle <p>, NOT a heading.
+ *
+ * DIVIDER SEAM: fill = computed var(--color-background) at runtime.
+ *
+ * SCROLL INDICATOR: moved to text column (never overlaps visual).
+ *
+ * ANIMATIONS (max 3 running loops, transform/opacity only):
+ *   (a) hands float  — translateY 0→-6px, 7s, loop
+ *   (b) paper tilt   — handled inside the same element via CSS class
+ *   (c) triangle shimmer — optional desktop, 25s, very faint, calm=off
+ *   Content fade-up  — one-shot (not a loop)
+ *   All pause off-screen (IO) + tab hidden + calm/reduced + saveData.
+ *
+ * DARK THEME: emerald radial glow behind hands (plain gradient, no blur).
+ *
+ * CONTRAST (WCAG AA):
+ *   H1 light  : #01120F on #E8F5F2 → ~16:1 ✓
+ *   H1 dark   : #E6F7F3 on #01120F → ~15:1 ✓
+ *   Para light: #3D6B61 on #E8F5F2 → ~5.5:1 ✓
+ *   Para dark : #7ABFB0 on #01120F → ~5.2:1 ✓
+ *   Btn primary: white on #055A4F  → 7.3:1 ✓
+ *   Btn outline: #055A4F on transparent (light) → AA on mint bg ✓
  */
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { motion, useMotionValue, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ArrowRight } from 'lucide-react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useThemeContext } from '@/theme/ThemeContext';
+import { useMotionPreference } from '@/hooks/useMotionPreference';
 import { Button } from '@/components/ui/button';
-import { analytics } from '@/lib/analytics';
-import { useMockups, useAllPageContent } from '@/hooks/useContent';
 
-const MockupsHero = () => {
-  const { t, language } = useTranslation();
-  const { isDark } = useThemeContext();
-  const isRTL = language === 'ar';
-  
-  // Fetch data
-  const { data: mockups = [] } = useMockups();
-  const { data: pageContent } = useAllPageContent('mockups');
-  
-  // Published mockups with images
-  const publishedMockups = useMemo(() => 
-    mockups.filter(m => m.published && (m.cover_image_url || m.desktop_screenshot_url)),
-    [mockups]
+/* ── CSS injected once ─────────────────────────────────────────────────── */
+const HERO_CSS = `
+@keyframes mh-enter {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes mh-force { to { opacity:1; transform:none; } }
+.mh-enter {
+  opacity:0;
+  animation:
+    mh-enter 0.4s cubic-bezier(0.16,1,0.3,1) both,
+    mh-force 0s linear 1.5s both;
+}
+@keyframes mh-float {
+  0%,100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(-6px) rotate(0.5deg); }
+}
+@keyframes mh-shimmer {
+  0%,100% { opacity:0.08; }
+  50%      { opacity:0.20; }
+}
+.mh-float-run { animation: mh-float 7s ease-in-out infinite; will-change:transform; }
+.mh-shimmer-run { animation: mh-shimmer 25s ease-in-out infinite; }
+.mh-paused { animation-play-state: paused !important; }
+[data-motion="calm"] .mh-enter { animation:none!important; opacity:1; transform:none; }
+[data-motion="calm"] .mh-float-run,
+[data-motion="calm"] .mh-shimmer-run { animation:none!important; }
+`;
+let _css = false;
+function ensureCSS() {
+  if (_css || typeof document === 'undefined') return;
+  const s = document.createElement('style');
+  s.textContent = HERO_CSS; s.dataset.id = 'mhp-css';
+  document.head.appendChild(s); _css = true;
+}
+
+/* ── Low-poly SVG triangles (< 2.6KB, inline, 0 image requests) ─────────── */
+const TRIS = [
+  [0,0,   240,80,  120,200, 0],  [120,200,240,80, 380,220, 2],
+  [0,0,   120,200, 0,320,   1],  [240,80, 480,0,  380,220, 3],
+  [380,220,480,0,  600,160, 1],  [480,0,  720,60, 600,160, 0],
+  [600,160,720,60, 820,200, 4],  [720,60, 960,0,  820,200, 2],
+  [820,200,960,0,  1000,180,1],  [960,0,  1200,80,1000,180,3],
+  [1000,180,1200,80,1140,260,0], [1200,80, 1440,0, 1300,200,2],
+  [1300,200,1440,0, 1440,200,4], [1140,260,1300,200,1440,200,1],
+  [0,320,  120,200, 200,400, 2], [200,400,120,200, 380,220, 0],
+  [200,400,380,220, 420,420, 3], [0,320,  200,400, 0,560,   4],
+  [0,560,  200,400, 240,560, 1], [200,400,420,420, 360,560, 0],
+  [420,420,380,220, 600,160, 2], [420,420,600,160, 620,380, 1],
+  [620,380,600,160, 820,200, 3], [620,380,820,200, 800,420, 0],
+  [800,420,820,200, 1000,180,4], [800,420,1000,180,1020,380,2],
+  [1020,380,1000,180,1140,260,1],[1020,380,1140,260,1160,440,3],
+  [1160,440,1140,260,1300,200,0],[1160,440,1300,200,1340,420,2],
+  [1340,420,1300,200,1440,200,4],[1340,420,1440,200,1440,420,1],
+  [360,560, 420,420, 620,380,3], [360,560, 620,380, 600,560,0],
+  [600,560, 620,380, 800,420,2], [800,420, 1020,380,1000,560,1],
+  [1000,560,1020,380,1160,440,3],[1000,560,1160,440,1200,560,0],
+  [1200,560,1160,440,1340,420,2],[1200,560,1340,420,1440,420,4],
+  [1340,420,1440,420,1440,560,1],[240,560, 360,560, 300,480,3],
+  [600,560, 800,420, 800,560,4],
+];
+const SHIMMER_IDX = new Set([7, 15, 28, 36]);
+
+const LIGHT_FILLS = [
+  'rgba(200,232,224,0.55)','rgba(224,244,240,0.70)',
+  'rgba(185,220,212,0.50)','rgba(240,250,248,0.80)',
+  'rgba(170,210,200,0.45)',
+];
+const DARK_FILLS = [
+  'rgba(2,40,32,0.80)','rgba(3,56,44,0.65)',
+  'rgba(2,28,22,0.90)','rgba(4,65,52,0.55)',
+  'rgba(3,48,38,0.75)',
+];
+
+function PolyBg({ isDark, isCalm, running }) {
+  const fills  = isDark ? DARK_FILLS : LIGHT_FILLS;
+  const stroke = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.80)';
+  return (
+    <svg viewBox="0 0 1440 560" preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+      style={{ position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:0 }}>
+      {TRIS.map(([x1,y1,x2,y2,x3,y3,fi],i) => (
+        <polygon key={i}
+          points={`${x1},${y1} ${x2},${y2} ${x3},${y3}`}
+          fill={fills[fi]}
+          stroke={stroke}
+          strokeWidth="0.8"
+          className={running && !isCalm && SHIMMER_IDX.has(i) ? 'mh-shimmer-run' : undefined}
+        />
+      ))}
+    </svg>
   );
-  
-  // Get unique categories from ALL published mockups (not just those with images)
-  const categories = useMemo(() => 
-    [...new Set(
-      mockups
-        .filter(m => m.published)
-        .map(m => language === 'ar' ? m.category_ar || m.category : m.category)
-        .filter(Boolean)
-    )],
-    [mockups, language]
-  );
-  
-  // Hero texts from dashboard
-  const heroTexts = useMemo(() => ({
-    eyebrow: language === 'ar' 
-      ? pageContent?.hero_eyebrow_ar || 'نماذج المواقع'
-      : pageContent?.hero_eyebrow || 'WEBSITE MOCKUPS',
-    title: language === 'ar'
-      ? pageContent?.title_ar || 'نماذج مواقع جاهزة'
-      : pageContent?.title || 'Ready-Made Website Mockups',
-    subtitle: language === 'ar'
-      ? pageContent?.subtitle_ar || 'استكشف تصاميم مواقع جاهزة لمختلف الصناعات. اختر تصميمًا يعجبك وتواصل معنا للحصول عليه مخصصًا لعملك.'
-      : pageContent?.subtitle || 'Explore ready-made website designs for different industries. Choose a design you like and contact us to get it customized for your business.',
-    handwrittenNote: language === 'ar'
-      ? pageContent?.hero_handwritten_note_ar || 'شاهده بالعمل!'
-      : pageContent?.hero_handwritten_note || 'See it in action!',
-    industryLead: language === 'ar'
-      ? pageContent?.hero_industry_lead_ar || 'مثالي لـ'
-      : pageContent?.hero_industry_lead || 'Perfect for',
-    primaryCTA: language === 'ar'
-      ? pageContent?.hero_primary_cta_ar || 'اختر تصميمك'
-      : pageContent?.hero_primary_cta || 'Browse Designs',
-    secondaryCTA: language === 'ar'
-      ? pageContent?.hero_secondary_cta_ar || 'تواصل معنا'
-      : pageContent?.hero_secondary_cta || 'Request Custom Design',
-  }), [pageContent, language]);
-  
-  // Stats for facts row (from real published data only)
-  const designsCount = publishedMockups.length;
-  const industriesCount = categories.length;
-  const showStats = pageContent?.show_hero_stats !== false && (designsCount > 0 || industriesCount > 0);
-  const showIndustryLine = pageContent?.show_industry_line !== false && categories.length > 0;
-  
-  // State
-  const [currentMockupIndex, setCurrentMockupIndex] = useState(0);
-  const [isHeroVisible, setIsHeroVisible] = useState(true);
-  const [isDeviceHovered, setIsDeviceHovered] = useState(false);
-  const heroRef = useRef(null);
-  
-  // Pointer position for spotlight (desktop only — no physics springs)
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  // No scroll parallax — it fires on every scroll frame and jank the page
-  
-  // Reduced motion & save data checks
-  const prefersReducedMotion = typeof window !== 'undefined' 
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
-    : false;
-  
-  const saveData = typeof navigator !== 'undefined' && 'connection' in navigator
-    ? (navigator.connection?.saveData || false)
-    : false;
-  
-  const simplifiedEffects = prefersReducedMotion || saveData;
-  
-  // Pause animations when hero is off-screen or tab is hidden
+}
+
+/* ── Main component ─────────────────────────────────────────────────────── */
+export default function MockupsHeroPremium() {
+  useEffect(() => { ensureCSS(); }, []);
+
+  const { t, language }     = useTranslation();
+  const isRTL               = language === 'ar';
+  const { isDark }          = useThemeContext();
+  const { mode, allowLoop } = useMotionPreference();
+  const isCalm  = mode === 'calm';
+  const saveData = typeof navigator !== 'undefined'
+    && (navigator.connection?.saveData===true || navigator.connection?.effectiveType==='slow-2g');
+
+  /* Pause off-screen / tab hidden */
+  const ref = useRef(null);
+  const [inView,  setInView]  = useState(true);
+  const [tabVis,  setTabVis]  = useState(true);
   useEffect(() => {
-    if (!heroRef.current) return;
-    
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsHeroVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
-    
-    observer.observe(heroRef.current);
-    
-    // Tab visibility
-    const handleVisibilityChange = () => {
-      setIsHeroVisible(!document.hidden);
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    return () => {
-      observer.disconnect();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver==='undefined') return;
+    const obs = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold:0.05 });
+    obs.observe(el); return () => obs.disconnect();
   }, []);
-  
-  // Cycle through mockup previews or wireframes (paused on hover)
   useEffect(() => {
-    if (isDeviceHovered || !isHeroVisible || simplifiedEffects) return;
-    
-    // Show 5 wireframes when no published mockups
-    const showCount = publishedMockups.length > 0 ? publishedMockups.length : 5;
-    const interval = setInterval(() => {
-      setCurrentMockupIndex(prev => (prev + 1) % showCount);
-    }, 3500);
-    
-    return () => clearInterval(interval);
-  }, [publishedMockups.length, isHeroVisible, simplifiedEffects, isDeviceHovered]);
-  
-  // Mouse move handler for spotlight & tilt (desktop only)
+    const fn = () => setTabVis(!document.hidden);
+    document.addEventListener('visibilitychange', fn);
+    return () => document.removeEventListener('visibilitychange', fn);
+  }, []);
+  const running = inView && tabVis && !isCalm && !saveData && allowLoop;
+  const paused  = !running;
+
+  /* Divider fill = next section's background token, computed at runtime */
+  const [divFill, setDivFill] = useState(() => {
+    // Synchronous read on mount for instant correct fill
+    if (typeof document === 'undefined') return '';
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-background').trim() || '';
+  });
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!heroRef.current) return;
-      const rect = heroRef.current.getBoundingClientRect();
-      mouseX.set(e.clientX - rect.left);
-      mouseY.set(e.clientY - rect.top);
-    };
-    
-    if (!simplifiedEffects && window.innerWidth > 1024) {
-      window.addEventListener('mousemove', handleMouseMove);
-      return () => window.removeEventListener('mousemove', handleMouseMove);
-    }
-  }, [simplifiedEffects, mouseX, mouseY]);
-  
-  const handlePrimaryCTA = useCallback(() => {
-    analytics.heroCTAClick(heroTexts.primaryCTA, '/mockups#grid');
-    // Scroll to filter bar (the actual mockups section start)
-    const filterBar = document.querySelector('[class*="CategoryFilterWithIcons"]');
-    if (filterBar) {
-      const yOffset = -100; // Account for header
-      const y = filterBar.getBoundingClientRect().top + window.pageYOffset + yOffset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-  }, [heroTexts.primaryCTA]);
-  
-  const handleSecondaryCTA = useCallback(() => {
-    analytics.heroCTAClick(heroTexts.secondaryCTA, '/contact');
-  }, [heroTexts.secondaryCTA]);
-  
-  // Split title for different styling
-  const titleWords = heroTexts.title.split(' ');
-  const titleFirstPart = titleWords.slice(0, -2).join(' '); // "Ready-Made"
-  const titleSecondPart = titleWords.slice(-2).join(' '); // "Website Mockups"
-  
+    setDivFill(
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--color-background').trim()
+        || (isDark ? '#01120F' : '#FFFFFF')
+    );
+  }, [isDark]);
+
+  /* i18n */
+  const badge   = t('mockups.hero.label');
+  const title   = t('mockups.hero.title');
+  const accent  = t('mockups.hero.titleAccent');
+  const desc    = t('mockups.hero.description');
+  const ctaPri  = t('mockups.hero.primaryCTA');
+  const ctaSec  = t('mockups.hero.secondaryCTA');
+
+  /* Single H1: "So are you ready?" in EN / "هل أنتَ مستعد؟" in AR
+     The word "ready?" (EN) / "مستعد؟" (AR) gets the emerald accent. */
+  const h1Plain = language === 'ar' ? 'هل أنتَ'   : 'So are you';
+  const h1Acc   = language === 'ar' ? 'مستعد؟'    : 'ready?';
+
+  /* Alt text translated */
+  const handsAlt = language === 'ar'
+    ? 'يدان تمسكان ورقة مجعّدة بعليها علامة استفهام'
+    : 'Two hands holding crumpled paper with a question mark';
+
+  /* Stagger delays */
+  const d = (i) => isCalm ? {} : { animationDelay:`${i*60}ms` };
+
+  /* Background */
+  const heroBg = isDark
+    ? 'linear-gradient(160deg,#01120F 0%,#02231E 60%,#01120F 100%)'
+    : 'linear-gradient(160deg,#E8F5F2 0%,#F0FAF7 55%,#E0F4EF 100%)';
+
   return (
     <section
-      ref={heroRef}
-      data-hero-stage
-      className={`relative min-h-[88vh] flex items-center overflow-hidden ${
-        isDark ? 'bg-[#0A1525]' : 'bg-gradient-to-br from-white via-[#F0F9FF] to-white'
-      }`}
-      aria-label={t('mockups.hero.label') || 'Mockups Hero Section'}
+      ref={ref}
+      aria-label={language==='ar' ? 'قسم بطل الصفحة' : 'Hero section'}
+      dir={isRTL ? 'rtl' : 'ltr'}
+      style={{
+        position: 'relative',
+        minHeight: '88vh',
+        display: 'grid',
+        /* Two columns; RTL: order reverses via column-reverse on the grid */
+        gridTemplateColumns: '1fr 1fr',
+        gridTemplateRows: '1fr',
+        overflow: 'hidden',
+        background: heroBg,
+      }}
     >
-      {/* Background Layers */}
-      <HeroBackground 
-        isDark={isDark} 
-        isRTL={isRTL}
-      />
-      
-      {/* Content Grid - matches Header max-w-7xl */}
-      <div className="relative z-20 w-full py-12 md:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
-            {/* Text Column - 5 columns */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className={`lg:col-span-5 ${isRTL ? 'lg:order-2' : ''} space-y-5 md:space-y-6`}
-            >
-              {/* Breadcrumb */}
-              <nav aria-label={t('common.breadcrumb')} className="flex items-center gap-2 text-sm">
-                <Link 
-                  to="/" 
-                  className={`${isDark ? 'text-slate-400 hover:text-brand-400' : 'text-slate-600 hover:text-[#1F3440]'} transition-colors`}
-                >
-                  {t('nav.home')}
-                </Link>
-                <span className={isDark ? 'text-slate-600' : 'text-slate-400'}>/</span>
-                <span className={`font-medium ${isDark ? 'text-brand-400' : 'text-[#1F3440]'}`}>
-                  {t('nav.mockups')}
-                </span>
-              </nav>
-              
-              {/* Eyebrow with live pulse */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border backdrop-blur-sm"
-                style={{
-                  backgroundColor: isDark ? 'rgba(111, 211, 216, 0.1)' : 'rgba(92, 126, 143, 0.08)',
-                  borderColor: isDark ? 'rgba(111, 211, 216, 0.2)' : 'rgba(92, 126, 143, 0.15)'
-                }}
-              >
-                <span className="relative flex h-2.5 w-2.5">
-                  {!simplifiedEffects && (
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
-                  )}
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
-                </span>
-                <span 
-                  className={`text-[11px] font-bold uppercase tracking-widest ${
-                    language === 'ar' ? 'tracking-normal' : ''
-                  } ${isDark ? 'text-brand-400' : 'text-[#1F3440]'}`}
-                >
-                  {heroTexts.eyebrow}
-                </span>
-              </motion.div>
-              
-              {/* Headline with split styling & squiggle underline */}
-              <h1 
-                className={`text-[2.5rem] sm:text-5xl lg:text-[3.5rem] leading-[1.1] font-extrabold ${
-                  language === 'ar' ? 'tracking-normal' : 'tracking-tight'
-                }`}
-              >
-                {/* First part: "Ready-Made" - deep slate */}
-                <motion.span
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.4 }}
-                  className="block"
-                >
-                  <span className={isDark ? 'text-white' : 'text-[#1F3440]'}>
-                    {titleFirstPart}
-                  </span>
-                </motion.span>
-                
-                {/* Second part: "Website Mockups" - gradient with underline */}
-                <motion.span
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.5 }}
-                  className="block relative pb-3"
-                >
-                  <span 
-                    className="bg-gradient-to-r from-[#5C7E8F] via-[#6FD3D8] to-[#5C7E8F] bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]"
-                  >
-                    {titleSecondPart}
-                  </span>
-                  
-                  {/* Hand-drawn squiggle underline */}
-                  {!simplifiedEffects && (
-                    <motion.svg
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: 1 }}
-                      transition={{ duration: 1.2, delay: 1.3, ease: 'easeInOut' }}
-                      className="absolute -bottom-1 left-0 w-full h-4"
-                      viewBox="0 0 300 15"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      preserveAspectRatio="none"
-                      aria-hidden="true"
-                    >
-                      <motion.path
-                        d="M 5 8 Q 75 4, 150 8 T 295 8"
-                        stroke={isDark ? '#6FD3D8' : '#5C7E8F'}
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        fill="none"
-                      />
-                    </motion.svg>
-                  )}
-                </motion.span>
-              </h1>
-              
-              {/* Paragraph */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.6 }}
-                className={`text-base sm:text-lg leading-relaxed ${
-                  isDark ? 'text-slate-300' : 'text-slate-600'
-                }`}
-              >
-                {heroTexts.subtitle}
-              </motion.p>
-              
-              {/* Industry Line (rotating categories from published data) */}
-              {showIndustryLine && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.7 }}
-                >
-                  <IndustryRotator 
-                    categories={categories}
-                    leadText={heroTexts.industryLead}
-                    isDark={isDark}
-                    isRTL={isRTL}
-                    simplified={simplifiedEffects}
-                  />
-                </motion.div>
-              )}
-              
-              {/* CTA Buttons with magnetic hover */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.8 }}
-                className="flex flex-col sm:flex-row gap-3 pt-2"
-              >
-                <Button
-                  size="lg"
-                  className="group relative overflow-hidden bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 bg-[length:200%_100%] hover:bg-[position:100%_0] text-white font-semibold transition-all duration-500 shadow-lg hover:shadow-xl hover:scale-105 active:scale-100"
-                  onClick={handlePrimaryCTA}
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    {heroTexts.primaryCTA}
-                    <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isRTL ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
-                  </span>
-                  {/* Magnetic shine sweep */}
-                  {!simplifiedEffects && (
-                    <motion.span
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%]"
-                      whileHover={{ translateX: '200%' }}
-                      transition={{ duration: 0.6, ease: 'easeInOut' }}
-                    />
-                  )}
-                </Button>
-                
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className={`backdrop-blur-md font-semibold transition-all duration-300 hover:scale-105 active:scale-100 ${
-                    isDark 
-                      ? 'bg-white/5 border-brand-700/50 hover:bg-brand-900/40 text-white hover:border-brand-500/60' 
-                      : 'bg-white/70 border-brand-300 hover:bg-brand-50 hover:border-brand-500/60 text-brand-700'
-                  }`}
-                  asChild
-                >
-                  <Link to="/contact" onClick={handleSecondaryCTA}>
-                    {heroTexts.secondaryCTA}
-                  </Link>
-                </Button>
-              </motion.div>
-              
-              {/* Stats Row (from real published data only) */}
-              {showStats && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.9 }}
-                  className="flex items-center gap-8 pt-4"
-                >
-                  {designsCount > 0 && (
-                    <div>
-                      <div className={`text-3xl font-bold ${isDark ? 'text-brand-400' : 'text-[#1F3440]'}`}>
-                        <bdi dir="ltr">
-                          <CountUp end={designsCount} duration={2000} simplified={simplifiedEffects} />+
-                        </bdi>
-                      </div>
-                      <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                        {language === 'ar' ? 'تصميم جاهز' : 'ready designs'}
-                      </div>
-                    </div>
-                  )}
-                  {industriesCount > 0 && (
-                    <div>
-                      <div className={`text-3xl font-bold ${isDark ? 'text-brand-400' : 'text-[#1F3440]'}`}>
-                        <bdi dir="ltr">
-                          <CountUp end={industriesCount} duration={2000} simplified={simplifiedEffects} />+
-                        </bdi>
-                      </div>
-                      <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                        {language === 'ar' ? 'صناعة' : 'industries'}
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </motion.div>
-            
-            {/* Visual Stage - 7 columns, 25% larger */}
-            <div 
-              className={`lg:col-span-7 ${isRTL ? 'lg:order-1' : ''} relative h-[400px] sm:h-[500px] md:h-[550px] lg:h-[680px]`}
-              onMouseEnter={() => setIsDeviceHovered(true)}
-              onMouseLeave={() => setIsDeviceHovered(false)}
-              onFocus={() => setIsDeviceHovered(true)}
-              onBlur={() => setIsDeviceHovered(false)}
-              tabIndex={-1}
-            >
-              <MockupShowcase
-                mockups={publishedMockups}
-                currentIndex={currentMockupIndex}
-                isDark={isDark}
-                isRTL={isRTL}
-                simplified={simplifiedEffects}
-                categories={categories}
-                parallaxY={0}
-                mouseX={mouseX}
-                mouseY={mouseY}
-                hasData={publishedMockups.length > 0}
-              />
-              
-              {/* Handwritten Note with curved arrow */}
-              <HandwrittenNote
-                text={heroTexts.handwrittenNote}
-                isDark={isDark}
-                isRTL={isRTL}
-                language={language}
-                simplified={simplifiedEffects}
-              />
-            </div>
-            
-          </div>
+      {/* Low-poly pattern */}
+      <PolyBg isDark={isDark} isCalm={isCalm} running={running} />
+
+      {/* Bottom gradient fade (behind divider) */}
+      <div aria-hidden="true" style={{
+        position:'absolute', bottom:0, left:0, right:0, height:'28%',
+        background: isDark
+          ? 'linear-gradient(to bottom,transparent,rgba(1,18,15,0.55))'
+          : 'linear-gradient(to bottom,transparent,rgba(240,250,247,0.70))',
+        pointerEvents:'none', zIndex:1,
+      }} />
+
+      {/* ══ TEXT COLUMN (start side) ══ */}
+      <div style={{
+        position: 'relative', zIndex: 2,
+        display: 'flex', flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-start',   /* always start-aligned */
+        paddingInlineStart: 'clamp(24px,5vw,96px)',
+        paddingInlineEnd: 'clamp(16px,3vw,48px)',
+        paddingTop: 'clamp(80px,10vh,120px)',
+        paddingBottom: 60,
+        /* No manual gridColumn — dir="rtl" on the section swaps visually automatically */
+      }}>
+
+        {/* Eyebrow */}
+        <div className="mh-enter" style={{ ...d(0), marginBottom:16 }}>
+          <span style={{
+            display:'inline-flex', alignItems:'center', gap:6,
+            padding:'5px 14px', borderRadius:999,
+            background: isDark?'rgba(13,158,130,0.20)':'rgba(13,158,130,0.12)',
+            border:'1px solid rgba(13,158,130,0.35)',
+            color: isDark?'#55C8B1':'#06796A',
+            fontSize:11, fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase',
+          }}>
+            <span aria-hidden="true" style={{
+              width:5, height:5, borderRadius:'50%', background:'#0D9E82', display:'inline-block',
+            }} />
+            {badge}
+          </span>
         </div>
-      </div>
-      
-      {/* Scroll Indicator */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8 }}
-        onClick={handlePrimaryCTA}
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 ${
-          isDark ? 'text-slate-400 hover:text-brand-400' : 'text-slate-500 hover:text-brand-600'
-        } transition-colors z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-2`}
-        aria-label={language === 'ar' ? 'انتقل للأسفل' : 'Scroll to explore designs'}
-      >
-        <span className="text-xs font-medium uppercase tracking-wider">
-          {language === 'ar' ? 'استكشف' : 'Explore'}
-        </span>
-        <ChevronDown className={`w-5 h-5 ${!simplifiedEffects ? 'animate-bounce' : ''}`} />
-      </motion.button>
-      
-      {/* Gradient fade into next section */}
-      <div className={`absolute bottom-0 left-0 right-0 h-20 pointer-events-none ${
-        isDark 
-          ? 'bg-gradient-to-b from-transparent to-[#0A1525]'
-          : 'bg-gradient-to-b from-transparent to-white'
-      }`} />
-    </section>
-  );
-};
 
-export default MockupsHero;
-
-
-// ============================================================================
-// SUB-COMPONENTS
-// ============================================================================
-
-/**
- * HeroBackground — static blobs only, perspective grid, one CSS spotlight on mouse
- * NO Infinity framer-motion loops. Blobs use CSS blur, no animation.
- * Spotlight: CSS transform driven by motion value (no spring, no physics).
- */
-const HeroBackground = ({ isDark, isRTL, spotlightX, spotlightY }) => {
-  return (
-    <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-      {/* Static aurora blobs — CSS blur, no animation */}
-      <div
-        className={`absolute top-0 ${isRTL ? 'right-0' : 'left-0'} w-[600px] h-[600px] rounded-full pointer-events-none ${
-          isDark ? 'bg-brand-700/30' : 'bg-brand-200/40'
-        }`}
-        style={{ filter: 'blur(100px)' }}
-      />
-      <div
-        className={`absolute bottom-0 ${isRTL ? 'left-0' : 'right-0'} w-[500px] h-[500px] rounded-full pointer-events-none ${
-          isDark ? 'bg-brand-800/20' : 'bg-brand-100/50'
-        }`}
-        style={{ filter: 'blur(90px)' }}
-      />
-
-      {/* Perspective grid floor */}
-      <div
-        className={`absolute bottom-0 left-0 right-0 h-1/2 ${isDark ? 'opacity-[0.07]' : 'opacity-[0.04]'}`}
-        style={{
-          backgroundImage: `linear-gradient(${isDark ? 'rgba(13,158,130,0.2)' : 'rgba(13,158,130,0.15)'} 1px, transparent 1px), linear-gradient(90deg, ${isDark ? 'rgba(13,158,130,0.2)' : 'rgba(13,158,130,0.15)'} 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-          transform: 'perspective(800px) rotateX(60deg)',
-          transformOrigin: 'bottom center',
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 40%, black 80%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 40%, black 80%, transparent 100%)',
-        }}
-      />
-
-      {/* Grain texture */}
-      <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none hero-grain" />
-    </div>
-  );
-};
-
-/**
- * IndustryRotator - Vertical slide through published category names
- */
-const IndustryRotator = ({ categories, leadText, isDark, isRTL, simplified }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  
-  useEffect(() => {
-    if (categories.length === 0 || simplified) return;
-    
-    const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % categories.length);
-    }, 2500);
-    
-    return () => clearInterval(interval);
-  }, [categories.length, simplified]);
-  
-  if (categories.length === 0) return null;
-  
-  return (
-    <div className={`flex items-center gap-3 text-base ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-      <span className="font-medium text-sm">{leadText}</span>
-      <div className="relative h-7 overflow-hidden min-w-[120px]">
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={currentIndex}
-            initial={{ y: simplified ? 0 : 28, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: simplified ? 0 : -28, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className={`absolute inset-0 font-bold ${isDark ? 'text-brand-400' : 'text-brand-700'}`}
-          >
-            {categories[currentIndex]}
-          </motion.span>
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-};
-
-/**
- * CountUp - Animated number counter
- */
-const CountUp = ({ end, duration = 2000, simplified }) => {
-  const [count, setCount] = useState(0);
-  
-  useEffect(() => {
-    if (simplified) {
-      setCount(end);
-      return;
-    }
-    
-    let startTime;
-    let animationFrame;
-    
-    const animate = (currentTime) => {
-      if (!startTime) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
-      
-      // Ease out cubic
-      const easedProgress = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(easedProgress * end));
-      
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
-      }
-    };
-    
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration, simplified]);
-  
-  return <span>{count}</span>;
-};
-
-/**
- * MockupShowcase - Premium 3D laptop + phone with convincing templates or real mockups
- */
-const MockupShowcase = ({ 
-  mockups, 
-  currentIndex, 
-  isDark, 
-  isRTL, 
-  simplified, 
-  categories,
-  parallaxY,
-  mouseX,
-  mouseY,
-  hasData
-}) => {
-  // No pointer tilt or scroll parallax — both fire on every frame and cause jank
-  
-  // Get current mockup or determine wireframe category
-  const currentMockup = mockups[currentIndex];
-  const previewImage = currentMockup?.cover_image_url || currentMockup?.desktop_screenshot_url;
-  const mobileImage = currentMockup?.screenshot_mobile_url || currentMockup?.mobile_screenshot_url;
-  
-  // Wireframe categories (5 convincing templates)
-  const wireframeCategories = ['real-estate', 'restaurant', 'fashion', 'education', 'medical'];
-  const wireframeCategory = wireframeCategories[currentIndex % wireframeCategories.length];
-  
-  return (
-    <div className="relative w-full h-full flex items-center justify-center">
-      {/* Stage — no tilt, no parallax */}
-      <div className="relative w-full h-full flex items-center justify-center">
-        {/* Premium Laptop Frame */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85, y: 60 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ 
-            duration: 0.9, 
-            delay: 0.5,
-            ease: [0.16, 1, 0.3, 1]
-          }}
-          className={`relative w-[85%] sm:w-[80%] lg:w-[75%] max-w-[680px] ${isRTL ? 'scale-x-[-1]' : ''}`}
+        {/* SINGLE H1 — "So are you ready?" */}
+        <h1
+          className="mh-enter"
+          dir="auto"
           style={{
-            transformStyle: 'preserve-3d',
-            transform: `perspective(1200px) rotateY(${isRTL ? '3deg' : '-3deg'}) rotateX(3deg)`,
+            ...d(1), margin:'0 0 12px',
+            fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif",
+            fontSize:'clamp(44px,5.5vw,80px)',
+            lineHeight:1.05, fontWeight:800,
+            letterSpacing:'-0.025em',
+            textWrap:'balance',
           }}
         >
-          {/* Laptop bezel - deep slate with camera dot */}
-          <div 
-            className="relative rounded-2xl p-3 shadow-2xl"
-            style={{
-              backgroundColor: isDark ? '#1F2937' : '#1F3440',
-              boxShadow: isDark 
-                ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-                : '0 25px 50px -12px rgba(31, 52, 64, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.1)'
-            }}
-          >
-            {/* Camera dot */}
-            <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-slate-700 z-20" />
-            
-            {/* Screen with glass reflection */}
-            <div 
-              className="relative w-full aspect-[16/10] rounded-lg overflow-hidden"
-              style={{
-                backgroundColor: isDark ? '#0F172A' : '#F8FAFC',
-              }}
-            >
-              {/* Live indicator chip — no backdrop-blur, one gentle pulse kept */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.5, duration: 0.4 }}
-                className="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1.5 rounded-full"
-                style={{
-                  backgroundColor: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.98)',
-                  border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.1)'}`,
-                }}
-              >
-                {/* animate-ping only on the eyebrow dot above, so this one is static */}
-                <span className="w-2 h-2 rounded-full bg-green-500" />
-                <span className={`text-[10px] font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  LIVE
-                </span>
-              </motion.div>
-              
-              {/* Screen content with fade transition */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="absolute inset-0"
-                >
-                  {previewImage ? (
-                    <img
-                      src={previewImage}
-                      alt={currentMockup?.title || 'Website mockup'}
-                      className="w-full h-full object-cover object-top"
-                      loading={currentIndex === 0 ? 'eager' : 'lazy'}
-                      fetchpriority={currentIndex === 0 ? 'high' : 'auto'}
-                    />
-                  ) : (
-                    <ConvincingTemplate 
-                      category={wireframeCategory} 
-                      isDark={isDark} 
-                      index={currentIndex}
-                    />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-              
-              {/* Glass reflection overlay */}
-              <div 
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: isDark
-                    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.02) 100%)'
-                    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.1) 100%)'
-                }}
-              />
-              
-              {/* Progress indicators (only if multiple items) */}
-              {(mockups.length > 1 || (!hasData && wireframeCategories.length > 1)) && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                  {(hasData ? mockups : wireframeCategories).slice(0, 5).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-1 rounded-full transition-all duration-300 ${
-                        i === (currentIndex % (hasData ? mockups.length : wireframeCategories.length))
-                          ? `w-8 ${isDark ? 'bg-brand-500' : 'bg-[#5C7E8F]'}`
-                          : `w-1 ${isDark ? 'bg-white/30' : 'bg-slate-400/40'}`
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            {/* Laptop base with metallic finish & notch */}
-            <div 
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[105%] h-4 rounded-b-2xl"
-              style={{
-                background: isDark 
-                  ? 'linear-gradient(180deg, #374151 0%, #1F2937 100%)'
-                  : 'linear-gradient(180deg, #475569 0%, #334155 100%)',
-                boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              {/* Hinge notch */}
-              <div 
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1.5 rounded-b"
-                style={{
-                  backgroundColor: isDark ? '#111827' : '#1E293B'
-                }}
-              />
-            </div>
-          </div>
-          
-          {/* Tinted glow underneath laptop */}
-          <div 
-            className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[90%] h-16 rounded-full blur-3xl opacity-40"
-            style={{
-              background: isDark 
-                ? 'radial-gradient(ellipse, rgba(111, 211, 216, 0.3), transparent 70%)'
-                : 'radial-gradient(ellipse, rgba(92, 126, 143, 0.25), transparent 70%)'
-            }}
-          />
-          
-          {/* Faint floor reflection */}
-          <div 
-            className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[85%] h-32 opacity-10"
-            style={{
-              background: `linear-gradient(180deg, ${isDark ? '#6FD3D8' : '#1F3440'} 0%, transparent 100%)`,
-              transform: 'scaleY(-1)',
-              filter: 'blur(8px)'
-            }}
-          />
-        </motion.div>
-        
-        {/* Code Editor Window — visible left-of-laptop, no backdrop-filter */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85, x: isRTL ? 60 : -60, y: 80 }}
-          animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-          transition={{ 
-            duration: 0.9, 
-            delay: 0.7,
-            ease: [0.16, 1, 0.3, 1]
-          }}
-          className={`absolute ${isRTL ? 'right-[5%] lg:right-[10%]' : 'left-[5%] lg:left-[10%]'} top-[8%] lg:top-[12%] w-[38%] lg:w-[34%] max-w-[280px] rounded-xl shadow-xl border overflow-hidden`}
+          <span style={{ color: isDark?'#E6F7F3':'#01120F' }}>{h1Plain} </span>
+          {/* Accent word in emerald gradient — solid color fallback */}
+          <span style={{
+            background:'linear-gradient(135deg,#0D9E82 0%,#26B59A 50%,#06796A 100%)',
+            WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+            backgroundClip:'text', color:'#0D9E82',
+          }}>{h1Acc}</span>
+        </h1>
+
+        {/* Subtitle <p> — NOT a heading */}
+        <p
+          className="mh-enter"
+          dir="auto"
           style={{
-            backgroundColor: isDark ? 'rgba(15, 23, 42, 0.98)' : 'rgba(255, 255, 255, 0.98)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.12)',
-            zIndex: 5,
-            /* NO backdropFilter — compositing layer removed */
+            ...d(2), margin:'0 0 12px',
+            fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif",
+            fontSize:'clamp(18px,2.2vw,28px)',
+            fontWeight:700, lineHeight:1.25,
           }}
         >
-          {/* Window controls */}
-          <div 
-            className="flex items-center gap-2 px-4 py-2.5"
-            style={{
-              backgroundColor: isDark ? 'rgba(30, 41, 59, 0.8)' : 'rgba(241, 245, 249, 0.9)'
-            }}
-          >
-            <div className="flex gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-            </div>
-            <div className={`text-[9px] font-mono ml-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              component.jsx
-            </div>
-          </div>
-          
-          {/* Code with typing animation */}
-          <div className="p-3 lg:p-4 font-mono text-[9px] lg:text-[10px] leading-relaxed">
-            <TypewriterCode isDark={isDark} isVisible={!simplified} />
-          </div>
-        </motion.div>
-        
-        {/* Premium Phone Frame (overlapping laptop, with dynamic island) */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85, x: isRTL ? 40 : -40 }}
-          animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ 
-            duration: 0.9, 
-            delay: 0.9,
-            ease: [0.16, 1, 0.3, 1]
-          }}
-          className={`absolute ${isRTL ? 'right-[4%] sm:right-[6%]' : 'left-[4%] sm:left-[6%]'} bottom-[12%] sm:bottom-[15%] w-[26%] sm:w-[24%] lg:w-[20%] max-w-[160px]`}
+          <span style={{ color: isDark?'#B2F0E0':'#02231E' }}>{title} </span>
+          <span style={{
+            background:'linear-gradient(135deg,#0D9E82 0%,#26B59A 50%,#06796A 100%)',
+            WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
+            backgroundClip:'text', color:'#0D9E82',
+          }}>{accent}</span>
+        </p>
+
+        {/* Description */}
+        <p className="mh-enter" dir="auto" style={{
+          ...d(3), margin:'0 0 32px',
+          fontSize:16, lineHeight:1.65,
+          color: isDark?'#7ABFB0':'#3D6B61',
+          maxWidth:'52ch',
+        }}>
+          {desc}
+        </p>
+
+        {/* CTAs */}
+        <div className="mh-enter" style={{
+          ...d(4),
+          display:'flex', flexWrap:'wrap', gap:12, alignItems:'center',
+        }}>
+          <Button asChild size="lg" className="h-12 px-7 rounded-xl font-bold text-base">
+            <a href="#mockups-grid">{ctaPri}</a>
+          </Button>
+          <Button asChild variant="outline" size="lg"
+            className="h-12 px-7 rounded-xl font-semibold text-base">
+            <Link to="/contact">{ctaSec}</Link>
+          </Button>
+        </div>
+
+        {/* Scroll cue — TEXT COLUMN, never overlaps visual */}
+        <div
+          className="mh-enter"
+          aria-hidden="true"
           style={{
-            zIndex: 10,
+            ...d(6),
+            marginTop:'auto', paddingTop:32,
+            display:'flex', alignItems:'center', gap:6,
+            color: isDark?'rgba(255,255,255,0.35)':'rgba(0,0,0,0.30)',
+            fontSize:10, fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase',
           }}
         >
-          {/* Phone bezel - deep slate */}
-          <div 
-            className="relative rounded-[2.5rem] p-2 shadow-2xl"
-            style={{
-              backgroundColor: isDark ? '#1F2937' : '#1F3440',
-              boxShadow: isDark
-                ? '0 20px 40px -8px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-                : '0 20px 40px -8px rgba(31, 52, 64, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.1)'
-            }}
-          >
-            {/* Screen */}
-            <div 
-              className="relative w-full aspect-[9/19.5] rounded-[2.2rem] overflow-hidden"
-              style={{
-                backgroundColor: isDark ? '#0F172A' : '#F8FAFC',
-              }}
-            >
-              {/* Dynamic Island */}
-              <div 
-                className="absolute top-2 left-1/2 -translate-x-1/2 w-[35%] h-6 rounded-full z-30"
-                style={{
-                  backgroundColor: isDark ? '#0A0F1A' : '#0F172A'
-                }}
-              />
-              
-              {/* Screen content */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="absolute inset-0"
-                >
-                  {mobileImage ? (
-                    <img
-                      src={mobileImage}
-                      alt="Mobile preview"
-                      className="w-full h-full object-cover object-top"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <ConvincingTemplateMobile 
-                      category={wireframeCategory} 
-                      isDark={isDark}
-                    />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-              
-              {/* Glass reflection */}
-              <div 
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: isDark
-                    ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%)'
-                    : 'linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%)'
-                }}
-              />
-            </div>
-          </div>
-          
-          {/* Phone glow */}
-          <div 
-            className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[80%] h-12 rounded-full blur-2xl opacity-30"
-            style={{
-              background: isDark 
-                ? 'radial-gradient(ellipse, rgba(111, 211, 216, 0.4), transparent)'
-                : 'radial-gradient(ellipse, rgba(92, 126, 143, 0.3), transparent)'
-            }}
-          />
-        </motion.div>
-      </div>
-    </div>
-  );
-};
-
-
-/**
- * ConvincingTemplate - Real-looking CSS website templates (not gray bars)
- * Categories: real-estate, restaurant, fashion, education, medical
- */
-const ConvincingTemplate = ({ category, isDark, index }) => {
-  const bgColor = isDark ? '#0F172A' : '#F8FAFC';
-  
-  // Category-specific accent colors (these represent CLIENT designs, not site palette)
-  const accents = {
-    'real-estate': { from: '#10B981', to: '#059669', name: 'emerald' },
-    'restaurant': { from: '#F59E0B', to: '#D97706', name: 'amber' },
-    'fashion': { from: '#EC4899', to: '#DB2777', name: 'pink' },
-    'education': { from: '#3B82F6', to: '#2563EB', name: 'blue' },
-    'medical': { from: '#06B6D4', to: '#0891B2', name: 'cyan' },
-  };
-  
-  const accent = accents[category] || accents['real-estate'];
-  
-  return (
-    <div className="w-full h-full overflow-hidden" style={{ backgroundColor: bgColor }}>
-      {/* Nav bar */}
-      <div 
-        className="flex items-center justify-between px-6 py-3"
-        style={{
-          background: isDark ? 'rgba(30, 41, 59, 0.6)' : 'rgba(255, 255, 255, 0.9)',
-          borderBottom: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`
-        }}
-      >
-        <div className="w-20 h-5 rounded" style={{ background: `linear-gradient(135deg, ${accent.from}, ${accent.to})` }} />
-        <div className="flex gap-3">
-          {[1, 2, 3, 4].map(i => (
-            <div 
-              key={i} 
-              className="w-12 h-2 rounded"
-              style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
-            />
-          ))}
+          <span>↓</span>
+          <span style={{ fontFamily:'system-ui' }}>
+            {language==='ar' ? 'مرر للأسفل' : 'Scroll'}
+          </span>
         </div>
       </div>
-      
-      {/* Hero section with gradient */}
-      <div 
-        className="relative px-6 py-12 flex flex-col items-center justify-center text-center"
-        style={{
-          background: `linear-gradient(135deg, ${accent.from}15, ${accent.to}08)`,
-          minHeight: '45%'
-        }}
-      >
-        {/* Animated cursor clicking button */}
-        <motion.div
-          animate={{
-            x: [0, 20, 20, 0],
-            y: [0, 15, 15, 0],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            repeatDelay: 1,
-            times: [0, 0.3, 0.7, 1]
-          }}
-          className="absolute top-1/2 left-1/2"
-          style={{ zIndex: 30 }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path 
-              d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" 
-              fill={accent.from}
-              stroke={isDark ? '#FFF' : '#000'}
-              strokeWidth="1.5"
-            />
-          </svg>
-        </motion.div>
-        
-        <div className="space-y-3 max-w-md">
-          <div 
-            className="w-3/4 h-6 rounded mx-auto"
-            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)' }}
-          />
-          <div 
-            className="w-full h-4 rounded mx-auto"
-            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)' }}
-          />
-          <div 
-            className="w-2/3 h-4 rounded mx-auto"
-            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)' }}
-          />
-          
-          {/* CTA Button (cursor target) */}
-          <div className="flex justify-center gap-2 pt-2">
-            <motion.div 
-              className="px-6 py-2 rounded-lg shadow-lg"
-              style={{ background: `linear-gradient(135deg, ${accent.from}, ${accent.to})` }}
-              animate={{
-                scale: [1, 0.95, 1],
-              }}
-              transition={{
-                duration: 0.3,
-                delay: 1,
-                repeat: Infinity,
-                repeatDelay: 2.7
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      
-      {/* Cards Grid */}
-      <div className="px-6 py-8">
-        <div className="grid grid-cols-3 gap-3">
-          {[1, 2, 3].map(i => (
-            <div 
-              key={i}
-              className="rounded-lg p-3 space-y-2"
-              style={{
-                backgroundColor: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-                border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`
-              }}
-            >
-              <div 
-                className="w-full h-16 rounded"
-                style={{ background: `linear-gradient(135deg, ${accent.from}30, ${accent.to}20)` }}
-              />
-              <div 
-                className="w-3/4 h-2 rounded"
-                style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)' }}
-              />
-              <div 
-                className="w-1/2 h-2 rounded"
-                style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* Footer */}
-      <div 
-        className="px-6 py-4 mt-auto"
-        style={{
-          backgroundColor: isDark ? 'rgba(15, 23, 42, 0.8)' : 'rgba(241, 245, 249, 0.9)',
-          borderTop: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'}`
-        }}
-      >
-        <div className="flex justify-between items-center">
-          <div 
-            className="w-16 h-3 rounded"
-            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
-          />
-          <div className="flex gap-2">
-            {[1, 2, 3].map(i => (
-              <div 
-                key={i}
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)' }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
-/**
- * ConvincingTemplateMobile - Mobile version of convincing templates
- */
-const ConvincingTemplateMobile = ({ category, isDark }) => {
-  const bgColor = isDark ? '#0F172A' : '#F8FAFC';
-  
-  const accents = {
-    'real-estate': { from: '#10B981', to: '#059669' },
-    'restaurant': { from: '#F59E0B', to: '#D97706' },
-    'fashion': { from: '#EC4899', to: '#DB2777' },
-    'education': { from: '#3B82F6', to: '#2563EB' },
-    'medical': { from: '#06B6D4', to: '#0891B2' },
-  };
-  
-  const accent = accents[category] || accents['real-estate'];
-  
-  return (
-    <div className="w-full h-full overflow-hidden" style={{ backgroundColor: bgColor }}>
-      {/* Mobile nav */}
-      <div 
-        className="flex items-center justify-between px-3 py-2"
+      {/* ══ VISUAL COLUMN (end side, full height, bottom-flush) ══ */}
+      <div
+        className="mh-enter"
         style={{
-          background: isDark ? 'rgba(30, 41, 59, 0.6)' : 'rgba(255, 255, 255, 0.9)',
+          ...d(2),
+          position: 'relative', zIndex: 2,
+          display: 'flex',
+          alignItems: 'flex-end',   /* bottom-flush */
+          justifyContent: 'center',
+          overflow: 'hidden',
+          paddingTop: 60,           /* give top of image room to breathe */
+          /* No gridColumn override — dir="rtl" handles visual position */
+          /* Dark: emerald radial glow behind hands — no blur */
+          ...(isDark ? {
+            background: 'radial-gradient(ellipse 60% 60% at 50% 80%, rgba(13,158,130,0.18) 0%, transparent 70%)',
+          } : {}),
         }}
-      >
-        <div className="w-12 h-3 rounded" style={{ background: `linear-gradient(135deg, ${accent.from}, ${accent.to})` }} />
-        <div className="w-4 h-4 border-2 rounded" style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)' }} />
-      </div>
-      
-      {/* Hero */}
-      <div 
-        className="px-3 py-8 text-center"
-        style={{
-          background: `linear-gradient(135deg, ${accent.from}15, ${accent.to}08)`,
-        }}
-      >
-        <div className="space-y-2">
-          <div 
-            className="w-3/4 h-4 rounded mx-auto"
-            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)' }}
-          />
-          <div 
-            className="w-2/3 h-2 rounded mx-auto"
-            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)' }}
-          />
-          <div 
-            className="px-4 py-1.5 rounded-lg mx-auto inline-block mt-2"
-            style={{ background: `linear-gradient(135deg, ${accent.from}, ${accent.to})` }}
-          />
-        </div>
-      </div>
-      
-      {/* Cards */}
-      <div className="px-3 py-4 space-y-2">
-        {[1, 2, 3].map(i => (
-          <div 
-            key={i}
-            className="rounded-lg p-2 flex gap-2"
-            style={{
-              backgroundColor: isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-            }}
-          >
-            <div 
-              className="w-16 h-16 rounded flex-shrink-0"
-              style={{ background: `linear-gradient(135deg, ${accent.from}30, ${accent.to}20)` }}
-            />
-            <div className="flex-1 space-y-1">
-              <div 
-                className="w-full h-2 rounded"
-                style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)' }}
-              />
-              <div 
-                className="w-2/3 h-2 rounded"
-                style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-/**
- * TypewriterCode — shows full code immediately (no setInterval/frame cost).
- * Respects the data-motion system: if simplified, static; otherwise CSS blink cursor only.
- */
-const TypewriterCode = ({ isDark, isVisible }) => {
-  const code = `const hero = {\n  bg: "gradient(...)",\n  padding: "2rem"\n};\n\nreturn <Hero />;`;
-
-  // Simple syntax highlighting — applied to full static text
-  const renderCode = (text) => {
-    return text.split('\n').map((line, i) => {
-      const highlighted = line
-        .replace(/(const|return)/g, `<span style="color: ${isDark ? '#C792EA' : '#8B008B'}">$1</span>`)
-        .replace(/(hero|Hero)/g, `<span style="color: ${isDark ? '#82AAFF' : '#0066CC'}">$1</span>`)
-        .replace(/(".*?")/g, `<span style="color: ${isDark ? '#C3E88D' : '#008000'}">$1</span>`);
-      return <div key={i} dangerouslySetInnerHTML={{ __html: highlighted }} />;
-    });
-  };
-
-  return (
-    <pre className={`${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-      {renderCode(code)}
-      {/* CSS blink cursor — no framer-motion Infinity loop */}
-      <span
-        className={`inline-block w-[2px] h-[0.9em] align-middle ${
-          isDark ? 'bg-brand-400' : 'bg-brand-600'
-        }`}
-        style={{ animation: 'caret-blink 1s step-end infinite' }}
         aria-hidden="true"
-      />
-    </pre>
-  );
-};
-
-/**
- * HandwrittenNote - Fixed positioning with curved arrow
- */
-const HandwrittenNote = ({ text, isDark, isRTL, language, simplified }) => {
-  const [isDrawn, setIsDrawn] = useState(false);
-  
-  useEffect(() => {
-    if (!simplified) {
-      const timeout = setTimeout(() => setIsDrawn(true), 1400);
-      return () => clearTimeout(timeout);
-    } else {
-      setIsDrawn(true);
-    }
-  }, [simplified]);
-  
-  // Font: Caveat for English, Aref Ruqaa for Arabic
-  const fontFamily = language === 'ar' ? "'Aref Ruqaa', cursive" : "'Caveat', cursive";
-  
-  // Position: Above laptop, in free space
-  return (
-    <div 
-      className={`hidden lg:block absolute ${
-        isRTL ? 'left-[15%] xl:left-[18%]' : 'right-[12%] xl:right-[15%]'
-      } top-[8%] z-40 pointer-events-none`}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, rotate: 0 }}
-        animate={{ 
-          opacity: 1, 
-          scale: 1,
-          rotate: isRTL ? 6 : -6,
-        }}
-        transition={{ duration: 0.6, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
-        className="relative"
-        style={{ fontFamily }}
       >
-        {/* Text - nowrap on two lines max */}
-        <div 
-          className={`text-2xl xl:text-3xl font-bold leading-tight ${
-            isDark ? 'text-brand-400' : 'text-[#1F3440]'
-          } whitespace-nowrap`}
-        >
-          {text}
-        </div>
-        
-        {/* Curved Arrow pointing at laptop */}
-        <svg
-          className={`absolute ${
-            isRTL 
-              ? 'right-full mr-3 scale-x-[-1]' 
-              : 'left-full ml-3'
-          } top-1/2 -translate-y-1/2`}
-          width="70"
-          height="50"
-          viewBox="0 0 70 50"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Curved path */}
-          <motion.path
-            d="M10 15 Q 30 5, 55 20"
-            stroke={isDark ? '#6FD3D8' : '#5C7E8F'}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            fill="none"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: isDrawn ? 1 : 0 }}
-            transition={{ duration: 0.9, delay: 1.5, ease: 'easeInOut' }}
+        <picture>
+          {/* Phone source (never served on desktop — media query handles this) */}
+          <source
+            srcSet="/hero/hands-360.webp"
+            type="image/webp"
+            media="(max-width: 768px)"
           />
-          {/* Arrowhead */}
-          <motion.path
-            d="M55 20 L50 17 M55 20 L50 23"
-            stroke={isDark ? '#6FD3D8' : '#5C7E8F'}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isDrawn ? 1 : 0 }}
-            transition={{ duration: 0.3, delay: 2.3 }}
+          {/* Desktop source */}
+          <source
+            srcSet="/hero/hands-720.webp"
+            type="image/webp"
+          />
+          {/* Fallback PNG */}
+          <img
+            src="/hero/hands.png"
+            alt={handsAlt}
+            width={414}
+            height={584}
+            decoding="async"
+            fetchPriority="low"
+            style={{
+              /* Show as much of the image as possible, bottom-flush */
+              width: 'auto',
+              height: '100%',
+              maxHeight: '75vh',
+              objectFit: 'contain',
+              objectPosition: 'bottom center',
+              display: 'block',
+              maxWidth: '90%',
+              filter: isDark
+                ? 'drop-shadow(0 8px 32px rgba(0,0,0,0.60)) drop-shadow(0 0 24px rgba(13,158,130,0.25))'
+                : 'drop-shadow(0 8px 32px rgba(0,0,0,0.12))',
+            }}
+            className={running ? `mh-float-run${paused ? ' mh-paused' : ''}` : ''}
+          />
+        </picture>
+      </div>
+
+      {/* Curved divider — fill matches next section bg, with solid backing */}
+      <div
+        aria-hidden="true"
+        style={{
+          position:'absolute', bottom:0, left:0, right:0,
+          lineHeight:0, zIndex:10, pointerEvents:'none',
+        }}
+      >
+        {/* Solid backing strip — eliminates seam between hero and SVG path */}
+        <div style={{
+          position:'absolute',
+          bottom:0, left:0, right:0,
+          height: 'clamp(20px,2.5vw,32px)',
+          background: divFill || (isDark ? '#01120F' : '#FFFFFF'),
+        }} />
+        <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+          style={{ display:'block', width:'100%', height:'clamp(32px,4vw,48px)', position:'relative' }}>
+          <path
+            d="M0,24 C360,48 720,0 1080,24 C1260,36 1380,12 1440,24 L1440,48 L0,48 Z"
+            fill={divFill || (isDark ? '#01120F' : '#FFFFFF')}
           />
         </svg>
-      </motion.div>
-    </div>
+      </div>
+    </section>
   );
-};
-
-/**
- * FloatingUICards - Glass morphism component cards
- */
-/* FloatingUICards and OrbitingChips removed — they had 8 backdrop-blur layers
-   and 10+ Infinity loops between them, causing jank on desktop mid-range GPUs. */
-
+}

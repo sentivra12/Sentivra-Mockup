@@ -76,7 +76,26 @@
     "ctaSecondary": "اعرف المزيد",
     "playVideo": "تشغيل الفيديو",
     "pauseVideo": "إيقاف الفيديو",
-    "scrollDown": "انتقل للأسفل"
+    "scrollDown": "انتقل للأسفل",
+    "carousel": {
+      "cta": "اطلب استشارة",
+      "by": "من حلول",
+      "brand": "SENTIVRA",
+      "solutions": "SOFTWARE SOLUTIONS",
+      "slideOf": "من",
+      "prevSlide": "الشريحة السابقة",
+      "nextSlide": "الشريحة التالية",
+      "openMenu": "فتح القائمة",
+      "whatsapp": "تواصل عبر واتساب",
+      "pauseCarousel": "إيقاف العرض",
+      "playCarousel": "تشغيل العرض",
+      "carouselLabel": "عرض الخدمات",
+      "slideLabel": "شريحة",
+      "statusDot": "نقبل الاستشارات الآن",
+      "fallbackKeyword": "رقمي",
+      "fallbackTitle": "حلول برمجية متكاملة",
+      "fallbackDesc": "نبني لك مواقع وتطبيقات وأنظمة برمجية مخصصة لعملك."
+    }
   },
   "footer": {
     "cta": {

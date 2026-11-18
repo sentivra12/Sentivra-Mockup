@@ -43,16 +43,22 @@
  */
 
 import React, {
-  useEffect, useRef, useState, useCallback, useMemo,
+  useEffect, useRef, useState, useCallback, useMemo, lazy, Suspense,
 } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useMotionPreference';
 import { Play, Pause } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+
+/* Mobile hero — lazy so the full component is never bundled on desktop. */
+const HomeHeroMobile = lazy(() => import('@/components/home/HomeHeroMobile'));
+
+/* Desktop stage — lazy so it is NEVER downloaded on phones.
+   The conditional render below ensures the import() never fires on mobile. */
+const HeroVisual = lazy(() => import('@/components/home/HeroVisual'));
 import Sparkle from '@/components/ui/Sparkle';
 import BrandBackground from '@/components/ui/BrandBackground';
-import HeroVisual from '@/components/home/HeroVisual';
 import { useTranslation } from '@/i18n/useTranslation';
 import { useServices } from '@/hooks/useContent';
 import { getIcon } from '@/utils/iconMap';
@@ -189,23 +195,65 @@ const CodeTokens = ({ animate }) => {
   );
 };
 
-/* ─── Main component ─────────────────────────────────────────────────────── */
+/* ─── Thin dispatcher — decides mobile vs desktop ───────────────────────── */
 
 const PremiumHero = ({ hero, trustBadges = [] }) => {
-  const { t, language } = useTranslation();
-  const isRTL            = language === 'ar';
-  const shouldReduceMotion = useReducedMotion();
-  const saveData         = saveDataActive();
-  const lowPower         = shouldReduceMotion || saveData;
-  const animate          = !shouldReduceMotion;
+  /* Mobile detection lives here (before any child-specific hooks).
+     ≤768px viewport OR touch-primary device OR saveData → mobile hero.
+     This is the ONLY hook in this wrapper; all other hooks live in the
+     respective child component so there is no conditional-hook violation. */
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 768px)').matches
+      || window.matchMedia('(hover: none)').matches
+      || saveDataActive();
+  });
+  useEffect(() => {
+    const mq      = window.matchMedia('(max-width: 768px)');
+    const mqHover = window.matchMedia('(hover: none)');
+    const update  = () => setIsMobile(mq.matches || mqHover.matches || saveDataActive());
+    mq.addEventListener('change', update);
+    mqHover.addEventListener('change', update);
+    return () => {
+      mq.removeEventListener('change', update);
+      mqHover.removeEventListener('change', update);
+    };
+  }, []);
 
-  /* ── Video refs (kept for backward compat; not shown in this layout) ── */
-  const videoRef         = useRef(null);
-  const [isPlaying, setIsPlaying]   = useState(false);
-  const [videoError, setVideoError] = useState(false);
-  const showVideo        = hero?.show_background_video !== false;
-  const hasVideo         = showVideo && !lowPower && !videoError &&
-                           (hero?.video_url || hero?.video_webm_url);
+  if (isMobile) {
+    return (
+      <Suspense fallback={<div style={{ height:'100svh', background:'#01120F' }} aria-hidden="true" />}>
+        <HomeHeroMobile hero={hero} trustBadges={trustBadges} />
+      </Suspense>
+    );
+  }
+
+  return (
+    <Suspense fallback={<DesktopHeroFallback />}>
+      <DesktopHero hero={hero} trustBadges={trustBadges} />
+    </Suspense>
+  );
+};
+
+/* ─── Fallback shown while desktop hero lazy-loads ─────────────────────── */
+const DesktopHeroFallback = () => (
+  <div
+    style={{
+      minHeight: 'clamp(360px, 88svh, 940px)',
+      background: 'linear-gradient(135deg, #0D9E82 0%, #06796A 40%, #055A4F 70%, #02231E 100%)',
+    }}
+    aria-hidden="true"
+  />
+);
+
+/* ─── Desktop hero (all original logic, unchanged) ──────────────────────── */
+const DesktopHero = ({ hero, trustBadges = [] }) => {
+  const { t, language }    = useTranslation();
+  const isRTL              = language === 'ar';
+  const shouldReduceMotion = useReducedMotion();
+  const saveData           = saveDataActive();
+  const lowPower           = shouldReduceMotion || saveData;
+  const animate            = !shouldReduceMotion;
 
   /* ── Real data ──────────────────────────────────────────────────────── */
   const { data: services = [] } = useServices();
@@ -232,6 +280,14 @@ const PremiumHero = ({ hero, trustBadges = [] }) => {
   /* ── Trust chips ────────────────────────────────────────────────────── */
   const trustChips = (trustBadges || []).slice(0, 4);
   const getTrustIcon = (name) => getIcon(name, getIcon('Shield'));
+
+  /* ── Video refs ───────────────────────────────────────────────────── */
+  const videoRef         = useRef(null);
+  const [isPlaying, setIsPlaying]   = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const showVideo        = hero?.show_background_video !== false;
+  const hasVideo         = showVideo && !lowPower && !videoError &&
+                           (hero?.video_url || hero?.video_webm_url);
 
   /* ── Video autoplay ─────────────────────────────────────────────────── */
   useEffect(() => {
@@ -285,22 +341,14 @@ const PremiumHero = ({ hero, trustBadges = [] }) => {
 
   return (
     <section
+      data-hero-desktop
       className="relative overflow-hidden flex flex-col"
       style={{
-        minHeight: 'clamp(360px, 88svh, 940px)',
-        /* Light theme: a soft mint veil over the gradient ensures AA text contrast */
+        minHeight: 'clamp(640px, 88svh, 940px)',
         background: 'linear-gradient(135deg, #0D9E82 0%, #06796A 40%, #055A4F 70%, #02231E 100%)',
       }}
       aria-label="Hero section"
     >
-      {/* Mobile-specific height adjustment */}
-      <style>{`
-        @media (max-width: 767px) {
-          section[aria-label="Hero section"] {
-            min-height: clamp(480px, 60vh, 600px) !important;
-          }
-        }
-      `}</style>
       {/* ── Background layers ────────────────────────────────────────── */}
       <BrandBackground grain aurora={!lowPower} grid beam={!lowPower} />
 
@@ -584,10 +632,12 @@ const PremiumHero = ({ hero, trustBadges = [] }) => {
                 /* On desktop, align-self stretch so it matches the text column height */
               }}
             >
-              <HeroVisual
-                services={publishedServices}
-                isRTL={isRTL}
-              />
+              <Suspense fallback={<div style={{ minHeight: 'clamp(280px, 40vw, 460px)' }} aria-hidden="true" />}>
+                <HeroVisual
+                  services={publishedServices}
+                  isRTL={isRTL}
+                />
+              </Suspense>
             </div>
 
           </div>{/* /grid */}
