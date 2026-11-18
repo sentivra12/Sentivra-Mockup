@@ -19,9 +19,44 @@ import React, {
 import { useTranslation }      from '@/i18n/useTranslation';
 import { useMotionPreference } from '@/hooks/useMotionPreference';
 import { useServices, useSiteSettings } from '@/hooks/useContent';
+import { getHeroSlideCopy } from './heroSlideCopy';
 
 /* ══════════════════════ CSS injected once ═══════════════════════════ */
 const CSS = `
+/* Fonts: Cormorant Garamond (Latin display serif) + Aref Ruqaa (Arabic title) */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/cormorant-garamond-latin-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020-007F, U+00A0-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2150-218F, U+FB00-FB4F;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/cormorant-garamond-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020-007F, U+00A0-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2150-218F, U+FB00-FB4F;
+}
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('/fonts/cormorant-garamond-latin-700-italic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0020-007F, U+00A0-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+2150-218F, U+FB00-FB4F;
+}
+@font-face {
+  font-family: 'Aref Ruqaa';
+  src: url('/fonts/aref-ruqaa-arabic-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
 .hhm-root {
   height:100vh; height:100dvh; height:100svh;
   display:flex; flex-direction:column; overflow:hidden;
@@ -121,26 +156,22 @@ const CSS = `
 
 /* particles — full mode: 3 depth layers drifting; calm mode: STATIC but VISIBLE */
 @keyframes hhm-far  {
-  0%,100%{transform:translate3d(0,0,0)}
-  25%    {transform:translate3d(16px,-26px,0)}
-  50%    {transform:translate3d(-12px,-42px,0)}
-  75%    {transform:translate3d(20px,-30px,0)}
+  0%  {transform:translate3d(0,0,0)}
+  100%{transform:translate3d(10px,-20px,0)}
 }
 @keyframes hhm-mid  {
-  0%,100%{transform:translate3d(0,0,0)}
-  33%    {transform:translate3d(-20px,34px,0)}
-  66%    {transform:translate3d(26px,-28px,0)}
+  0%  {transform:translate3d(0,0,0)}
+  100%{transform:translate3d(14px,-28px,0)}
 }
 @keyframes hhm-near {
-  0%,100%{transform:translate3d(0,0,0)}
-  40%    {transform:translate3d(30px,40px,0)}
-  80%    {transform:translate3d(-26px,-36px,0)}
+  0%  {transform:translate3d(0,0,0)}
+  100%{transform:translate3d(-14px,28px,0)}
 }
 @keyframes hhm-twkl { 0%,100%{opacity:var(--ob)} 50%{opacity:calc(var(--ob)*1.8)} }
 
-.hhm-p-far  { animation:hhm-far  28s ease-in-out infinite alternate; will-change:transform; }
-.hhm-p-mid  { animation:hhm-mid  20s ease-in-out infinite alternate; will-change:transform; }
-.hhm-p-near { animation:hhm-near 14s ease-in-out infinite alternate; will-change:transform; }
+.hhm-p-far  { animation:hhm-far  26s ease-in-out infinite alternate; }
+.hhm-p-mid  { animation:hhm-mid  18s ease-in-out infinite alternate; }
+.hhm-p-near { animation:hhm-near 12s ease-in-out infinite alternate; }
 .hhm-p-far.hhm-paused,
 .hhm-p-mid.hhm-paused,
 .hhm-p-near.hhm-paused { animation-play-state:paused; }
@@ -170,7 +201,8 @@ function injectCSS() {
 }
 
 /* ══════════════════════ Sparkle ═════════════════════════════════════ */
-const SPARKLE_D = 'M50 0 C54 28 72 46 100 50 C72 54 54 72 50 100 C46 72 28 54 0 50 C28 46 46 28 50 0 Z';
+// Longer, thinner, more concave points for elegant reference match
+const SPARKLE_D = 'M50 0 C52 30 70 47 100 50 C70 53 52 70 50 100 C48 70 30 53 0 50 C30 47 48 30 50 0 Z';
 
 function SparkleVisual({ animAlt, paused }) {
   const gId = 'hhm-sg';
@@ -180,33 +212,48 @@ function SparkleVisual({ animAlt, paused }) {
       data-anim={animAlt ? 'b' : 'a'}
       style={{
         position: 'relative',
-        /* bigger on tall screens, smaller on short (overridden by @media above) */
-        width:  'clamp(150px, 28svh, 240px)',
-        height: 'clamp(150px, 28svh, 240px)',
+        /* taller than wide (8%), bigger overall to match reference */
+        width:  'clamp(190px, 38vw, 250px)',
+        height: 'clamp(205px, 41vw, 270px)',
         flexShrink: 0,
       }}
     >
-      {/* radial glow — slow drift via .hhm-glow */}
+      {/* Large halo behind sparkle — outer radial + inner glow */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: '-80%',
+          pointerEvents: 'none',
+          background: `
+            radial-gradient(circle at center, rgba(220,255,245,0.25) 0%, transparent 35%),
+            radial-gradient(circle at center, rgba(120,200,175,0.38) 0%, transparent 70%)
+          `,
+        }}
+      />
+      {/* Subtle animated glow drift for depth */}
       <div
         className={`hhm-glow${paused ? ' hhm-paused' : ''}`}
         aria-hidden="true"
         style={{
           position: 'absolute', inset: '-32%', borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(13,158,130,.55) 0%, transparent 68%)',
+          background: 'radial-gradient(circle, rgba(13,158,130,.20) 0%, transparent 68%)',
           pointerEvents: 'none',
         }}
       />
       <svg
         width="100%" height="100%"
-        viewBox="0 0 100 100"
+        viewBox="0 0 100 108"
+        preserveAspectRatio="xMidYMid meet"
         fill="none"
         aria-hidden="true"
         style={{ position: 'relative', display: 'block' }}
       >
         <defs>
           <linearGradient id={gId} x1="50%" y1="0%" x2="50%" y2="100%">
-            <stop offset="0%"   stopColor="#F4FBF8" />
-            <stop offset="100%" stopColor="#B2E8DC" />
+            <stop offset="0%"   stopColor="#f2f7f5" />
+            <stop offset="50%"  stopColor="#d5dedb" />
+            <stop offset="100%" stopColor="#aeb9b6" />
           </linearGradient>
         </defs>
         <path d={SPARKLE_D} fill={`url(#${gId})`} />
@@ -215,42 +262,94 @@ function SparkleVisual({ animAlt, paused }) {
   );
 }
 
-/* ══════════════════════ Particles ═══════════════════════════════════ */
-// 16 dots — [left%, top%, sizePx, opacity, layer(0=far/1=mid/2=near), twinkle, delay]
+/* ══════════════════════ Particles (background stars) ════════════════ */
+// 28 drifting dots split into 3 depth layers (far/mid/near)
+// [left%, top%, sizePx, baseOpacity, layer]
 const DOTS = [
-  [8,12,3,.42,0,false,'0s'], [82,8,3,.38,0,false,'3s'], [35,18,4,.48,0,true,'1.2s'],
-  [65,11,3,.36,0,false,'5s'],[92,28,3,.44,0,false,'2s'], [15,55,4,.54,1,false,'0s'],
-  [72,48,5,.58,1,true,'2.5s'],[48,35,4,.50,1,false,'4s'],[88,62,4,.56,1,false,'1s'],
-  [22,70,4,.52,1,false,'3.5s'],[55,22,3,.40,0,true,'0.8s'],[5,80,5,.60,2,false,'0s'],
-  [78,75,5,.60,2,true,'1.8s'],[42,82,5,.58,2,false,'3s'],[60,58,4,.54,2,false,'0.5s'],
-  [30,42,4,.48,1,true,'2.2s'],[18,32,3,.46,0,false,'1.5s'],[90,46,3,.40,0,true,'3.2s'],
+  // FAR layer (9 dots) — smallest motion, slower
+  [12,8,1.5,.45,'far'],[78,12,2,.50,'far'],[35,18,1.5,.42,'far'],
+  [88,25,2,.48,'far'],[52,32,1.5,.40,'far'],[25,45,2,.52,'far'],
+  [68,55,1.5,.46,'far'],[85,68,2,.50,'far'],[45,75,1.5,.44,'far'],
+  
+  // MID layer (10 dots) — medium motion
+  [15,6,2.5,.62,'mid'],[92,15,2,.58,'mid'],[40,22,2.5,.65,'mid'],
+  [62,35,2,.60,'mid'],[8,42,2.5,.68,'mid'],[75,52,2,.62,'mid'],
+  [32,62,2.5,.70,'mid'],[90,72,2,.58,'mid'],[55,80,2.5,.66,'mid'],
+  [20,85,2,.60,'mid'],
+  
+  // NEAR layer (9 dots) — largest motion, fastest, some emerald tint
+  [50,10,3,.78,'near'],[18,20,2.5,.75,'near'],[82,28,4,.85,'near'],
+  [28,38,2.5,.72,'near'],[65,48,3,.80,'near'],[10,58,3.5,.82,'near'],
+  [42,65,2.5,.76,'near'],[72,78,3,.84,'near'],[60,88,2.5,.74,'near'],
 ];
 
 function Particles({ paused }) {
+  // Group dots by layer
+  const byLayer = { far: [], mid: [], near: [] };
+  DOTS.forEach(dot => byLayer[dot[4]].push(dot));
+  
   return (
     <div aria-hidden="true"
       style={{ position:'absolute',inset:0,pointerEvents:'none',overflow:'hidden',zIndex:0 }}>
-      {[0,1,2].map(layer => (
-        <div key={layer}
-          className={`${['hhm-p-far','hhm-p-mid','hhm-p-near'][layer]}${paused?' hhm-paused':''}`}
-          style={{ position:'absolute', inset:0 }}
-        >
-          {DOTS.filter(d => d[4]===layer).map(([l,t,sz,op,,twk,dly], i) => (
-            <span key={i} data-particle="true"
-              className={twk ? 'hhm-twkl' : undefined}
+      {/* FAR layer container */}
+      <div className={`hhm-p-far${paused ? ' hhm-paused' : ''}`}
+        style={{ position:'absolute',inset:0,willChange:'transform' }}>
+        {byLayer.far.map(([l,t,sz,op], i) => (
+          <span key={`f${i}`} data-particle="true" data-layer="far"
+            className="hhm-twkl"
+            style={{
+              '--ob': op,
+              position:'absolute', left:`${l}%`, top:`${t}%`,
+              width:sz, height:sz, borderRadius:'50%',
+              background:'#FFFFFF',
+              boxShadow: `0 0 ${sz*1.4}px rgba(255,255,255,${op*0.6})`,
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* MID layer container */}
+      <div className={`hhm-p-mid${paused ? ' hhm-paused' : ''}`}
+        style={{ position:'absolute',inset:0,willChange:'transform' }}>
+        {byLayer.mid.map(([l,t,sz,op], i) => (
+          <span key={`m${i}`} data-particle="true" data-layer="mid"
+            className="hhm-twkl"
+            style={{
+              '--ob': op,
+              position:'absolute', left:`${l}%`, top:`${t}%`,
+              width:sz, height:sz, borderRadius:'50%',
+              background:'#FFFFFF',
+              boxShadow: `0 0 ${sz*1.3}px rgba(255,255,255,${op*0.5})`,
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* NEAR layer container */}
+      <div className={`hhm-p-near${paused ? ' hhm-paused' : ''}`}
+        style={{ position:'absolute',inset:0,willChange:'transform' }}>
+        {byLayer.near.map(([l,t,sz,op], i) => {
+          // Some near dots have emerald tint
+          const isEmerald = i % 3 === 0;
+          const bg = isEmerald ? 'rgba(13,158,130,0.85)' : '#FFFFFF';
+          const shadow = isEmerald
+            ? `0 0 ${sz*1.6}px rgba(13,158,130,${op*0.7})`
+            : `0 0 ${sz*1.5}px rgba(255,255,255,${op*0.6})`;
+          
+          return (
+            <span key={`n${i}`} data-particle="true" data-layer="near"
+              className="hhm-twkl"
               style={{
                 '--ob': op,
                 position:'absolute', left:`${l}%`, top:`${t}%`,
                 width:sz, height:sz, borderRadius:'50%',
-                background: layer === 2 ? '#0D9E82' : '#FFFFFF',
-                opacity:op,
-                boxShadow: `0 0 ${sz*1.5}px rgba(${layer === 2 ? '13,158,130' : '255,255,255'},${op*0.6})`,
-                animationDelay: twk ? dly : undefined,
+                background: bg,
+                boxShadow: shadow,
               }}
             />
-          ))}
-        </div>
-      ))}
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -261,9 +360,10 @@ function CitySkyline() {
     <svg viewBox="0 0 414 80" preserveAspectRatio="none" aria-hidden="true"
       style={{ position:'absolute',bottom:0,left:0,right:0,
                width:'100%',height:'clamp(44px,7svh,72px)',
-               pointerEvents:'none',zIndex:1,opacity:.12 }}
+               pointerEvents:'none',zIndex:1,opacity:.9,
+               filter:'brightness(0.7)' }}
     >
-      <path fill="#26B59A"
+      <path fill="#021512" opacity="0.9"
         d="M0,80 L0,52 L10,52 L10,38 L18,38 L18,28 L26,28 L26,38 L34,38 L34,52
            L40,52 L40,42 L48,42 L48,30 L56,30 L56,20 L64,20 L64,30 L72,30 L72,42
            L78,42 L78,35 L86,35 L86,25 L94,25 L94,15 L102,15 L102,25 L110,25
@@ -277,6 +377,15 @@ function CitySkyline() {
            L328,42 L336,42 L336,56 L344,56 L344,46 L352,46 L352,36 L360,36
            L360,46 L368,46 L368,58 L376,58 L376,48 L384,48 L384,36 L392,36
            L392,48 L400,48 L400,60 L414,60 L414,80 Z"/>
+      {/* Tiny teal city lights */}
+      <circle cx="15" cy="45" r="1.2" fill="rgba(13,158,130,0.4)" />
+      <circle cx="62" cy="24" r="1.2" fill="rgba(13,158,130,0.4)" />
+      <circle cx="98" cy="18" r="1.2" fill="rgba(13,158,130,0.4)" />
+      <circle cx="138" cy="26" r="1.2" fill="rgba(13,158,130,0.4)" />
+      <circle cx="200" cy="28" r="1.2" fill="rgba(13,158,130,0.4)" />
+      <circle cx="262" cy="30" r="1.2" fill="rgba(13,158,130,0.4)" />
+      <circle cx="324" cy="32" r="1.2" fill="rgba(13,158,130,0.4)" />
+      <circle cx="380" cy="42" r="1.2" fill="rgba(13,158,130,0.4)" />
     </svg>
   );
 }
@@ -314,6 +423,7 @@ export default function HomeHeroMobile({ hero }) {
       return [{
         id:'fb',
         keyword: isRTL ? 'برامج' : 'SOFTWARE',
+        headline: null,
         title:   isRTL ? 'حلول برمجية متكاملة' : 'Complete Software Solutions',
         description: isRTL
           ? 'نبني منتجات رقمية تدفع أعمالك إلى الأمام.'
@@ -321,15 +431,33 @@ export default function HomeHeroMobile({ hero }) {
       }];
     }
     return active.map(s => {
-      const title = (isRTL ? (s.title_ar||s.title_en) : (s.title_en||s.title_ar)) || s.title || '';
-      const desc  = (isRTL ? (s.description_ar||s.description_en) : (s.description_en||s.description_ar))
-                    || s.description
-                    || (isRTL
-                        ? 'نقدم حلولاً برمجية متكاملة تلبي احتياجات عملك.'
-                        : 'We deliver complete software solutions tailored to your business needs.');
-      let kw = s.slug ? s.slug.split('-')[0].toUpperCase() : title.split(/\s+/)[0].toUpperCase();
+      let kw = s.slug ? s.slug.split('-')[0].toUpperCase() : '';
+      if (!kw && s.title) kw = s.title.split(/\s+/)[0].toUpperCase();
       kw = kw.slice(0, 7);
-      return { id:s.id, keyword:kw, title, description:desc };
+      
+      const lang = isRTL ? 'ar' : 'en';
+      const copy = getHeroSlideCopy({ ...s, keyword: kw }, lang);
+      
+      // For description: use copy, or service's short description, or fallback
+      let desc = copy.description;
+      if (!desc) {
+        desc = (isRTL ? (s.description_ar||s.description_en) : (s.description_en||s.description_ar))
+               || s.description
+               || (isRTL
+                   ? 'نقدم حلولاً برمجية متكاملة تلبي احتياجات عملك.'
+                   : 'We deliver complete software solutions tailored to your business needs.');
+      }
+      
+      // Title (not used as headline, only for aria/fallback)
+      const title = (isRTL ? (s.title_ar||s.title_en) : (s.title_en||s.title_ar)) || s.title || '';
+      
+      return {
+        id: s.id,
+        keyword: kw,
+        headline: copy.headline, // null if not found or matches keyword
+        title,
+        description: desc,
+      };
     });
   }, [rawServices, isRTL]);
 
@@ -430,8 +558,8 @@ export default function HomeHeroMobile({ hero }) {
       className="hhm-root"
       style={{
         position: 'relative',
-        /* near-black at top → dark emerald at bottom; NO light mint */
-        background: 'linear-gradient(to bottom, #03130F 0%, #021A14 30%, #03302A 65%, #044D3A 100%)',
+        /* darker reference match: near-black teal top → deep green bottom */
+        background: 'linear-gradient(to bottom, #020f0d 0%, #04211c 45%, #0b3d33 100%)',
         paddingBottom: 'max(14px, env(safe-area-inset-bottom, 0px))',
       }}
       onTouchStart={onTouchStart}
@@ -476,37 +604,69 @@ export default function HomeHeroMobile({ hero }) {
               </div>
 
               {/* keyword — huge, display font */}
-              <div className="hhm-kw" style={{ flexShrink:0, width:'100%', marginBottom:2,
-                textAlign: isRTL ? 'right' : 'left' }}>
+              <div className="hhm-kw" style={{
+                flexShrink:0,
+                width:'100%',
+                marginBottom:6,
+              }}>
                 <span className="hhm-kw-text" style={{
                   display: 'inline-block',
-                  fontSize: 'clamp(64px, 18vw, 96px)',
-                  lineHeight: .88, fontWeight: 800,
-                  fontFamily: FONT,
-                  color: W, letterSpacing: '-0.03em',
+                  fontSize: 'clamp(72px, 22vw, 104px)',
+                  lineHeight: .88,
+                  fontWeight: 700,
+                  fontFamily: "'Cormorant Garamond', Georgia, 'Times New Roman', serif",
+                  color: '#eafaf5',
+                  letterSpacing: '-0.01em',
+                  textShadow: 'none',
                 }}>
                   {slide.keyword}
                 </span>
               </div>
 
-              {/* title */}
-              <h1 className="hhm-ttl" dir="auto" style={{
-                flexShrink:0, width:'100%', margin:'0 0 6px',
-                textAlign: isRTL ? 'right' : 'left',
-                fontSize: 'clamp(24px, 6.5vw, 32px)', fontWeight:700,
-                lineHeight: isRTL ? 1.4 : 1.2, color: W,
-                letterSpacing: isRTL ? 0 : '-0.02em',
-                fontFamily: FONT,
-              }}>
-                {slide.title}
-              </h1>
+              {/* headline (marketing line, hide if missing) */}
+              {slide.headline && (
+                <h2 className="hhm-headline" dir="auto" lang={isRTL ? 'ar' : 'en'} style={{
+                  flexShrink:0,
+                  width:'92%',
+                  maxWidth:'92%',
+                  margin:0,
+                  marginBlockEnd: 10,
+                  fontSize: isRTL ? 'clamp(32px, 8.5vw, 34px)' : 'clamp(30px, 7.5vw, 32px)',
+                  fontWeight: 700,
+                  lineHeight: isRTL ? 1.5 : 1.15,
+                  color: '#FFFFFF',
+                  fontFamily: isRTL
+                    ? "'Aref Ruqaa', 'Traditional Arabic', serif"
+                    : "'Cormorant Garamond', Georgia, 'Times New Roman', serif",
+                  fontStyle: isRTL ? 'normal' : 'italic',
+                  letterSpacing: 'normal',
+                  textTransform: 'none',
+                  textWrap: 'balance',
+                }}>
+                  {slide.headline}
+                </h2>
+              )}
 
               {/* description */}
-              <p className="hhm-dsc hhm-desc" dir="auto" style={{
-                flexShrink:0, margin:'0 0 10px', fontSize:15, lineHeight:1.5,
-                color: D, textAlign: isRTL ? 'right' : 'left',
-                display:'-webkit-box', WebkitLineClamp:3, WebkitBoxOrient:'vertical',
+              <p className="hhm-dsc hhm-desc" dir="auto" lang={isRTL ? 'ar' : 'en'} style={{
+                flexShrink:0,
+                width:'92%',
+                maxWidth:'92%',
+                margin:0,
+                marginBlockEnd: 18,
+                fontSize: isRTL ? 17 : 16,
+                lineHeight: isRTL ? 1.85 : 1.6,
+                color: 'rgba(255,255,255,0.72)',
+                fontFamily: isRTL
+                  ? "'IBM Plex Sans Arabic', system-ui, sans-serif"
+                  : "'Plus Jakarta Sans', system-ui, sans-serif",
+                letterSpacing: 'normal',
+                textTransform: 'none',
+                display:'-webkit-box',
+                WebkitLineClamp:3,
+                WebkitBoxOrient:'vertical',
                 overflow:'hidden',
+                textWrap: 'pretty',
               }}>
                 {slide.description}
               </p>
@@ -519,35 +679,43 @@ export default function HomeHeroMobile({ hero }) {
       <div style={{
         flexShrink:0,
         paddingInlineStart:20, paddingInlineEnd:20,
-        paddingTop:8, paddingBottom:6,
+        paddingTop:14, paddingBottom:6,
       }}>
         {/* thin divider */}
-        <div style={{ height:1, background:'rgba(255,255,255,0.14)', marginBottom:7 }} />
-        {/* first line: "A solution by SENTIVRA" inline */}
+        <div style={{ height:1, background:'rgba(255,255,255,0.15)', marginBottom:14 }} />
+        {/* first line: "A solution by / من حلول" + SENTIVRA inline */}
         <div style={{
           display:'flex', alignItems:'baseline',
-          flexDirection: isRTL ? 'row-reverse' : 'row',
-          gap:5, marginBottom:3,
+          gap:6, marginBottom:3,
         }}>
           <span style={{
-            fontSize:12, fontWeight:500, letterSpacing:'0.04em',
+            fontSize: isRTL ? 15 : 14,
+            fontWeight:500,
+            letterSpacing:'0.02em',
             color:'rgba(255,255,255,0.45)',
           }}>
             {lockupBy}
           </span>
           <span style={{
-            fontSize:20, fontWeight:800,
-            fontFamily: FONT,
-            letterSpacing:'0.03em', color:'rgba(255,255,255,0.90)',
+            fontSize:24,
+            fontWeight:600,
+            fontFamily: "'Cormorant Garamond', Georgia, 'Times New Roman', serif",
+            fontVariantCaps: 'all-small-caps',
+            letterSpacing:'0.04em',
+            color:'rgba(255,255,255,0.95)',
             lineHeight:1,
           }}>
             SENTIVRA
           </span>
         </div>
-        {/* second line */}
+        {/* second line - SOFTWARE SOLUTIONS */}
         <span style={{
-          fontSize:10, fontWeight:700, letterSpacing:'0.3em',
-          textTransform:'uppercase', color:'rgba(255,255,255,0.32)',
+          fontSize:12,
+          fontWeight:700,
+          fontFamily: "'Cormorant Garamond', Georgia, 'Times New Roman', serif",
+          letterSpacing:'0.35em',
+          textTransform:'uppercase',
+          color:'rgba(255,255,255,0.32)',
         }}>
           SOFTWARE SOLUTIONS
         </span>
@@ -576,20 +744,19 @@ export default function HomeHeroMobile({ hero }) {
         flexShrink:0,
         display:'flex', alignItems:'center', gap:10,
         paddingInlineStart:16, paddingInlineEnd:16,
-        flexDirection: isRTL ? 'row-reverse' : 'row',
         position:'relative', zIndex:10,
       }}>
         {/* WhatsApp */}
         <a href={`https://wa.me/${whatsappNum}`} target="_blank" rel="noopener noreferrer"
           aria-label="WhatsApp"
-          style={{ width:52, height:52, borderRadius:'50%', flexShrink:0,
+          style={{ width:56, height:56, borderRadius:'50%', flexShrink:0,
             background:'#FFFFFF', display:'flex', alignItems:'center',
             justifyContent:'center', color:'#128C7E', textDecoration:'none' }}>
           <WaIcon />
         </a>
 
         {/* progress segments */}
-        <div style={{ flex:1, display:'flex', gap:5, alignItems:'center', minWidth:0 }}>
+        <div style={{ flex:1, display:'flex', gap:4, alignItems:'center', minWidth:0 }}>
           {slides.map((_, i) => {
             const isDone = i < active;
             const isBar  = i === active;
@@ -601,10 +768,19 @@ export default function HomeHeroMobile({ hero }) {
             
             return (
               <button key={i} onClick={() => goTo(i)} aria-label={`Slide ${i+1}`}
-                style={{ flex:1, height:3, borderRadius:2,
-                  background:'rgba(255,255,255,0.20)',
-                  overflow:'hidden', position:'relative',
-                  border:'none', padding:0, cursor:'pointer' }}>
+                style={{
+                  minWidth: total > 5 ? 40 : 48,
+                  maxWidth: 56,
+                  flex: '1 1 0',
+                  height: 3,
+                  borderRadius: 2,
+                  background:'rgba(255,255,255,0.25)',
+                  overflow:'hidden',
+                  position:'relative',
+                  border:'none',
+                  padding:0,
+                  cursor:'pointer'
+                }}>
                 <div key={`${i}-${active}`} className={cls}
                   style={{ position:'absolute', inset:0, background:'#FFFFFF' }} />
               </button>
@@ -615,11 +791,11 @@ export default function HomeHeroMobile({ hero }) {
         {/* prev */}
         <button onClick={goPrev} aria-label={isRTL ? 'التالي' : 'Previous'}
           style={{ width:44, height:44, borderRadius:'50%', flexShrink:0,
-            background:'transparent', border:`1px solid ${BF}`,
+            background:'transparent', border:'1px solid rgba(255,255,255,0.5)',
             display:'flex', alignItems:'center', justifyContent:'center',
-            color:W, cursor:'pointer' }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.8"
+            color:'#FFFFFF', cursor:'pointer' }}>
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2"
               strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
@@ -627,11 +803,11 @@ export default function HomeHeroMobile({ hero }) {
         {/* next */}
         <button onClick={goNext} aria-label={isRTL ? 'السابق' : 'Next'}
           style={{ width:44, height:44, borderRadius:'50%', flexShrink:0,
-            background:'transparent', border:`1px solid ${BF}`,
+            background:'transparent', border:'1px solid rgba(255,255,255,0.5)',
             display:'flex', alignItems:'center', justifyContent:'center',
-            color:W, cursor:'pointer' }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.8"
+            color:'#FFFFFF', cursor:'pointer' }}>
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2"
               strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
