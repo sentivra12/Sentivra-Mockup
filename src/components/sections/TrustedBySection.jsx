@@ -65,23 +65,23 @@ function ClientBadge({ client, isRTL, animate }) {
       role={client.website_url ? undefined : 'img'}
       aria-label={name}
     >
-      {/* Badge tile — stronger glass effect for visibility */}
+      {/* Badge tile — 72px on mobile, 96px on desktop */}
       <div
         style={{
-          width: 96,
-          height: 96,
-          borderRadius: 20,
+          width: 72,
+          height: 72,
+          borderRadius: 18,
           background: 'rgba(255,255,255,0.80)',
-          border: '1px solid rgba(13,158,130,0.35)',
-          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(13,158,130,0.20)',
+          backdropFilter: 'blur(12px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: 16,
-          boxShadow: '0 6px 20px rgba(13,158,130,0.18), 0 0 0 1px rgba(255,255,255,0.60) inset',
+          padding: 10,
+          boxShadow: '0 2px 8px rgba(13,158,130,0.08)',
           transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
         }}
-        className="group-hover:scale-105 group-hover:shadow-[0_10px_32px_rgba(13,158,130,0.28)] dark:bg-[rgba(255,255,255,0.12)] dark:border-[rgba(13,158,130,0.45)] dark:shadow-[0_6px_20px_rgba(0,0,0,0.40),0_0_0_1px_rgba(255,255,255,0.08)_inset]"
+        className="md:w-24 md:h-24 md:rounded-[20px] md:p-4 md:shadow-[0_6px_20px_rgba(13,158,130,0.18),0_0_0_1px_rgba(255,255,255,0.60)_inset] group-hover:scale-105 group-hover:shadow-[0_10px_32px_rgba(13,158,130,0.28)] dark:bg-[rgba(255,255,255,0.12)] dark:border-[rgba(13,158,130,0.30)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.30)] md:dark:shadow-[0_6px_20px_rgba(0,0,0,0.40),0_0_0_1px_rgba(255,255,255,0.08)_inset]"
       >
         {hasImage ? (
           <img
@@ -309,15 +309,15 @@ export default function TrustedBySection() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-16 md:py-20 overflow-hidden"
+      className="relative py-5 md:py-16 md:overflow-hidden"
       style={{
-        background: 'var(--color-background)',
+        background: 'var(--color-surface)',
       }}
       aria-label="Trusted by"
     >
-      {/* Subtle bottom separator line (between this section and next) */}
+      {/* Subtle bottom separator line (between this section and next) — desktop only */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-px"
+        className="absolute bottom-0 left-0 right-0 h-px hidden md:block"
         style={{
           background: 'linear-gradient(90deg, transparent, rgba(13,158,130,0.15), transparent)',
         }}
@@ -325,13 +325,13 @@ export default function TrustedBySection() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
+        {/* Header — compact on mobile */}
+        <div className="text-center mb-3 md:mb-12">
           {sectionSettings?.eyebrow ? (
-            <div className="inline-flex items-center gap-2 mb-3">
+            <div className="inline-flex items-center gap-2">
               <p
                 style={{
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.12em',
@@ -341,13 +341,13 @@ export default function TrustedBySection() {
               >
                 {isRTL ? sectionSettings.eyebrow_ar || sectionSettings.eyebrow : sectionSettings.eyebrow}
               </p>
-              <Sparkle size={14} color="#26B59A" glow={animate} animate={animate} />
+              <Sparkle size={12} color="#26B59A" glow={animate} animate={animate} />
             </div>
           ) : (
-            <div className="inline-flex items-center gap-2 mb-3">
+            <div className="inline-flex items-center gap-2">
               <p
                 style={{
-                  fontSize: 11,
+                  fontSize: 13,
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   letterSpacing: '0.12em',
@@ -357,17 +357,19 @@ export default function TrustedBySection() {
               >
                 {isRTL ? 'موثوق به' : 'Trusted By'}
               </p>
-              <Sparkle size={14} color="#26B59A" glow={animate} animate={animate} />
+              <Sparkle size={12} color="#26B59A" glow={animate} animate={animate} />
             </div>
           )}
 
           {sectionSettings?.title && (
             <h2
+              className="hidden md:block"
               style={{
                 fontSize: 'clamp(24px, 3vw, 32px)',
                 fontWeight: 800,
                 lineHeight: 1.2,
                 color: 'var(--color-text)',
+                marginTop: 12,
                 marginBottom: 8,
               }}
             >
@@ -377,6 +379,7 @@ export default function TrustedBySection() {
 
           {sectionSettings?.subtitle && (
             <p
+              className="hidden md:block"
               style={{
                 fontSize: 15,
                 color: 'var(--color-text-muted)',
@@ -389,11 +392,11 @@ export default function TrustedBySection() {
           )}
         </div>
 
-        {/* Logos strip */}
+        {/* Logos strip — horizontal row on mobile, gap 12px */}
         {!useMarquee ? (
           /* ── Static grid (< 6 logos or reduced motion) ────────────────── */
           <div
-            className="flex flex-wrap items-center justify-center gap-8"
+            className="flex flex-wrap items-center justify-center gap-3 md:gap-8"
             role="list"
             aria-label="Client logos"
           >
@@ -406,24 +409,24 @@ export default function TrustedBySection() {
         ) : (
           /* ── Marquee (6+ logos, motion allowed) ───────────────────────── */
           <div className="relative">
-            {/* Edge fade masks */}
+            {/* Edge fade masks — hidden on mobile */}
             <div
-              className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
+              className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none hidden md:block"
               style={{
-                background: `linear-gradient(to right, var(--color-background), transparent)`,
+                background: `linear-gradient(to right, var(--color-surface), transparent)`,
               }}
               aria-hidden="true"
             />
             <div
-              className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
+              className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none hidden md:block"
               style={{
-                background: `linear-gradient(to left, var(--color-background), transparent)`,
+                background: `linear-gradient(to left, var(--color-surface), transparent)`,
               }}
               aria-hidden="true"
             />
 
             <div
-              className="space-y-8"
+              className="space-y-0 md:space-y-8"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
               onFocus={() => setIsPaused(true)}
@@ -432,9 +435,9 @@ export default function TrustedBySection() {
               aria-label="Client logos"
             >
               {/* Row 1 */}
-              <div className="overflow-hidden">
+              <div className="overflow-x-auto md:overflow-hidden -mx-4 px-4 md:mx-0 md:px-0">
                 <div
-                  className="flex gap-8 items-center"
+                  className="flex gap-3 md:gap-8 items-center"
                   style={{
                     width: 'fit-content',
                     animation: paused
@@ -451,9 +454,9 @@ export default function TrustedBySection() {
                 </div>
               </div>
 
-              {/* Row 2 (opposite direction) */}
+              {/* Row 2 (opposite direction) — hidden on mobile */}
               {useTwoRows && (
-                <div className="overflow-hidden">
+                <div className="overflow-hidden hidden md:block">
                   <div
                     className="flex gap-8 items-center"
                     style={{

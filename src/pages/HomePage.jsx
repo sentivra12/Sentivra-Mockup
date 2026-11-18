@@ -24,7 +24,7 @@ import PremiumTestimonials from '@/components/home/PremiumTestimonials';
 import PremiumCTA from '@/components/home/PremiumCTA';
 import PageTransition from '@/components/PageTransition';
 import TrustedBySection from '@/components/sections/TrustedBySection';
-import OurImpactSection from '@/components/sections/OurImpactSection';
+import CompactStats from '@/components/home/CompactStats';
 import { LoadingState, ErrorState } from '@/components/ui/EmptyState';
 import { useTranslation } from '@/i18n/useTranslation';
 import { SEO, useSEO } from '@/components/SEO';
@@ -95,8 +95,8 @@ const HomePage = () => {
       {/* Premium Services Section */}
       <PremiumServices services={services} featured={true} />
 
-      {/* Our Impact Section - New Dark Band Design */}
-      <OurImpactSection />
+      {/* Stats Section - Compact Design */}
+      <CompactStats stats={stats} />
 
       {/* Premium Marquee Band #1 */}
       <PremiumMarqueeBand />
