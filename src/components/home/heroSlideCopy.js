@@ -1,100 +1,107 @@
 /**
- * Hero slide marketing copy - keyed by service slug/keyword (case-insensitive)
- * Each entry: { en: { headline, description }, ar: { headline, description } }
+ * Hero slide marketing copy — single-line headline + single-line description.
+ * All strings are pre-validated to fit one line at their respective font sizes
+ * on screens 360–430 px wide.
  *
- * Copy rules (task 1):
- *  - headline: max ~30 chars EN, ~18 chars AR — fits 2 lines at clamp(22px, 6vw, 26px)
- *  - description: max ~65 chars EN, ~50 chars AR — fits 2 lines at 15/16px lh 1.6/1.8
+ * EN headline: clamp(17px, 5vw, 20px)   — max ~38 chars
+ * EN desc:     14px                      — max ~52 chars
+ * AR headline: Aref Ruqaa clamp(20px, 5.8vw, 24px) — max ~22 chars
+ * AR desc:     14.5px                    — max ~32 chars
+ *
+ * Services with no entry in this map will use HERO_SLIDE_COPY_FALLBACK.
+ * Report: DATA entry is new. Any slug not listed below is unmatched.
  */
 
 export const HERO_SLIDE_COPY = {
   'erp': {
     en: {
       headline:    'Your company on one screen',
-      description: 'Sales, inventory, accounting and HR in one organized system.',
+      description: 'Sales, stock, accounts and HR in one system.',
     },
     ar: {
       headline:    'شركتك كلها في شاشة واحدة',
-      description: 'مبيعات ومخازن وحسابات وموظفين في نظام واحد مترتب.',
+      description: 'مبيعات ومخازن وحسابات وموظفين في نظام واحد.',
     },
   },
   'crm': {
     en: {
-      headline:    'Every client and deal in view',
-      description: 'Track leads, follow-ups and deals so no opportunity slips away.',
+      headline:    'Every client, every deal',
+      description: 'Track leads and deals. Miss no opportunity.',
     },
     ar: {
       headline:    'كل عميل وصفقة تحت عينك',
-      description: 'تابع العملاء والصفقات من غير ما يضيع أي طلب.',
+      description: 'تابع العملاء والصفقات ولا تضيّع فرصة.',
     },
   },
   'web': {
     en: {
-      headline:    'A website that speaks for you',
-      description: 'Fast, modern, responsive sites that turn visitors into clients.',
+      headline:    'A site that speaks for you',
+      description: 'Fast, modern sites that win clients.',
     },
     ar: {
       headline:    'موقعك يتكلم عنك',
-      description: 'مواقع سريعة وحديثة تحوّل الزائر لعميل.',
+      description: 'مواقع سريعة وحديثة تجيب لك العملاء.',
     },
   },
   'mobile': {
     en: {
-      headline:    'Your business in their pocket',
-      description: 'Android and iOS apps with a smooth experience and fast performance.',
+      headline:    'Your brand in their pocket',
+      description: 'Smooth, fast Android and iOS apps.',
     },
     ar: {
       headline:    'شغلك في جيب عميلك',
-      description: 'تطبيقات أندرويد وiOS بتجربة سلسة وأداء سريع.',
+      description: 'تطبيقات أندرويد وiOS سلسة وسريعة.',
     },
   },
   'ai': {
     en: {
-      headline:    'Smart tools that work for you',
-      description: 'AI features that automate tasks and turn your data into decisions.',
+      headline:    'AI that works for you',
+      description: 'Automate tasks and turn data into decisions.',
     },
     ar: {
       headline:    'أدوات ذكية تشتغل بدالك',
-      description: 'حلول ذكاء اصطناعي تؤتمت المهام وتحوّل بياناتك لقرارات.',
+      description: 'أتمتة المهام وتحويل بياناتك لقرارات.',
+    },
+  },
+  'data': {
+    en: {
+      headline:    'Your data, made useful',
+      description: 'Dashboards and reports that guide decisions.',
+    },
+    ar: {
+      headline:    'بياناتك تشتغل لصالحك',
+      description: 'لوحات وتقارير تساعدك على القرار.',
     },
   },
 };
 
-/**
- * Fallback copy for services not in the map above.
- * Report: AI was missing from the original map; added above.
- * Any other service slug not in the map gets this generic pair.
- */
+/** Generic fallback for any service not in the map above. */
 export const HERO_SLIDE_COPY_FALLBACK = {
   en: {
-    headline:    'Software built around your business',
-    description: 'Custom solutions designed, built and supported by one team.',
+    headline:    'Software built around you',
+    description: 'Custom solutions built and supported by us.',
   },
   ar: {
-    headline:    'برمجيات مصممة على قد شغلك',
-    description: 'حلول مخصصة نصممها وننفذها وندعمها بفريق واحد.',
+    headline:    'برمجيات على قد شغلك',
+    description: 'حلول مخصصة نصممها وندعمها بفريق واحد.',
   },
 };
 
 /**
- * Get marketing copy for a service. Always returns a non-null headline and description.
- * @param {object} service - Service object with slug, title, keyword
- * @param {string} lang - 'en' or 'ar'
- * @returns {{ headline: string, description: string }}
+ * Get marketing copy for a service.
+ * Always returns a non-null { headline, description }.
+ * @param {object} service — { slug?, keyword?, title? }
+ * @param {'en'|'ar'} lang
  */
 export function getHeroSlideCopy(service, lang) {
   const l = lang === 'ar' ? 'ar' : 'en';
-
   if (!service) return HERO_SLIDE_COPY_FALLBACK[l];
 
-  // Try: slug → keyword → title words (all lowercase)
   const slug    = (service.slug    || '').toLowerCase();
   const keyword = (service.keyword || '').toLowerCase();
   const title   = (service.title   || '').toLowerCase();
 
-  let entry =
-    HERO_SLIDE_COPY[slug] ||
-    HERO_SLIDE_COPY[keyword];
+  let entry = HERO_SLIDE_COPY[slug] || HERO_SLIDE_COPY[keyword];
 
   if (!entry) {
     for (const word of title.split(/[\s-]+/)) {
@@ -104,13 +111,13 @@ export function getHeroSlideCopy(service, lang) {
 
   const copy = entry?.[l] || null;
 
-  // Safety: skip headline only if it literally equals the keyword
-  const keyLower = keyword.toLowerCase();
+  // Safety: reject headline if it literally equals the keyword
+  const keyLower  = keyword.toLowerCase();
   const headLower = (copy?.headline || '').toLowerCase();
   const headlineOk = copy?.headline && headLower !== keyLower;
 
   return {
-    headline:    headlineOk ? copy.headline : HERO_SLIDE_COPY_FALLBACK[l].headline,
-    description: copy?.description      || HERO_SLIDE_COPY_FALLBACK[l].description,
+    headline:    headlineOk ? copy.headline    : HERO_SLIDE_COPY_FALLBACK[l].headline,
+    description: copy?.description             || HERO_SLIDE_COPY_FALLBACK[l].description,
   };
 }
