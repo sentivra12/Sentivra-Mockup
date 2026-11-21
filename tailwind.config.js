@@ -14,6 +14,24 @@ module.exports = {
       screens: { '2xl': '1400px' },
     },
     extend: {
+      /* ── Type scale — reduced ~12–15% from Tailwind defaults ──────────── */
+      fontSize: {
+        // BEFORE → AFTER (px reference at 1rem=16px)
+        xs:   ['0.75rem',  { lineHeight: '1.1rem'  }],  // 12px unchanged (min safe)
+        sm:   ['0.8125rem',{ lineHeight: '1.25rem' }],  // 14→13px
+        base: ['0.9375rem',{ lineHeight: '1.5rem'  }],  // 16→15px
+        lg:   ['1rem',     { lineHeight: '1.625rem'}],  // 18→16px
+        xl:   ['1.125rem', { lineHeight: '1.75rem' }],  // 20→18px
+        '2xl':['1.3125rem',{ lineHeight: '1.9rem'  }],  // 24→21px
+        '3xl':['1.625rem', { lineHeight: '2.1rem'  }],  // 30→26px
+        '4xl':['1.9375rem',{ lineHeight: '2.4rem'  }],  // 36→31px
+        '5xl':['2.5625rem',{ lineHeight: '1.1'     }],  // 48→41px
+        '6xl':['3.1875rem',{ lineHeight: '1'       }],  // 60→51px
+        '7xl':['3.75rem',  { lineHeight: '1'       }],  // 72→60px
+        '8xl':['4.75rem',  { lineHeight: '1'       }],  // 96→76px
+        '9xl':['6rem',     { lineHeight: '1'       }],  // 128→96px
+      },
+
       /* ── Fonts ─────────────────────────────────────────────────────────── */
       fontFamily: {
         sans: [

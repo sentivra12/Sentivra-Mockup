@@ -201,11 +201,10 @@ const CSS = `
 .hhm-twkl { animation:hhm-twkl 5s ease-in-out infinite; }
 [data-motion="calm"] .hhm-twkl { animation:hhm-twkl 6s ease-in-out infinite; }
 
-/* short screens ≤700px height: tighten sizes, 2-line desc */
+/* short screens ≤700px height: tighten sizes */
 @media (max-height:700px) {
-  .hhm-spk-wrap { width:clamp(90px,18svh,140px) !important; height:clamp(90px,18svh,140px) !important; }
-  .hhm-kw-text  { font-size:clamp(52px,15vw,76px) !important; }
-  .hhm-desc     { -webkit-line-clamp:2 !important; }
+  .hhm-spk-wrap { width:clamp(90px,18svh,140px); height:clamp(90px,18svh,140px); }
+  .hhm-kw-text  { font-size:clamp(48px,13vw,66px); }
 }
 `;
 
@@ -443,40 +442,25 @@ export default function HomeHeroMobile({ hero }) {
       return [{
         id:'fb',
         keyword: isRTL ? 'برامج' : 'SOFTWARE',
-        headline: null,
-        title:   isRTL ? 'حلول برمجية متكاملة' : 'Complete Software Solutions',
+        headline: isRTL ? 'برمجيات مصممة على قد شغلك' : 'Software built around your business',
         description: isRTL
-          ? 'نبني منتجات رقمية تدفع أعمالك إلى الأمام.'
-          : 'We build digital products that move your business forward.',
+          ? 'حلول مخصصة نصممها وننفذها وندعمها بفريق واحد.'
+          : 'Custom solutions designed, built and supported by one team.',
       }];
     }
     return active.map(s => {
       let kw = s.slug ? s.slug.split('-')[0].toUpperCase() : '';
       if (!kw && s.title) kw = s.title.split(/\s+/)[0].toUpperCase();
       kw = kw.slice(0, 7);
-      
+
       const lang = isRTL ? 'ar' : 'en';
       const copy = getHeroSlideCopy({ ...s, keyword: kw }, lang);
-      
-      // For description: use copy, or service's short description, or fallback
-      let desc = copy.description;
-      if (!desc) {
-        desc = (isRTL ? (s.description_ar||s.description_en) : (s.description_en||s.description_ar))
-               || s.description
-               || (isRTL
-                   ? 'نقدم حلولاً برمجية متكاملة تلبي احتياجات عملك.'
-                   : 'We deliver complete software solutions tailored to your business needs.');
-      }
-      
-      // Title (not used as headline, only for aria/fallback)
-      const title = (isRTL ? (s.title_ar||s.title_en) : (s.title_en||s.title_ar)) || s.title || '';
-      
+      // getHeroSlideCopy now always returns non-null headline + description
       return {
         id: s.id,
         keyword: kw,
-        headline: copy.headline, // null if not found or matches keyword
-        title,
-        description: desc,
+        headline: copy.headline,
+        description: copy.description,
       };
     });
   }, [rawServices, isRTL]);
@@ -635,7 +619,21 @@ export default function HomeHeroMobile({ hero }) {
           let cls = 'hhm-slide';
           if (isActive) cls += ' hhm-active';
           if (isLeaving) cls += ' hhm-leaving';
-          
+
+          // Per-keyword font scaling so long words (MOBILE=6) and short ones (ERP=3)
+          // fill the same visual weight without overflowing the container.
+          // Available width ? viewport - 40px side padding.
+          // Cormorant Garamond caps avg char width ? 0.62 � font-size.
+          const letters = Math.max(slide.keyword.length, 1);
+          const kwFontSize = `min(76px, calc((100vw - 40px) / ${(letters * 0.62).toFixed(2)}))`;
+
+          // Headline: 2-line fixed height (worst case = 2 � 26px � lh)
+          const hlLH = isRTL ? '1.4' : '1.25';
+          const hlH  = isRTL ? 'calc(2 * 26px * 1.4)' : 'calc(2 * 26px * 1.25)';
+
+          // Description: 2-line fixed height
+          const dscH = isRTL ? 'calc(2 * 16px * 1.8)' : 'calc(2 * 15px * 1.6)';
+
           return (
             <div
               key={slide.id}
@@ -645,78 +643,91 @@ export default function HomeHeroMobile({ hero }) {
               {...(!isActive ? { inert:'' } : {})}
               className={cls}
             >
-              {/* sparkle — fills leftover space above text */}
+              {/* sparkle � fills leftover space above text */}
               <div style={{ flex:'1 1 0', minHeight:0,
                 display:'flex', alignItems:'center', justifyContent:'center',
                 paddingTop:8, paddingBottom:4 }}>
                 <SparkleVisual animAlt={spkAlt} paused={paused||!isActive} />
               </div>
 
-              {/* keyword — huge, display font */}
+              {/* ?? KEYWORD SLOT � 1 line, fixed height 76�0.88=~67px ?? */}
               <div className="hhm-kw" style={{
-                flexShrink:0,
-                width:'100%',
-                marginBottom:6,
+                flexShrink: 0,
+                width: '100%',
+                marginBottom: 6,
+                height: 'calc(76px * 0.88)',
+                display: 'flex',
+                alignItems: 'flex-end',
+                overflow: 'hidden',
               }}>
                 <span className="hhm-kw-text" style={{
-                  display: 'inline-block',
-                  fontSize: 'clamp(72px, 22vw, 104px)',
-                  lineHeight: .88,
+                  display: 'block',
+                  fontSize: kwFontSize,
+                  lineHeight: 0.88,
                   fontWeight: 700,
                   fontFamily: "'Cormorant Garamond', Georgia, 'Times New Roman', serif",
                   color: '#eafaf5',
                   letterSpacing: '-0.01em',
-                  textShadow: 'none',
+                  whiteSpace: 'nowrap',
                 }}>
                   {slide.keyword}
                 </span>
               </div>
 
-              {/* headline (marketing line, hide if missing) */}
-              {slide.headline && (
-                <h2 className="hhm-headline" dir="auto" lang={isRTL ? 'ar' : 'en'} style={{
-                  flexShrink:0,
-                  width:'92%',
-                  maxWidth:'92%',
-                  margin:0,
-                  marginBlockEnd: 10,
-                  fontSize: isRTL ? 'clamp(32px, 8.5vw, 34px)' : 'clamp(30px, 7.5vw, 32px)',
-                  fontWeight: 700,
-                  lineHeight: isRTL ? 1.5 : 1.15,
+              {/* ?? HEADLINE SLOT � always rendered, fixed 2-line height ?? */}
+              <h2
+                className="hhm-ttl hhm-headline"
+                dir="auto"
+                lang={isRTL ? 'ar' : 'en'}
+                style={{
+                  flexShrink: 0,
+                  width: '92%',
+                  margin: 0,
+                  marginBlockEnd: 8,
+                  height: hlH,
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  fontSize: 'clamp(22px, 6vw, 26px)',
+                  fontWeight: 600,
+                  lineHeight: hlLH,
                   color: '#FFFFFF',
                   fontFamily: isRTL
                     ? "'Aref Ruqaa', 'Traditional Arabic', serif"
                     : "'Cormorant Garamond', Georgia, 'Times New Roman', serif",
                   fontStyle: isRTL ? 'normal' : 'italic',
                   letterSpacing: 'normal',
-                  textTransform: 'none',
                   textWrap: 'balance',
-                }}>
-                  {slide.headline}
-                </h2>
-              )}
+                }}
+              >
+                {slide.headline}
+              </h2>
 
-              {/* description */}
-              <p className="hhm-dsc hhm-desc" dir="auto" lang={isRTL ? 'ar' : 'en'} style={{
-                flexShrink:0,
-                width:'92%',
-                maxWidth:'92%',
-                margin:0,
-                marginBlockEnd: 18,
-                fontSize: isRTL ? 17 : 16,
-                lineHeight: isRTL ? 1.85 : 1.6,
-                color: 'rgba(255,255,255,0.72)',
-                fontFamily: isRTL
-                  ? "'IBM Plex Sans Arabic', system-ui, sans-serif"
-                  : "'Plus Jakarta Sans', system-ui, sans-serif",
-                letterSpacing: 'normal',
-                textTransform: 'none',
-                display:'-webkit-box',
-                WebkitLineClamp:3,
-                WebkitBoxOrient:'vertical',
-                overflow:'hidden',
-                textWrap: 'pretty',
-              }}>
+              {/* ?? DESCRIPTION SLOT � always rendered, fixed 2-line height ?? */}
+              <p
+                className="hhm-dsc"
+                dir="auto"
+                lang={isRTL ? 'ar' : 'en'}
+                style={{
+                  flexShrink: 0,
+                  width: '92%',
+                  margin: 0,
+                  marginBlockEnd: 16,
+                  height: dscH,
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  fontSize: isRTL ? '16px' : '15px',
+                  lineHeight: isRTL ? 1.8 : 1.6,
+                  color: 'rgba(255,255,255,0.72)',
+                  fontFamily: isRTL
+                    ? "'IBM Plex Sans Arabic', system-ui, sans-serif"
+                    : "'Plus Jakarta Sans', system-ui, sans-serif",
+                  letterSpacing: 'normal',
+                }}
+              >
                 {slide.description}
               </p>
             </div>
@@ -788,11 +799,15 @@ export default function HomeHeroMobile({ hero }) {
         </a>
       </div>
 
-      {/* ── BOTTOM ROW ── */}
+      {/* ── BOTTOM ROW ──
+           The global floating WhatsApp button (56px circle, 16px from inline-start)
+           overlaps the first progress segment. Add clearance = 56 + 16 + 12 = 84px
+           on the WA side. The button is on inline-start (left in EN, right in AR).
+      */}
       <div style={{
         flexShrink:0,
         display:'flex', alignItems:'center', gap:10,
-        paddingInlineStart:16, paddingInlineEnd:16,
+        paddingInlineStart: 84, paddingInlineEnd:16,
         position:'relative', zIndex:10,
       }}>
         {/* progress segments */}
