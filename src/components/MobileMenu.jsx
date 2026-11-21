@@ -159,7 +159,7 @@ export function MobileMenu({ isOpen, onClose, hamburgerRef }) {
                 onClick={() => { onClose(); }}
                 aria-label="Sentivra home"
               >
-                <Logo variant="full" size={32} />
+                <Logo variant="auto" size={28} />
               </Link>
               <button
                 ref={closeButtonRef}

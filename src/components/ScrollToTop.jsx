@@ -13,9 +13,9 @@ import { ChevronUp } from 'lucide-react';
  *   card's buttons are never obscured at rest
  */
 const ScrollToTop = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [liftUp, setLiftUp] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(0);
+  const [liftUp, setLiftUp] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(0);
 
   // Detect mobile menu state
   useEffect(() => {
@@ -41,7 +41,9 @@ const ScrollToTop = () => {
       const footer = document.querySelector('footer');
       if (footer) {
         const rect = footer.getBoundingClientRect();
-        setLiftUp(rect.top < window.innerHeight + 80);
+        // Lift by the amount the footer overlaps the viewport from the bottom
+        const overlap = window.innerHeight - rect.top;
+        setLiftUp(overlap > 0 ? Math.min(overlap + 16, rect.height) : 0);
       }
     };
 
@@ -60,7 +62,7 @@ const ScrollToTop = () => {
             opacity: 1,
             scale: 1,
             // Lift above footer when it scrolls into view
-            y: liftUp ? -72 : 0,
+            y: liftUp ? -liftUp : 0,
           }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.2 }}

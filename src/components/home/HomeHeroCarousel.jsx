@@ -596,7 +596,7 @@ export default function HomeHeroCarousel() {
         paddingInlineEnd: 20,
       }}>
         <Link to="/" aria-label="Sentivra home">
-          <Logo variant={isDark ? 'light' : 'full'} size={34} />
+          <Logo variant="light" size={28} />
         </Link>
 
         <button

@@ -81,15 +81,11 @@ const Header = () => {
             className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-lg"
             aria-label="Sentivra home"
           >
-            {/* Light theme with light hero: always use full variant (dark)
-                Light theme with dark hero: light variant when not scrolled, full when scrolled
-                Dark theme: always use light variant (white) */}
-            {isScrolled ? (
-              <Logo variant="full" size={38} />
-            ) : hasLightHero ? (
-              <Logo variant="full" size={38} />
+            {/* Logo: white on dark hero (not scrolled); auto (theme-aware) elsewhere */}
+            {!isScrolled && !hasLightHero ? (
+              <Logo variant="light" size={32} />
             ) : (
-              <Logo variant="light" size={38} />
+              <Logo variant="auto" size={32} />
             )}
           </Link>
 

@@ -9,7 +9,7 @@ import { useTranslation } from '@/i18n/useTranslation';
 export function SEO({ 
   title, 
   description, 
-  image = '/sentivra-logo.svg',
+  image = '/og-image.png',
   type = 'website',
   noindex = false 
 }) {

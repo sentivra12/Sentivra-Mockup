@@ -1,182 +1,162 @@
 /**
- * Logo — SP brand mark
+ * Logo — Sentivra brand mark
  *
- * SP LOGO PLACEHOLDER — replace with official file when provided.
- * The mark is derived from the brand image: bold italic interlocked SP
- * monogram + four-point sparkle, on the emerald gradient.
+ * Uses official PNG files from /public/brand/:
+ *   sentivra-logo-white.png   — white mark, transparent bg (for dark surfaces)
+ *   sentivra-logo-emerald.png — dark emerald mark, transparent bg (for light surfaces)
  *
- * Variants:
- *   full        — gradient badge + "Sentivra" wordmark (navbar, footer)
- *   monogram    — badge only, no text (favicon, loaders, tight spaces)
- *   light       — white mark, transparent bg  (on dark/inverse surfaces)
- *   dark        — deep-emerald mark, transparent bg (on light surfaces)
+ * Natural image dimensions: 873 × 593 px (width × height, landscape)
+ * Aspect ratio: 873/593 ≈ 1.4722
  *
  * Props:
- *   variant     — 'full' | 'monogram' | 'light' | 'dark'   default: 'full'
- *   size        — badge height in px                        default: 40
- *   className   — extra classes on the wrapper
- *   wordmark    — override wordmark text                    default: 'Sentivra'
+ *   variant   'auto'      theme-aware (white on dark, emerald on light) — default
+ *             'light'     always white mark (for hard-coded dark surfaces)
+ *             'full'      alias for 'light' — kept for call-site compat
+ *             'dark'      always emerald mark (for hard-coded light surfaces)
+ *   size      height in px                                               default: 36
+ *   className extra classes on the outer <span>
+ *   wordmark  false → mark only; string → override text; true/undefined → 'Sentivra'
  */
 
 import React from 'react';
 
-/* ── The SP monogram as an inline SVG ─────────────────────────────────────
-   Geometric bold italic construction matching the brand image.
-   Rendered at 100×80 internal viewport; scaled via height prop.
-──────────────────────────────────────────────────────────────────────────── */
-const SPMark = ({ markColor = '#FFFFFF', showBg = true, size = 40 }) => {
-  const bgId   = `sp-bg-${showBg ? 'grad' : 'none'}-${size}`;
-  const glowId = `sp-glow-${size}`;
-  const height = size;
-  const width  = Math.round(size * 1.25); // 5:4 aspect
+const W = 873;   // natural width
+const H = 593;   // natural height
 
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox="0 0 100 80"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      style={{ flexShrink: 0 }}
-    >
-      <defs>
-        {/* Brand gradient — matches logo image (top-left teal → bottom-right deep) */}
-        <linearGradient id={bgId} x1="0" y1="0" x2="100" y2="80" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="#0D9E82" />
-          <stop offset="55%"  stopColor="#06796A" />
-          <stop offset="100%" stopColor="#044D40" />
-        </linearGradient>
+/* Pixel width for a given display height (keeps aspect ratio) */
+const imgW = (h) => Math.round((h * W) / H);
 
-        {/* Sparkle soft glow */}
-        <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
-          <feComposite  in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
-
-      {/* Background rounded square */}
-      {showBg && (
-        <rect x="0" y="0" width="100" height="80" rx="14" fill={`url(#${bgId})`} />
-      )}
-
-      {/* ── S letter — bold italic with rounded terminals ─────────────────── */}
-      {/* Top arc of S */}
-      <path
-        d="M62 18 C62 18 52 14 42 18 C32 22 28 30 32 36 C36 42 44 44 52 46 C60 48 66 51 64 57 C62 63 52 66 42 62"
-        stroke={markColor}
-        strokeWidth="8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-
-      {/* ── P letter — overlapping, offset down and right ──────────────────── */}
-      <path
-        d="M36 30 L36 66"
-        stroke={markColor}
-        strokeWidth="8"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M36 30 C36 30 54 28 58 36 C62 44 50 50 36 48"
-        stroke={markColor}
-        strokeWidth="8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-
-      {/* ── Four-point sparkle (top-right of monogram) ────────────────────── */}
-      {/* Soft glow bloom behind sparkle */}
-      <ellipse
-        cx="74" cy="20"
-        rx="8" ry="8"
-        fill="#B2F0E0"
-        opacity="0.35"
-        filter={`url(#${glowId})`}
-      />
-      {/* Four-point star paths */}
-      <path
-        d="M74 11 L75.5 18.5 L83 20 L75.5 21.5 L74 29 L72.5 21.5 L65 20 L72.5 18.5 Z"
-        fill={markColor}
-        opacity="0.95"
-      />
-    </svg>
-  );
-};
-
-/* ── Main Logo component ───────────────────────────────────────────────── */
 export default function Logo({
-  variant  = 'full',
-  size     = 40,
+  variant   = 'auto',
+  size      = 36,
   className = '',
-  wordmark = 'Sentivra',
+  wordmark,          // undefined | true | false | string
 }) {
-  /* monogram — badge + gradient bg, no text */
-  if (variant === 'monogram') {
-    return (
-      <span className={`inline-flex items-center ${className}`} aria-label="Sentivra logo">
-        <SPMark size={size} markColor="#FFFFFF" showBg />
+  const showWordmark = wordmark !== false;
+  const wordmarkText = typeof wordmark === 'string' ? wordmark : 'Sentivra';
+
+  /* ── The mark image ──────────────────────────────────────────────────── */
+  const markImg = (src, alt) => (
+    <img
+      src={src}
+      width={imgW(size)}
+      height={size}
+      alt={alt}
+      decoding="async"
+      draggable="false"
+      style={{ height: size, width: imgW(size), objectFit: 'contain', flexShrink: 0 }}
+    />
+  );
+
+  /* ── Wordmark text ───────────────────────────────────────────────────── */
+  const wm = (colorClass) =>
+    showWordmark && (
+      <span
+        className={`font-extrabold tracking-tight leading-none select-none ${colorClass}`}
+        style={{
+          fontSize : Math.round(size * 0.6),
+          fontFamily: "'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif",
+        }}
+        aria-hidden="true"
+      >
+        {wordmarkText}
       </span>
+    );
+
+  /* ── Wrapper ─────────────────────────────────────────────────────────── */
+  const wrap = (children) => (
+    <span
+      className={`inline-flex items-center gap-[10px] ${className}`}
+      aria-label={showWordmark ? undefined : 'Sentivra'}
+      role={showWordmark ? undefined : 'img'}
+    >
+      {children}
+    </span>
+  );
+
+  /* ── 'light' / 'full'  — always white mark (dark surface) ───────────── */
+  if (variant === 'light' || variant === 'full') {
+    return wrap(
+      <>
+        {markImg('/brand/sentivra-logo-white.png', '')}
+        {wm('text-white')}
+      </>
     );
   }
 
-  /* light — white mark on transparent bg (for dark surfaces) */
-  if (variant === 'light') {
-    return (
-      <span className={`inline-flex items-center gap-2 ${className}`} aria-label="Sentivra logo">
-        <SPMark size={size} markColor="#FFFFFF" showBg={false} />
-        {wordmark && (
-          <span
-            className="font-extrabold tracking-tight text-white"
-            style={{ fontSize: size * 0.6, lineHeight: 1, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-          >
-            {wordmark}
-          </span>
-        )}
-      </span>
-    );
-  }
-
-  /* dark — deep-emerald mark on transparent bg (for light surfaces) */
+  /* ── 'dark'  — always emerald mark (light surface) ──────────────────── */
   if (variant === 'dark') {
-    return (
-      <span className={`inline-flex items-center gap-2 ${className}`} aria-label="Sentivra logo">
-        <SPMark size={size} markColor="#044D40" showBg={false} />
-        {wordmark && (
-          <span
-            className="font-extrabold tracking-tight"
-            style={{
-              fontSize: size * 0.6,
-              lineHeight: 1,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              color: '#02231E',
-            }}
-          >
-            {wordmark}
-          </span>
-        )}
-      </span>
+    return wrap(
+      <>
+        {markImg('/brand/sentivra-logo-emerald.png', '')}
+        {wm('text-brand-900 dark:text-white')}
+      </>
     );
   }
 
-  /* full (default) — gradient badge + wordmark, theme-aware text */
-  return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`} aria-label="Sentivra logo">
-      <SPMark size={size} markColor="#FFFFFF" showBg />
-      {wordmark && (
+  /* ── 'auto' (default) — CSS-toggled pair, theme-aware ───────────────── */
+  // The site sets `class="dark"` on <html>; use Tailwind's dark: prefix.
+  // Render both images; hide the one that doesn't match the active theme.
+  return wrap(
+    <>
+      {/* White mark — visible in dark mode only */}
+      <img
+        src="/brand/sentivra-logo-white.png"
+        width={imgW(size)}
+        height={size}
+        alt=""
+        decoding="async"
+        draggable="false"
+        className="hidden dark:block"
+        style={{ height: size, width: imgW(size), objectFit: 'contain', flexShrink: 0 }}
+      />
+      {/* Emerald mark — visible in light mode only */}
+      <img
+        src="/brand/sentivra-logo-emerald.png"
+        width={imgW(size)}
+        height={size}
+        alt=""
+        decoding="async"
+        draggable="false"
+        className="block dark:hidden"
+        style={{ height: size, width: imgW(size), objectFit: 'contain', flexShrink: 0 }}
+      />
+      {/* Wordmark: white in dark, brand-900 in light */}
+      {showWordmark && (
         <span
-          className="font-extrabold tracking-tight text-brand-900 dark:text-white"
-          style={{ fontSize: size * 0.575, lineHeight: 1, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          className="font-extrabold tracking-tight leading-none select-none text-brand-900 dark:text-white"
+          style={{
+            fontSize : Math.round(size * 0.6),
+            fontFamily: "'Plus Jakarta Sans', 'IBM Plex Sans Arabic', sans-serif",
+          }}
+          aria-hidden="true"
         >
-          {wordmark}
+          {wordmarkText}
         </span>
       )}
-    </span>
+    </>
   );
 }
 
-/* Named re-exports for convenience */
-export { SPMark };
+/* ── Back-compat named exports ───────────────────────────────────────────
+   HeroVisual, MiniStage, HomeHeroCarousel import SPMark by name.
+   Redirect them to a simple img wrapper so nothing breaks.
+─────────────────────────────────────────────────────────────────────────── */
+export function SPMark({ size = 40 }) {
+  const h = size;
+  const w = imgW(h);
+  /* On dark surfaces (InverseSurface, hero) always white */
+  return (
+    <span className="inline-flex items-center" aria-hidden="true">
+      <img
+        src="/brand/sentivra-logo-white.png"
+        width={w}
+        height={h}
+        alt=""
+        decoding="async"
+        draggable="false"
+        style={{ height: h, width: w, objectFit: 'contain' }}
+      />
+    </span>
+  );
+}

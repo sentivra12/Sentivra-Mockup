@@ -76,7 +76,7 @@ const AdminLayout = () => {
     return (
       <div className="min-h-screen bg-brand-950 flex items-center justify-center">
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
-          <SPMark size={48} markColor="#FFFFFF" showBg />
+          <SPMark size={48} />
         </motion.div>
       </div>
     );
@@ -94,7 +94,7 @@ const AdminLayout = () => {
             </motion.div>
           ) : (
             <motion.div key="mono" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <SPMark size={30} markColor="#FFFFFF" showBg />
+              <SPMark size={30} />
             </motion.div>
           )}
         </AnimatePresence>
